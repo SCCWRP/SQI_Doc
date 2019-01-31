@@ -1,10 +1,10 @@
 ---
-title: "The Stream Quality Index - Outline"
+title: "Stream Quality Index - Outline"
 output: 
   bookdown::word_document2:
     reference_docx: my_styles.docx
 # bibliography: refs.bib
-author: 'Marcus W. Beck (marcusb@sccwrp.org), Raphael D. Mazor (raphaelm@sccwrp.org), Ken Schiff (kens@sccwrp.org'
+author: 'Marcus W. Beck (marcusb@sccwrp.org), Raphael D. Mazor (raphaelm@sccwrp.org), Kenneth C. Schiff (kens@sccwrp.org'
 urlcolor: blue
 link-citations: true
 ---
@@ -23,3 +23,76 @@ library(Jabbrev)
 # # extract bib entries from online
 # bib_scrp('outline.Rmd', 'refs.bib')
 ```
+
+# Introduction
+
+* State of the science for biological assessment
+     * Biological indicators are common response endpoints 
+     * Multiple taxa can be used - macroinverts, fish, algae, etc.
+     * Can trigger 303d listing
+     * Many states use more than one index, questions regarding how to combine multiple response endpoints - empirically (average, separate) and in regulatory setting (one fails triggers listing, etc.)
+
+* Biological response is a symptom not a cause
+     * Biological impairments require remediation
+     * Can be achieved through causal assessments to identify stressors impacting biology
+     * Causal assessments are effective but labor-intensive, may require new data
+     * Rapid screening tools that combine multiple lines of evidence are useful alternatives to prioritize
+     * Additional challenges summmarizing complex data that describe environment, biological response
+
+* Methods to integrate biological, chemical, and physical data are needed
+     * Should leverage existing data/indices to inform causal assessments, 
+     * Should aggregate multiple biological indicators
+     * Should do so to inform management priorities - actionable results in an accessible format
+     * To date, no other studies on holistic stream health indices - currently limited to MMI (integrated index) or functional-based measures (e.g., ecosystem metabolism), i.e., how can multiple indices be simultaneously evaluated?
+
+* The Stream Quality Index
+     * This paper presents the SQI as a management tool to jointly evaluate stream quality using biological, chemical, physical data
+     * The objective of the SQI is to combine multiple indices to provide actionable information that categorically describes stream quality
+     * Goals - provide tiers of information (landscape to in situ), diagnostic information for prioritization
+     * Uses biology as an endpoint - empirically links biology to chemical, physical stressors
+     
+# Methods
+
+* Backround on study region, SMC program and data collected
+* CSCI, ASCI as endpoints - background on both
+* Physical, chemical data as stressors - types of data (eutro indicators, conductivity, PHAB, CRAM)
+* Modelling approach - what is the probability of biology being impacted given observed stressors
+     * Rf models to predict sites as "good"/"bad" biology as a function of chemistry, physical habitat
+     * How was biology combined? BCG bins for both indicators, assigned categories based on combination of bins
+     * Models produced pChem, pHab for each site, combined to overall pStress
+* Model output to SQI scores
+     * Defined categories based on good/bad biology, likelihood of stress (need to emphasize how breakpoints chosen)
+     * Overall, Biological condition, Stress condition, Stress condition detail
+
+* Online application 
+     * How to use SQI in practice
+     
+# Results
+
+* SMC breakdown, % by catogory, watershed, etc.
+* Most common stressors, should link to land use/watershed position, other covariates
+* Interesting trends or sites as examples (e.g., ASCI impacted, chemistry stress vs. CSCI impacted, habitat stress)
+* Odd-ball categories - Healthy and resilient, Impacted by unknown stress
+
+# Discussion
+
+* Value of the approach
+    * Combines multiple lines of evidence to rapidly evaluate stream health
+    * Actionable outcomes
+    * Linked to common stressors (eutro, conductivity, physical habitat)
+    * First to use RF models to combine multiple indices
+    * Broad categories to site-level information provided by index, easily accessible with online app
+
+* Drawbacks/limitations
+    * Other stressors not evaluated - flow mod, contaminants, climate change
+    * Other biota not considered - fish, amphibians, etc.
+    * Some expert judgment for breakpoints or index combos (i.e., average BCG between indices, worse BCG, etc.), but note these were at least partically vetted through advisory committees
+    * Policy needs not fully integrated because policy has yet to be cleary defined, though in progress
+    * Currently does not consider flow regime (ephemeral, perennial)
+    * Cursory - not as comprehensive as full-blown causal assessment but could be used to inform where its needed
+  
+* Next steps
+    * Expansion of toolbox - greater spatial resolution, additional endpoints/stressors
+    * Integration with other tools - SCAPE, RSCA, hydromod
+
+
