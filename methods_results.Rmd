@@ -1,0 +1,75 @@
+---
+title: "The Stream Condition Index: A Multi-Indicator Tool For Enhancing Environmental Management Communication"
+output: 
+  bookdown::word_document2:
+    reference_docx: my_styles.docx
+bibliography: refs.bib
+author: 'Marcus W. Beck (marcusb@sccwrp.org), Raphael D. Mazor (raphaelm@sccwrp.org), Kenneth C. Schiff (kens@sccwrp.org'
+urlcolor: blue
+link-citations: true
+---
+
+```{r setup, echo = F, warning = F, message = F, results = 'hide'}
+# figure path, chunk options
+knitr::opts_chunk$set(fig.path = 'figs/', warning = F, message = F, echo = F, cache = T, dev.args = list(family = 'serif'), dpi = 300, warning = F, out.width = '100%', cache.path = 'manu_draft_cache/',
+  fig.process = function(x) {
+  x2 = sub('-\\d+([.][a-z]+)$', '\\1', x)
+  if (file.rename(x, x2)) x2 else x
+  })
+
+# libraries
+library(Jabbrev)
+
+# extract bib entries from online
+bib_scrp('methods_results.Rmd', 'refs.bib')
+```
+
+# Methods
+
+## General Approach
+
+The SQI is a conceptual approach to describing stream health that is based on a stressor-response relationship between biology and in-stream stressors.  Using these relationships, the index provides a categorical description of overall stream health to support high-level management decisions, while also providing descriptions of the biological, chemical, and physical components that establish the foundation of the index to further evaluate which factors are driving stream health.  These tiers of information represent overall stream health, biological health, and stressor condition as single, actionable catogeries.  However, the underlying stressor-response relationships that define the categories are based on empirical models that describe a modelled likelihood of chemical or physical stressors impacting the separate components of biological condition.  Scientists and managers can easily access different components of the SQI depending on the desired level of information within the stressor-response paradigm. 
+
+The stressor-response model used by the SQI uses biological endpoints as indicators of beneficial uses for wadeable streams and water chemistry and physical habitat measurements as stressors that are empirically linked to biological condition.  Biological indices for aquatic macroinvertebrates and algal communities have been developed for California streams and both indices are used as complementary lines of evidence within the SQI.  Multiple taxa groups provide a more balanced indication of biological condition that can confirm overall stream health or provide additional diagnostic information about stressors as different communities may respond to different characteristics of stream habitat.  Water chemistry stressors were those that commonly affect biological condition in perennial streams, such as nutrients and conductivity.  Likewise, physical habitat was described generally as flow, channel, and riparian condition observed at a site.  Although physical habitat can be considered a response metric of stream health depending on the context, physical habitat herein is considered a stressor that can affect biological condition within the stressor-response model. 
+
+## Response components
+
+Two biological indices previously developed for California wadeable streams provide the foundation for evaluating biological integrity within the SQI.  First, the California Stream Condition Index (CSCI, @Mazor16) is a predictive index that compares observed macroinvertebrate taxa and metrics at a site to those expected under least disturbed reference conditions [@Stoddard06]. Expected values at a site are based on models that estimate the likely macroinvertebrate community relative to factors that naturally influence biology [@Moss87;@Cao07]. The CSCI score at a site can vary from 0 to ~ 1.4, with higher values indicating less deviation from reference state. CSCI scores have consistent meaning in different geogrpahic settings because the index was developed to minimize the influence of natural gradients on macroinvertebrate communities. Second, the Algal Stream Condition Index (ASCI, @Therouxip) was similarly developed using diatom and soft-bodied algae as response endpoints at lower trophic levels.  This index follows a multimetric approach where observed metrics were evaluated against statewide references sites that were chosen to characterize least disturbed algal communities.  Unlike the CSCI, the ASCI is not a predictive index because observed metrics had sufficient precision, accuracy, and responsiveness to characterize statewide patterns in algal integrity.  
+
+## Stressor components
+
+Water chemisty and physical habitat measurements were used to describe stressors associated with changes in CSCI and ASCI scores.  The water chemistry data included total nitrogen (mg/L), total phosphorus (mg/L) and specific conductivity ($\mu$S/cm).  These data describe stressors associated with eutrophication (nitrogen, phosphorus) and serve as proxies for cultural enrichment where the rate of primary production may be excessive relative to background conditions.  Linkages between eutrophication and beneficial uses are strongly supported by the literature and nutrient observations could be considered "biostimulatory" substances in California streams, whereby a mechanistic link with biological integrity is represented in the stress-response model of the SQI.  Nitrogen, phosphorus, and conductivity are also widely available observations from regional and statewide monitoring programs and collectively act as surrogates for unmeasured or alternative water chemistry problems at a site (e.g., temperature, light penetration).  Additional water quality data that may also be important could include contaminants, such as pesticides, bacteria, or pharmaceuticals.  Although these contaminants can affect aquatic organisms, they are not routinely monitored and links with biological integrity and aquatic life uses are not as well understood as for nutrient-based stressors.  
+
+Physical habitat conditions at a site were described using physical habitat metrics (PHAB, [@Rehn18]) and scores from the California Rapid Assessment Method (CRAM).  These data described the condition of physical habitat relative to flow characteristics, riparian condition, channel morphology, substrate type and diversity, and canopy shading.  As for biological communities, physical conditions vary naturally across geographic gradients such that observed data collected at one location may not be meaningfully compared to those from another location. A similar approach that was used for calibration of the biological indices was used to develop scoring methods for observed PHAB metrics that helped distinguish natural variability from anthropogenic stress.  Values range from 0 to ~ 1.4 with higher values indicating less deviation of physical habitat from reference.  As noted above, we consider physical habitat a critical component that influences biological condition, whereas both habitat and biology could be independently affected by external anthropogenic stressors.  For the purpose of the SQI, physical habitat was conceptually linked  to biology as a proximal stressor rather than a separate response measure of stress, although it could be used independently to do so or as a remedial step in identifying likely causes of poor condition.   
+
+PHAB metrics included percent sands and fines (%SAFN), Shannon diversity of aquatic habitat types (H_AqHab), Shannon diversity of natural substrate types (H_SubNat), evenness of flow habitat types (Ev_FlowHab), and riparian vegetation cover (XCMG).  All of the metrics are positively associated with physical habitat integrity such that an increase in each was generally considered an improvement in site condition.  The exception is percent sands and fines where an increase is more commonly associated with degraded physical conditions (e.g., bank instability, watershed erosion).  All physical data used to collect PHAB metrics were collected using standard field protocols desribed in @Ode07.  Finally, the riverine module of CRAM was used to produce an additional, overall assessment score of physical habitat condition at each site [@Collins07;@Solek11].  CRAM component metrics individually assess buffer and landscape context, hydrology, physical structure, and biotic structure.  The combined score ranges from 25 to 100, with higher values indicating less degraded conditions at a site. As described below, PHAB and CRAM scores were jointly considered in their relationship to biological response endpoints. 
+
+## Stream Condition Index
+
+*	Flow chart description
+*	Combining stressors
+*	Combining responses
+*	Combining stress and Response
+*	Linking final score to management actions (the categorical descriptions)
+
+## Application
+
+*	SMC data set
+*	Evaluation parameters/Performance metrics
+*	Web app (or leave this for discussion
+
+# Results
+
+*	SQI performance metrics
+     * 	Precision
+     * 	Any others?
+*	Percent So Cal stream miles or site frequency in each category
+     * 	As a set up for the value of the categorical scoring
+*	Overall agreement among stressor indicators
+     * 	As a set up for do we need multiple indicators?
+*	Overall agreement among response indicators
+     * 	As a set up for do we need multiple indicators?
+*	SQI trends either overall or at example sites
+
+# References
+
