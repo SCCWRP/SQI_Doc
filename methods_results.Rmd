@@ -44,19 +44,42 @@ Physical habitat conditions at a site were described using physical habitat metr
 
 PHAB metrics included percent sands and fines (%SAFN), Shannon diversity of aquatic habitat types (H_AqHab), Shannon diversity of natural substrate types (H_SubNat), evenness of flow habitat types (Ev_FlowHab), and riparian vegetation cover (XCMG).  All of the metrics are positively associated with physical habitat integrity such that an increase in each was generally considered an improvement in site condition.  The exception is percent sands and fines where an increase is more commonly associated with degraded physical conditions (e.g., bank instability, watershed erosion).  All physical data used to collect PHAB metrics were collected using standard field protocols desribed in @Ode07.  Finally, the riverine module of CRAM was used to produce an additional, overall assessment score of physical habitat condition at each site [@Collins07;@Solek11].  CRAM component metrics individually assess buffer and landscape context, hydrology, physical structure, and biotic structure.  The combined score ranges from 25 to 100, with higher values indicating less degraded conditions at a site. As described below, PHAB and CRAM scores were jointly considered in their relationship to biological response endpoints. 
 
-## Stream Condition Index
+## Stream Quality Index
 
-*	Flow chart description
-*	Combining stressors
-*	Combining responses
-*	Combining stress and Response
-*	Linking final score to management actions (the categorical descriptions)
+The stressor-response model to jointly evaluate the biological, physical, and chemical data for the SQI is conceptually represented in figure \@ref(fig:sqiflo). The overall SQI is a categorical outcome of biological condition (healthy/impacted) and stress condition (likelihood of impact) that is empirically based on the probability of observing biological alteration for observed stressor levels.  The empirical models that describe the probability of observing altered or unaltered biology were developed separately for chemistry and physical habitat stressors.  For both, a generalized additive model [@Wood06] was fit to calibration data to quantify smoothed functions for each separate water quality or physical habitat measure and how they are additively linked to binomial categories for altered or unaltered biology. Two models were developed:
+
+\begin{equation}
+pChem: p\left(bio\right) \sim  s\left(TN\right) + s\left(TP\right) + s\left(cond\right)
+(\#eq:pchem)
+\end{equation}
+
+\begin{equation}
+pHab: p\left(bio\right) \sim  s\left(PHAB\right) + s\left(CRAM\right)
+(\#eq:phab)
+\end{equation}
+
+where $p\left(bio\right)$ is the probability of biological alteration in equations \@ref(eq:pchem) and \@ref(eq:phab) given smoothed function $s$ for each chemistry or physical habitat variable.  The probability of alteration is modelled using a logit link function for binomial variables, as $log\left(p / \left(1 - p\right)\right)$, where $p$ defines altered or unaltered biology.
+
+An overall likelihood of biological alteration from both chemistry and physical habitat stressors was also estimated as a multiplicative function for $pChem$ and $pHab$:
+
+\begin{equation}
+pOverall: p\left(bio\right) \sim pChem \times pHab
+(\#eq:poverall)
+\end{equation}
+
+Equations \@ref(eq:pchem), \@ref(eq:phab), and \@ref(eq:poverall) provided the empirical estimates of biological alteration that were used to define the categorical outputs of the SQI, defined below.  
+
+Biological alteration using both the CSCI and ASCI as a binomial description for the above models required a framework to combine information from both indices.  As a conceptual model to link continuous data from each index to qualitative descriptions of condition, the biological condition gradient [BCG, @Davies06] framework was applied to both indices for binning scores into categories.  The BCG framework was initially developed to interpret bioassessment results based on independent methods and maps biological condition to different tiers of alteration across a generalized stressor gradient.  Specifically, sites in tier 1 are typically those with high bioassessment scores that are characteristic of pristine condtions, whereas sites in increasingly lower tiers indicating a transition from moderately to severely impacted condition.  Mapping biological index scores into tiers follows a semi-quantiative approach that combines numerical and narrative descriptions of condition.  The final categories are generally comparable between index types, e.g., tier 1 ASCI scores have a similar interpreation as tier 1 CSCI scores.  BCG tiers for the ASCI and CSCI were defined using methods in @Davies06 with considerable stakeholder input.  
+
+For the stress models above, the assigned BCG tiers for each index were combined using a ranking system to create a single integer that represented an overall BCG condition reflected by both indices.  The general approach assumed strict independent applicability between the two indices, such that combined categories were assigned through best judgment (as opposed to averaging, best prevails, etc.).  The combined BCG categories ranged as integers from 5 to -5, with higher values indicating overall unaltered biological condtion.  For example, a site with ASCI and CSCI scores with BCG bins both equal to 1 was assigned a value of 5 to represent the combined biological condition.  The overall determination of a site having altered or unaltered biology for the binomial models was based on a breakpoint of zero for the combined categories, i.e., sites with combined scores from 1 to 5 were unaltered and sites from 0 to -5 were altered for both indices.
+
+The empirical framework for the binomial models and BCG combined categories established a basis for the categorical descriptions from the SQI output.  These descriptions linked the quantitative data to management actions such that the results were easily interpreted with an indication of biological condition and the relevant stressors which may or may not be related to condition.  For the components in figure \@ref(fig:sqiflo), categorical outputs are provided by the index for the overall SQI, the biological condition, and the stress condition (figure \@ref(fig:sqicat)).  The categorical outputs were created from a matrix combination of the respective inputs.  The overall SQI categories describe the four possible combinations of biology and stressors at a site from the binary categories of altered/unaltered biology and stressed/unstressed conditions.  For the biological condition categories, the four possible outputs for a site that were based on the four combinations from the binary categories of high/low CSCI and high/low ASCI.  Finally, the possible stressor condition categories for a site were based on the four outcomes of the binary combinations of high/low chemistry stress and high/low physical habitat stress.  Because stress condition was multiplicative, a fifth category for the stressor condition category was also possible where the probability of overall stress ($pOverall$) exceeded the defined threshold for high/low stress even though the individual components for $pChem$ and $pHab$ were below the threshold.  Thresholds for biological indices that defined high/low condition were based on the tenth percentile distribution of scores at reference sites for each index.  Thresholds for high/low stress were conservative, whereby exceedance of a 33\% likelihood of biological alteration for any of the stress measures was considered high likelihood.
 
 ## Application
 
-*	SMC data set
-*	Evaluation parameters/Performance metrics
-*	Web app (or leave this for discussion
+All data for the SQI were from the Stormwater Monitoring Coalition (SMC) regional monitoring program in southern California [@Mazor15].  This coalition represents multiple state, federal, and local agencies that have a shared mission of stormwater management for over 7000 stream kilometers.  The SMC initiated a regional monitoring program in 2009 for the purpose of permit re-allocations among member agencies.  Central monitoring questions focus on assessing biological condition, identifying stressors associated with condition, and evaluating trends over time.  This dataset represents the most comprehensive and only probailistic source of perennial stream data in Southern California.  Because the SQI requires synoptic biological, chemistry, and physical habitat data, the final dataset used for model calibration represents a subset of the SMC dataset where all three components were simultaneously collected. This included 263 sites, 75\% of which were used for model calibration.  Collection dates ranged from 2008 to 2015 with relatively even distribution of samples between years.  Most sample events occurred in June following standard protocols for perennial stream surveys [@Ode07].
+
+Finally, precision and sensitivity of the SQI was evaluated to describe 1) how well the underlying empirical model described the likelihood of biological alteration, and 2) sensitivity of the model output to changing thresholds that defined the categorical conditions.  The first analysis evaluated precision in the validation dataset for the SQI to determine agreement between the model and actual stress and biological conditions.  The second analysis evaluated the change in results for the regional database that resulted from changing the categorical thresholds.  For example, the percentage of sites ranked as healthy and unstressed was compared by evaluating a change in the biological threshold for altered/unaltered biology, e.g., at 1\%, 10\%, and 30\% of reference scores for each index.     
 
 # Results
 
@@ -70,6 +93,19 @@ PHAB metrics included percent sands and fines (%SAFN), Shannon diversity of aqua
 *	Overall agreement among response indicators
      * 	As a set up for do we need multiple indicators?
 *	SQI trends either overall or at example sites
+
+# Figures
+
+```{r sqiflo, fig.cap = "Flowchart representation of the Stream Quality Index (SQI).  The overall SQI is a function of the likelihood of observing degraded biological condition given the stressors at a site.  Biological condition is assessed using macroinvertebrate (California Stream Condition Index, CSCI) and algal (Algal Stream Condition Index, ASCI) indices and stressors are evaluated based on water quality measures (total nitrogen, total phosphorus, conductivity) and physical habitat (California Rapid Assessment Method or CRAM, physical habitat metrics or PHAB). Stress condition is empirically linked to bilogical condition by separate probability functions for chemistry (pCHem) and physical habitat (pHab)."}
+knitr::include_graphics('figs/sqi_flo.png')
+```
+
+```{r sqicat, fig.cap = "Categorical site descriptions that are possible from the Stream Quality Index (SQI).  The overall SQI is described as the possible outcomes from biological and stress conditions.  The biological conditions are described by the possible outcomes from the CSCI and ASCI.  The stress conditions are described by the possible outcomes from the chemistry and habitat stressors.  A fifth stress category is possible because stress from both chemistry and habitat was multiplicative."}
+knitr::include_graphics('figs/sqi_cat.png')
+```
+
+
+
 
 # References
 
