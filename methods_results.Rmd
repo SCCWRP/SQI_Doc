@@ -19,6 +19,11 @@ knitr::opts_chunk$set(fig.path = 'figs/', warning = F, message = F, echo = F, ca
 
 # libraries
 library(Jabbrev)
+library(sf)
+library(tidyverse)
+
+# data
+data(alldat)
 
 # extract bib entries from online
 bib_scrp('methods_results.Rmd', 'refs.bib')
@@ -83,6 +88,8 @@ Finally, precision and sensitivity of the SQI was evaluated to describe 1) how w
 
 # Results
 
+Table \@ref(tab:sqicnt)
+
 *	SQI performance metrics
      * 	Precision
      * 	Any others?
@@ -104,6 +111,48 @@ knitr::include_graphics('figs/sqi_flo.png')
 knitr::include_graphics('figs/sqi_cat.png')
 ```
 
+# Tables
+
+```{r sqicnt}
+totab <- alldat %>% 
+  st_set_geometry(NULL) %>% 
+  select(MasterID, date, BiologicalCondition, OverallStressCondition_detail, StreamHealthIndex) %>% 
+  rename(
+    `Biological condition` = BiologicalCondition, 
+    `Stress condition` = OverallStressCondition_detail,
+    `Overall SQI` = StreamHealthIndex
+  ) %>% 
+  gather('var', 'val', -MasterID, -date) %>% 
+  group_by(var, val) %>%
+  summarise(
+    cnt = n()
+  ) %>% 
+  mutate(
+    per = round(100 * cnt / sum(cnt), 1), 
+    per = paste0('(', per, ')')
+  ) %>% 
+  ungroup %>% 
+  mutate(
+    val = factor(val, levels = c("Healthy", "Impacted for ASCI", "Impacted for CSCI", "Impacted for CSCI and ASCI", 
+"Healthy and unstressed", "Healthy and resilient", "Impacted and stressed", 
+"Impacted by unknown stress", "Low stress", "Stressed by chemistry and habitat degradation", 
+"Stressed by chemistry degradation", "Stressed by habitat degradation", 
+"Stressed by low levels of chemistry or habitat degradation"))
+  ) %>% 
+  arrange(val) %>%
+  mutate(var = ifelse(duplicated(var), '', var)) %>% 
+  rename(
+    `SQI output` = var, 
+    `category` = val
+  ) %>% 
+  unite('Count (percent)', cnt, per, sep = ' ' )
+  
+# table stuff
+cap.val <- 'Counts of sites in each of the categorical outputs from the SQI.  For every SQI output (biological condition, overall SQI, stress condition), a site is categorized as one of four possible outcomes.'
+
+# table
+knitr::kable(totab, booktabs = T, caption = cap.val)
+```
 
 
 
