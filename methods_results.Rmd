@@ -21,12 +21,18 @@ knitr::opts_chunk$set(fig.path = 'figs/', warning = F, message = F, echo = F, ca
 library(Jabbrev)
 library(sf)
 library(tidyverse)
+library(gridExtra)
+source('R/funcs.R')
 
 # data
-data(alldat)
+data(alldatavg)
+data(sheds)
 
 # extract bib entries from online
 bib_scrp('methods_results.Rmd', 'refs.bib')
+
+# all colors used for categories
+allcol <- getdsccol(palout = T)
 ```
 
 # Methods
@@ -88,7 +94,7 @@ Finally, precision and sensitivity of the SQI was evaluated to describe 1) how w
 
 # Results
 
-Table \@ref(tab:sqicnt)
+Table \@ref(tab:sqicnt), Figure \@ref(fig:sqimap)
 
 *	SQI performance metrics
      * 	Precision
@@ -111,18 +117,135 @@ knitr::include_graphics('figs/sqi_flo.png')
 knitr::include_graphics('figs/sqi_cat.png')
 ```
 
+```{r, results = 'hide'}
+toplo <- alldatavg %>% 
+  dplyr::select(MasterID, StreamHealthIndex, BiologicalCondition, OverallStressCondition_detail) %>% 
+  gather('var', 'val', -MasterID, -geometry) %>% 
+  mutate(
+    var = factor(var, 
+                 levels = c('StreamHealthIndex', 'BiologicalCondition', 'OverallStressCondition_detail'),
+                 labels = c('Overall SQI', 'Biological condition', 'Stress condition'))
+  )
+
+toplo1 <- toplo %>% 
+  filter(var %in% 'Overall SQI') %>% 
+  mutate(
+    val = factor(val, 
+                 levels = c("Healthy and unstressed", "Healthy and resilient", "Impacted by unknown stress", "Impacted and stressed")
+                 )
+  )
+toplo2 <- toplo %>% 
+  filter(var %in% 'Biological condition') %>% 
+  mutate(
+    val = factor(val, 
+                 levels = c("Healthy", "Impacted for CSCI", "Impacted for ASCI", "Impacted for CSCI and ASCI")
+                 )
+  )
+toplo3 <- toplo %>% 
+  filter(var %in% 'Stress condition') %>% 
+  mutate(
+    val = factor(val, 
+                 levels = c("Low stress", "Stressed by chemistry degradation", "Stressed by habitat degradation", "Stressed by chemistry and habitat degradation", "Stressed by low levels of chemistry or habitat degradation")
+                 )
+  )
+
+sqicol <- getdsccol(palfac = 'StreamHealthIndex')
+biocol <- getdsccol(palfac = 'BiologicalCondition')
+strcol <- getdsccol(palfac = 'OverallStressCondition_detail')
+
+legpos <- 'right'
+sz <- 3
+p1 <- ggplot() + 
+  geom_sf(data = sheds, colour = 'lightgrey') + 
+  geom_sf(data = toplo1, aes(fill = val), pch = 21, colour = 'black', size = sz) + 
+  facet_wrap(~var) + 
+  # scale_colour_manual(values = sqicol$col) + 
+  scale_fill_manual(values = sqicol$col) +
+  theme_void(base_family = 'serif', base_size = 14) + 
+  theme(
+    legend.position = legpos,
+    legend.title = element_blank(),
+    legend.justification = "left"
+  ) +
+  guides(fill = guide_legend(override.aes = list(size = 0.5)))
+p1leg <- g_legend(p1)
+p1 <- p1 +
+  theme(
+    legend.position = 'none',
+    panel.grid = element_line(colour = NA),
+    strip.background = element_blank(),
+    legend.title = element_blank()
+    )
+p2 <- ggplot() + 
+  geom_sf(data = sheds, colour = 'lightgrey') + 
+  geom_sf(data = toplo2, aes(fill = val), pch = 21, colour = 'black', size = sz) + 
+  facet_wrap(~var) + 
+  scale_fill_manual(values = biocol$col) +
+  theme_void(base_family = 'serif', base_size = 14) + 
+  theme(
+    legend.position = legpos,
+    legend.title = element_blank(),
+    legend.justification = "left"
+  ) +
+  guides(fill = guide_legend(override.aes = list(size = 0.5)))
+p2leg <- g_legend(p2)
+p2 <- p2 +
+  theme(
+    legend.position = 'none',
+    panel.grid = element_line(colour = NA),
+    strip.background = element_blank(),
+    legend.title = element_blank()
+    )
+
+p3 <- ggplot() + 
+  geom_sf(data = sheds, colour = 'lightgrey') + 
+  geom_sf(data = toplo3, aes(fill = val), pch = 21, colour = 'black', size = sz) + 
+  facet_wrap(~var) + 
+  scale_fill_manual(values = strcol$col) +
+  theme_void(base_family = 'serif', base_size = 14) + 
+  theme(
+    legend.position = legpos, 
+    legend.title = element_blank(),
+    legend.justification = "left"
+  ) +
+  guides(fill = guide_legend(override.aes = list(size = 0.5)))
+p3leg <- g_legend(p3)
+p3 <- p3 +
+  theme(
+    legend.position = 'none',
+    panel.grid = element_line(colour = NA),
+    strip.background = element_blank(),
+    legend.title = element_blank()
+    )
+
+maxWidth = grid::unit.pmax(p1leg$widths[2:5], p2leg$widths[2:5], p3leg$widths[2:5])
+ p1leg$widths[2:5] <- as.list(maxWidth)
+ p2leg$widths[2:5] <- as.list(maxWidth)
+ p3leg$widths[2:5] <- as.list(maxWidth)
+
+png('figs/sqi_map.png', height = 8, width = 8, units = 'in', res = 500)
+grid.arrange(
+  arrangeGrob(p1, p2, p3, ncol=1),
+  arrangeGrob(p1leg, p2leg, p3leg, ncol=1),
+  ncol = 2)
+dev.off()
+```
+```{r sqimap, fig.cap = "Categorical site descriptions for the Stream Quality Index (SQI) at monitoring sites in Southern California.  The overall SQI (top) is described as the possible outcomes from biological (middle) and stress conditions (bottom).  The biological conditions are described by the possible outcomes from the CSCI and ASCI.  The stress conditions are described by the possible outcomes from the chemistry and habitat stressors."}
+knitr::include_graphics('figs/sqi_map.png')
+```
+
 # Tables
 
 ```{r sqicnt}
-totab <- alldat %>% 
+totab <- alldatavg %>% 
   st_set_geometry(NULL) %>% 
-  select(MasterID, date, BiologicalCondition, OverallStressCondition_detail, StreamHealthIndex) %>% 
+  select(MasterID, BiologicalCondition, OverallStressCondition_detail, StreamHealthIndex) %>% 
   rename(
     `Biological condition` = BiologicalCondition, 
     `Stress condition` = OverallStressCondition_detail,
     `Overall SQI` = StreamHealthIndex
   ) %>% 
-  gather('var', 'val', -MasterID, -date) %>% 
+  gather('var', 'val', -MasterID) %>% 
   group_by(var, val) %>%
   summarise(
     cnt = n()
