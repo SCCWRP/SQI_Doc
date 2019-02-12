@@ -22,11 +22,14 @@ library(Jabbrev)
 library(sf)
 library(tidyverse)
 library(gridExtra)
+library(grid)
 source('R/funcs.R')
 
 # data
 data(alldatavg)
 data(sheds)
+data(wqglm)
+data(habglm)
 
 # extract bib entries from online
 bib_scrp('methods_results.Rmd', 'refs.bib')
@@ -233,6 +236,136 @@ dev.off()
 ```{r sqimap, fig.cap = "Categorical site descriptions for the Stream Quality Index (SQI) at monitoring sites in Southern California.  The overall SQI (top) is described as the possible outcomes from biological (middle) and stress conditions (bottom).  The biological conditions are described by the possible outcomes from the CSCI and ASCI.  The stress conditions are described by the possible outcomes from the chemistry and habitat stressors."}
 knitr::include_graphics('figs/sqi_map.png')
 ```
+
+```{r rspcrv, results = 'hide'}
+opt_vrs <- list(
+ TN2 = 0,
+ TP = 0.1,
+ Cond = 0
+ )  
+
+# wq
+toplotn <- strs_surf('TN2', mod  = 'wq_mod', mod_in = 'wqglm', opt_vrs = opt_vrs)
+toplotp <- strs_surf('TP', mod  = 'wq_mod', mod_in = 'wqglm', opt_vrs = opt_vrs)
+toplocn <- strs_surf('Cond', mod  = 'wq_mod', mod_in = 'wqglm', opt_vrs = opt_vrs)
+
+# plots
+p1 <- ggplot(toplotn, aes(x = TN2, y = fit)) +
+  geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
+  geom_line() +
+  geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
+  geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
+  theme_bw(base_size = 12,base_family = 'serif') +
+  xlab('Total Nitrogen (mg/L)') + 
+  theme(axis.title.y = element_blank())
+    
+p2 <- ggplot(toplotp, aes(x = TP, y = fit)) +
+  geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
+  geom_line() +
+  geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
+  geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
+  theme_bw(base_size = 12,base_family = 'serif') +
+  xlab('Total phosphorus (mg/L)') + 
+  theme(axis.title.y = element_blank())
+    
+p3 <- ggplot(toplocn, aes(x = Cond, y = fit)) +
+  geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
+  geom_line() +
+  geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
+  geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
+  theme_bw(base_size = 12,base_family = 'serif') +
+  xlab('Conductivity (uS/cm)') + 
+  theme(axis.title.y = element_blank())
+  
+opt_vrs <- list(
+    indexscore_cram = 100,
+    PCT_SAFN = 0,
+    H_AqHab = 1.5,
+    H_SubNat = 1.5,
+    Ev_FlowHab = 1.5,
+    XCMG = 100
+  )
+
+# hab
+toplocrm <- strs_surf('indexscore_cram', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
+toplosaf <- strs_surf('PCT_SAFN', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
+toploaqh <- strs_surf('H_AqHab', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
+toplosbn <- strs_surf('H_SubNat', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
+toploflo <- strs_surf('Ev_FlowHab', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
+toplocmg <- strs_surf('XCMG', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
+
+# plots
+p4 <- ggplot(toplocrm, aes(x = indexscore_cram, y = fit)) +
+  geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
+  geom_line() +
+  geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
+  geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
+  theme_bw(base_size = 12,base_family = 'serif') +
+  xlab('CRAM') + 
+  theme(axis.title.y = element_blank())
+    
+p5 <- ggplot(toplosaf, aes(x = PCT_SAFN, y = fit)) +
+  geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
+  geom_line() +
+  geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
+  geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
+  theme_bw(base_size = 12,base_family = 'serif') +
+  xlab('% sands and fines') + 
+  theme(axis.title.y = element_blank())
+    
+p6 <- ggplot(toploaqh, aes(x = H_AqHab, y = fit)) +
+  geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
+  geom_line() +
+  geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
+  geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
+  theme_bw(base_size = 12,base_family = 'serif') +
+  xlab('Diversity of habitat') + 
+  theme(axis.title.y = element_blank())
+
+p7 <- ggplot(toplosbn, aes(x = H_SubNat, y = fit)) +
+  geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
+  geom_line() +
+  geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
+  geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
+  theme_bw(base_size = 12,base_family = 'serif') +
+  xlab('Diversity of substrate') + 
+  theme(axis.title.y = element_blank())
+
+p8 <- ggplot(toploflo, aes(x = Ev_FlowHab, y = fit)) +
+  geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
+  geom_line() +
+  geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
+  geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
+  theme_bw(base_size = 12,base_family = 'serif') +
+  xlab('Evenness of flow') + 
+  theme(axis.title.y = element_blank())
+
+p9 <- ggplot(toplocmg, aes(x = XCMG, y = fit)) +
+  geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
+  geom_line() +
+  geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
+  geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
+  theme_bw(base_size = 12,base_family = 'serif') +
+  xlab('% cover') + 
+  theme(axis.title.y = element_blank())
+
+png('figs/rsp_crv.png', height = 6, width = 11, res = 500, units = 'in', family = 'serif')
+grid.arrange(
+  left = textGrob('Likelihood of alteration', rot = 90), 
+  arrangeGrob(
+    textGrob('Water chemistry', just = 'left'), 
+    arrangeGrob(p1, p2, p3, ncol = 3),
+    textGrob('Physical habitat', just = 'left'), 
+    arrangeGrob(p4, p5, p6, p7, p8, p9, ncol = 6), 
+    ncol = 1, heights = c(0.1, 1, 0.1, 1)
+  )
+)
+dev.off()
+```
+```{r rsp_crv, fig.cap = "Some curves"}
+knitr::include_graphics('figs/rsp_crv.png')
+```
+
 
 # Tables
 

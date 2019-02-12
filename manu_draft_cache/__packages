@@ -13,3 +13,5 @@ forcats
 bindrcpp
 patchwork
 gridExtra
+nlme
+mgcv
