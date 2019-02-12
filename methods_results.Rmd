@@ -23,6 +23,7 @@ library(sf)
 library(tidyverse)
 library(gridExtra)
 library(grid)
+library(directlabels)
 source('R/funcs.R')
 
 # data
@@ -97,7 +98,11 @@ Finally, precision and sensitivity of the SQI was evaluated to describe 1) how w
 
 # Results
 
-Table \@ref(tab:sqicnt), Figure \@ref(fig:sqimap)
+Among all sites, the overall SQI categorized a majority as having altered biology under high stress conditions (impacted and stressed, 75\% of sites, Table \@ref(tab:sqicnt)).  Just over 5\% of sites were in the opposite category of unaltered biology in low stress conditions (healty and unstressed).  For the remaining two categories of the overall SQI, nearly 20\% of sites had unaltered biology but were under high stress conditions (healthy and resilient), whereas less than 1\% of sites had altered biology not related to physical or chemical stressors (impacted by unkown stress).  For the biological condition category, sites with altered conditions were more often indicated as impacted for both CSCI and ASCI scores (47%).  More sites were impacted for the ASCI (23%) than the CSCI (7%) if only one index was altered.  Less than a quarter of all sites had unaltered biology (23%).  For stress conditions, over 75% of sites were stressed by both chemistry and physical habitat stressors.  More sites were stressed by habitat degradation (11\%) than water chemistry (4\%) if only one stressor was present.  Only 6\% of sites had low stress, wheres 3\% of sites were impacted by the multiplicative combination of both low chemistry and physical habitat stressors.    
+
+Spatial patterns among SQI categories in Southern California generally followed elevation and land use gradients (Figure \@ref(fig:sqimap)).  More impacted biological communities and high stress conditions were observed toward coastal areas in the lower watersheds and where urbanization is highest (e.g., Los Angeles, Orange County, Ventura, San Diego).  Sites with altered biological condition showed similar spatial patterns, although sites altered only for the ASCI were more often observed at mid-elevation in northern and southern locations in the study area. Stress condition patterns were similar to biology although low stress conditions were confined to the extreme northeast region of the study area, whereas healthy biological conditions were observed at a wider range of locations but still generally confined to high elevation. High stress conditions were also observed across a wider elevation gradient than biological alteration, i.e., resilient biological comunities in the presence of high stress were not uncommon (Table \@ref(tab:sqicnt)).    
+
+Figure \@ref(fig:strlik), Figure \@ref(fig:rspcrv)
 
 *	SQI performance metrics
      * 	Precision
@@ -237,11 +242,57 @@ dev.off()
 knitr::include_graphics('figs/sqi_map.png')
 ```
 
-```{r rspcrv, results = 'hide'}
+
+```{r, results = 'hide'}
+toplo <- alldatavg %>% 
+  st_set_geometry(NULL) %>% 
+  select(pChem, pHab, pChemHab) 
+
+xgrid <- seq(min(toplo$pHab, na.rm = T), max(toplo$pHab, na.rm = T), length = 100)
+ygrid <- seq(min(toplo$pChem, na.rm = T), max(toplo$pChem, na.rm = T), length = 100)
+
+data.fit <- expand.grid(pHab = xgrid, pChem = ygrid)
+
+data.loess <- loess(pChemHab ~ pHab * pChem, data = toplo)
+mtrxd <- predict(data.loess, newdata = data.fit) %>% 
+  reshape2::melt() %>% 
+  mutate(
+    pHab = as.numeric(gsub('^pHab=', '', pHab)), 
+    pChem = as.numeric(gsub('^pChem=', '', pChem))
+  ) %>% 
+  rename(pChemHab = value)
+
+cols <- getdsccol(palfac = 'OverallStressCondition')$col
+
+p <- ggplot(mtrxd, aes(x = pChem, y = pHab, z = pChemHab)) + 
+  stat_contour(aes(colour = ..level..)) + 
+  geom_point(data = toplo, aes(x = pChem, y = pHab, fill = pChemHab), pch = 21, colour = 'lightgrey', size = 4) +
+  theme_bw(base_family= 'serif') + 
+  theme(
+    legend.position = 'top',
+    legend.title = element_text(face = 'italic'), 
+    axis.title = element_text(face = 'italic')
+  ) + 
+  scale_colour_gradientn('pOverall', colours = cols, guide = F)+
+  scale_fill_gradientn('pOverall', colours = cols)
+
+
+p <- direct.label(p, list('bottom.pieces', cex = 0.7))
+
+png('figs/str_lik.png', height = 5, width = 4.5, family = 'serif', res = 400, units = 'in')
+p
+dev.off()
+```
+```{r strlik, fig.cap = "Relationship between stress models for water chemistry (*pChem*, eqn. \\\\@ref(eq:pchem)) and physical habitat (*pHab*, eqn. \\\\@ref(eq:phab).  Stress models for water chemistry and physical habitat were created based on the likelihood of biological alteration for the observed stress measures.  The overall stress meaures (*pOverall*, eqn. \\\\@ref(eq:poverall)) is the product of both stress models.  Points represent estimated stress at a single site."}
+knitr::include_graphics('figs/str_lik.png')
+```
+
+
+```{r, results = 'hide'}
 opt_vrs <- list(
  TN2 = 0,
  TP = 0.1,
- Cond = 0
+ Cond = 100
  )  
 
 # wq
@@ -283,7 +334,7 @@ opt_vrs <- list(
     H_AqHab = 1.5,
     H_SubNat = 1.5,
     Ev_FlowHab = 1.5,
-    XCMG = 100
+    XCMG = 50
   )
 
 # hab
@@ -362,10 +413,9 @@ grid.arrange(
 )
 dev.off()
 ```
-```{r rsp_crv, fig.cap = "Some curves"}
+```{r rspcrv, fig.cap = "Modelled likelihood of biological alteration from water quality (top) and physical habitat stressors (bottom). Curves are the binomial likelihood (+/- standard error) of biological condition being altered (as measured by macroinvertebrate and algal indices) across the range of observed values for water quality and physical habitat stressors on the x-axes.  The water chemistry and physical habitat stress plots are derived from equations \\\\@ref(eq:pchem) and \\\\@ref(eq:phab).  Other variables in each model not on the x-axis for each plot are held constant at values for low stress conditions."}
 knitr::include_graphics('figs/rsp_crv.png')
 ```
-
 
 # Tables
 
@@ -389,11 +439,7 @@ totab <- alldatavg %>%
   ) %>% 
   ungroup %>% 
   mutate(
-    val = factor(val, levels = c("Healthy", "Impacted for ASCI", "Impacted for CSCI", "Impacted for CSCI and ASCI", 
-"Healthy and unstressed", "Healthy and resilient", "Impacted and stressed", 
-"Impacted by unknown stress", "Low stress", "Stressed by chemistry and habitat degradation", 
-"Stressed by chemistry degradation", "Stressed by habitat degradation", 
-"Stressed by low levels of chemistry or habitat degradation"))
+    val = factor(val, levels = c("Healthy and unstressed", "Healthy and resilient", "Impacted and stressed", "Impacted by unknown stress", "Healthy", "Impacted for ASCI", "Impacted for CSCI", "Impacted for CSCI and ASCI",  "Low stress", "Stressed by chemistry and habitat degradation", "Stressed by chemistry degradation", "Stressed by habitat degradation", "Stressed by low levels of chemistry or habitat degradation"))
   ) %>% 
   arrange(val) %>%
   mutate(var = ifelse(duplicated(var), '', var)) %>% 
@@ -409,8 +455,6 @@ cap.val <- 'Counts of sites in each of the categorical outputs from the SQI.  Fo
 # table
 knitr::kable(totab, booktabs = T, caption = cap.val)
 ```
-
-
 
 # References
 

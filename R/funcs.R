@@ -85,7 +85,7 @@ strs_surf <- function(xvar, mod = c('hab_mod', 'wq_mod'), mod_in = NULL, title =
     var = c(hab_vrs, wq_vrs),
     minv = c(24, 0, 0, 0, 0, 0, 0, 0, 0),
     avev = c(69.3, 38, 1.33, 1.3, 0.548, 108, 1.92, 0.232, 1615),
-    maxv = c(100, 100, 2.5, 2.5, 1, 264, 1.5, 1, 2000),
+    maxv = c(100, 100, 2.5, 2.5, 1, 264, 1.5, 0.3, 2000),
     modv = c('hab_mod', 'hab_mod', 'hab_mod', 'hab_mod', 'hab_mod', 'hab_mod', 'wq_mod', 'wq_mod', 'wq_mod')
   ) %>% 
     gather('rng', 'val', minv, avev, maxv)
@@ -184,7 +184,7 @@ strs_surf <- function(xvar, mod = c('hab_mod', 'wq_mod'), mod_in = NULL, title =
   prd_vrs <- rbind(xy_vrs, cnt_vrs) %>% 
     deframe() %>% 
     expand.grid
-  
+
   # modelled response surface
   rspse <- paste0('predict(', mod_in, ', newdata = prd_vrs, type = "response", se = T)')
   rspse <- eval(parse(text = rspse))
@@ -199,3 +199,4 @@ strs_surf <- function(xvar, mod = c('hab_mod', 'wq_mod'), mod_in = NULL, title =
   return(toplo)
   
 }
+
