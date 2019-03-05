@@ -74,19 +74,19 @@ strs_surf <- function(xvar, mod = c('hab_mod', 'wq_mod'), mod_in = NULL, title =
   
   # get mod arg
   mod <- match.arg(mod)
-  
+
   # hab and wq vars
-  hab_vrs <- c('indexscore_cram', 'PCT_SAFN', 'H_AqHab', 'H_SubNat', 'Ev_FlowHab', 'XCMG')
-  wq_vrs <- c('TN2', 'TP', 'Cond')
+  hab_vrs <- c('indexscore_cram', 'IPI')
+  wq_vrs <- c('TN', 'TP', 'Cond')
   
   # rng and avgs for habitat/wq variables
   # averages from calibration data, all stations/dates
   rng_vrs <- tibble::tibble( 
     var = c(hab_vrs, wq_vrs),
-    minv = c(24, 0, 0, 0, 0, 0, 0, 0, 0),
-    avev = c(69.3, 38, 1.33, 1.3, 0.548, 108, 1.92, 0.232, 1615),
-    maxv = c(100, 100, 2.5, 2.5, 1, 264, 1.5, 0.3, 2000),
-    modv = c('hab_mod', 'hab_mod', 'hab_mod', 'hab_mod', 'hab_mod', 'hab_mod', 'wq_mod', 'wq_mod', 'wq_mod')
+    minv = c(24, 0, 0, 0, 0),
+    avev = c(69.3, 0.79, 1.92, 0.232, 1615),
+    maxv = c(100, 1.25, 1.5, 0.3, 2000),
+    modv = c('hab_mod', 'hab_mod', 'wq_mod', 'wq_mod', 'wq_mod')
   ) %>% 
     gather('rng', 'val', minv, avev, maxv)
   
@@ -192,7 +192,7 @@ strs_surf <- function(xvar, mod = c('hab_mod', 'wq_mod'), mod_in = NULL, title =
   # combined predictation data and response
   toplo <- prd_vrs %>% 
     mutate(
-      `fit` = 1 - rspse$fit, 
+      `fit` = rspse$fit, 
       `fitse` = rspse$se
     )
   

@@ -24,10 +24,11 @@ library(tidyverse)
 library(gridExtra)
 library(grid)
 library(directlabels)
+library(SQI)
 source('R/funcs.R')
 
 # data
-data(alldatavg)
+data(sqidat)
 data(sheds)
 data(wqglm)
 data(habglm)
@@ -128,7 +129,7 @@ knitr::include_graphics('figs/sqi_cat.png')
 ```
 
 ```{r, results = 'hide'}
-toplo <- alldatavg %>% 
+toplo <- sqidat %>% 
   dplyr::select(MasterID, StreamHealthIndex, BiologicalCondition, OverallStressCondition_detail) %>% 
   gather('var', 'val', -MasterID, -geometry) %>% 
   mutate(
@@ -246,7 +247,7 @@ knitr::include_graphics('figs/sqi_map.png')
 
 
 ```{r, results = 'hide'}
-toplo <- alldatavg %>% 
+toplo <- sqidat %>% 
   st_set_geometry(NULL) %>% 
   select(pChem, pHab, pChemHab) 
 
@@ -279,7 +280,7 @@ p <- ggplot(mtrxd, aes(x = pChem, y = pHab, z = pChemHab)) +
   scale_fill_gradientn('pOverall', colours = cols)
 
 
-p <- direct.label(p, list('bottom.pieces', cex = 0.7))
+# p <- direct.label(p, list('bottom.pieces', cex = 0.7))
 
 png('figs/str_lik.png', height = 5, width = 4.5, family = 'serif', res = 400, units = 'in')
 p
@@ -292,18 +293,18 @@ knitr::include_graphics('figs/str_lik.png')
 
 ```{r, results = 'hide'}
 opt_vrs <- list(
- TN2 = 0,
+ TN = 0,
  TP = 0.1,
  Cond = 100
  )  
 
 # wq
-toplotn <- strs_surf('TN2', mod  = 'wq_mod', mod_in = 'wqglm', opt_vrs = opt_vrs)
+toplotn <- strs_surf('TN', mod  = 'wq_mod', mod_in = 'wqglm', opt_vrs = opt_vrs)
 toplotp <- strs_surf('TP', mod  = 'wq_mod', mod_in = 'wqglm', opt_vrs = opt_vrs)
 toplocn <- strs_surf('Cond', mod  = 'wq_mod', mod_in = 'wqglm', opt_vrs = opt_vrs)
 
 # plots
-p1 <- ggplot(toplotn, aes(x = TN2, y = fit)) +
+p1 <- ggplot(toplotn, aes(x = TN, y = fit)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
   geom_line() +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
@@ -332,20 +333,12 @@ p3 <- ggplot(toplocn, aes(x = Cond, y = fit)) +
   
 opt_vrs <- list(
     indexscore_cram = 100,
-    PCT_SAFN = 0,
-    H_AqHab = 1.5,
-    H_SubNat = 1.5,
-    Ev_FlowHab = 1.5,
-    XCMG = 50
+    IPI = 1
   )
 
 # hab
 toplocrm <- strs_surf('indexscore_cram', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
-toplosaf <- strs_surf('PCT_SAFN', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
-toploaqh <- strs_surf('H_AqHab', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
-toplosbn <- strs_surf('H_SubNat', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
-toploflo <- strs_surf('Ev_FlowHab', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
-toplocmg <- strs_surf('XCMG', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
+toploipi <- strs_surf('IPI', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
 
 # plots
 p4 <- ggplot(toplocrm, aes(x = indexscore_cram, y = fit)) +
@@ -357,59 +350,23 @@ p4 <- ggplot(toplocrm, aes(x = indexscore_cram, y = fit)) +
   xlab('CRAM') + 
   theme(axis.title.y = element_blank())
     
-p5 <- ggplot(toplosaf, aes(x = PCT_SAFN, y = fit)) +
+p5 <- ggplot(toploipi, aes(x = IPI, y = fit)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
   geom_line() +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
   theme_bw(base_size = 12,base_family = 'serif') +
-  xlab('% sands and fines') + 
-  theme(axis.title.y = element_blank())
-    
-p6 <- ggplot(toploaqh, aes(x = H_AqHab, y = fit)) +
-  geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_line() +
-  geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
-  geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
-  theme_bw(base_size = 12,base_family = 'serif') +
-  xlab('Diversity of habitat') + 
+  xlab('IPI') + 
   theme(axis.title.y = element_blank())
 
-p7 <- ggplot(toplosbn, aes(x = H_SubNat, y = fit)) +
-  geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_line() +
-  geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
-  geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
-  theme_bw(base_size = 12,base_family = 'serif') +
-  xlab('Diversity of substrate') + 
-  theme(axis.title.y = element_blank())
-
-p8 <- ggplot(toploflo, aes(x = Ev_FlowHab, y = fit)) +
-  geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_line() +
-  geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
-  geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
-  theme_bw(base_size = 12,base_family = 'serif') +
-  xlab('Evenness of flow') + 
-  theme(axis.title.y = element_blank())
-
-p9 <- ggplot(toplocmg, aes(x = XCMG, y = fit)) +
-  geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_line() +
-  geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
-  geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
-  theme_bw(base_size = 12,base_family = 'serif') +
-  xlab('% cover') + 
-  theme(axis.title.y = element_blank())
-
-png('figs/rsp_crv.png', height = 6, width = 11, res = 500, units = 'in', family = 'serif')
+png('figs/rsp_crv.png', height = 6, width = 8, res = 500, units = 'in', family = 'serif')
 grid.arrange(
   left = textGrob('Likelihood of alteration', rot = 90), 
   arrangeGrob(
     textGrob('Water chemistry', just = 'left'), 
     arrangeGrob(p1, p2, p3, ncol = 3),
     textGrob('Physical habitat', just = 'left'), 
-    arrangeGrob(p4, p5, p6, p7, p8, p9, ncol = 6), 
+    arrangeGrob(p4, p5, ncol = 2), 
     ncol = 1, heights = c(0.1, 1, 0.1, 1)
   )
 )
@@ -422,7 +379,7 @@ knitr::include_graphics('figs/rsp_crv.png')
 # Tables
 
 ```{r sqicnt}
-totab <- alldatavg %>% 
+totab <- sqidat %>% 
   st_set_geometry(NULL) %>% 
   select(MasterID, BiologicalCondition, OverallStressCondition_detail, StreamHealthIndex) %>% 
   rename(
