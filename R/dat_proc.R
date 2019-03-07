@@ -355,7 +355,7 @@ sqidat <- sqidat %>%
   left_join(xwalk, by = c('CSCI_rc', 'ASCI_rc')) %>% 
   select(-CSCI_score, -ASCI_score) %>% 
   mutate(
-    bio_fp = ifelse(Bio_BPJ < 0, 1, 0)
+    bio_fp = ifelse(Bio_BPJ <= 0, 1, 0)
   ) %>% 
   ungroup
 
