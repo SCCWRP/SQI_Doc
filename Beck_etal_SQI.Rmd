@@ -25,7 +25,10 @@ library(gridExtra)
 library(grid)
 library(directlabels)
 library(SQI)
-library(english)
+library(jtools)
+library(huxtable)
+library(flextable)
+library(officer)
 source('R/funcs.R')
 
 # data
@@ -161,7 +164,7 @@ Because our index was focused on assessing environmental health, a key challenge
 
 As a categorical index, the SQI provides a readily interpretable description of stream conditions. The four classes defined by the index (i.e., healthy and unstressed, healthy and resilient, impacted and stressed, impacted by unknown stress) can be understood by a general audience with little familiarity with the underlying data or the tools used to analyze them. In contrast, numeric indices demand a higher level of experience to interpret; without training, an unfamiliar audience cannot easily identify which values of a numeric index correspond to conditions requiring protection and which correspond to problems requiring intervention. [Although categorical indices create challenges for assessing trends or identifying borderline conditions, we have addressed this by XYZ .]
 
-The SQI addresses the challenge of synthesizing large amounts of information about stream condition while preserving the components and presenting them for more detailed exploration. The index is structured in layers, allowing interested users to explore reasons for categorical classificaton of each site. That is, users can determine which biological indicators account for a stream's health rating, along with which stressors may or not be associated with biological condition.  Users can identify presence or absence of physical and/or chemical stressors and which components in equations \@ref(eq:pchem) and \@ref(eg:phab) may be linked to their respective stressor categories.  Further, physical habitat measures described by CRAM and IPI include additional metrics that were used to calculate scores at each site. Although these metrics were not explicit components in the empirical models of the SQI, they serve as additional diagnostic information to describe physical conditions at each site. 
+The SQI addresses the challenge of synthesizing large amounts of information about stream condition while preserving the components and presenting them for more detailed exploration. The index is structured in layers, allowing interested users to explore reasons for categorical classificaton of each site. That is, users can determine which biological indicators account for a stream's health rating, along with which stressors may or not be associated with biological condition.  Users can identify presence or absence of physical and/or chemical stressors and which components in equations \@ref(eq:pchem) and \@ref(eq:phab) may be linked to their respective stressor categories.  Further, physical habitat measures described by CRAM and IPI include additional metrics that were used to calculate scores at each site. Although these metrics were not explicit components in the empirical models of the SQI, they serve as additional diagnostic information to describe physical conditions at each site. 
 
 Our approach to characterizing stressors differs from similar efforts, making the SQI well suited for use with ambient monitoring programs.  The Canadian Water Quality Index (CWQI, @CCME01) is a similar tool that evaluates the scope, frequency, and amplitude  of water quality objective exceedances for numerous parameters, resulting in a numeric value that ranges from 0 (poor) to 100 (excellent). This approach is appropriate for assessing compliance  with regulatory criteria at sites where monitoring covers many parameters and occurs at regular intervals (i.e., at selected sites of interest, such as below discharge points or at mass-emission stations). In contrast, the SQI is better suited for ambient monitoring programs (e.g., the SMC, @Mazor15, or the National Rivers and Streams Assessment, @USEPA16) that typically sample many sites with little or no replication and focusing on just a few indicators broadly indicative of water chemistry conditions rather than a large suite of potential stressors. Our approach is also applicable to indicators where thresholds are unavailable (e.g., CRAM or IPI), yet the relevance for measuring aquatic life supportis maintained even if it has less bearing on regulatory compliance than other approaches, such as the CWQI. Finally, our approach can be directly interpreted without familiarity of established benchmarks because the empirical stress models inthe SQI are expressed as probabilities of degrading biological condition, rather than abstract numbers.
 
@@ -460,7 +463,6 @@ cap.val <- 'Combined biological condition categories for the benthic macroinvert
 knitr::kable(totab, caption = cap.val)
 ```
 
-
 ```{r sqicnt}
 totab <- sqidat %>% 
   st_set_geometry(NULL) %>% 
@@ -497,6 +499,30 @@ cap.val <- 'Counts of sites in each of the categorical outputs from the SQI.  Fo
 # table
 knitr::kable(totab, booktabs = T, caption = cap.val)
 ```
+
+*Table \@ref(tab:strmod): \(\#tab:strmod) Summary of empirical stress models to quantify associations of water chemistry (pChem) and physical habitat (pHab) predictors with biological alteration.  Generalized linear models were fit to predict the likelihood of both healthy benthic macroinvertebrate and algal communities at calibration sites (75\\% of `r nrow(sqidat)` sites).*
+```{r, results = 'asis'}
+# use jtools
+coef_names <- c("Constant" = "(Intercept)", "log(TN)" = "log10(1 + TN)", "log(TP)" = "log10(1 + TP)", "Conductivity" = "Cond", "CRAM" = "indexscore_cram", "IPI" = "IPI")
+huxres <- export_summs(wqglm, habglm, coefs = coef_names, model.names = c('pChem', 'pHab'))
+
+brd <- fp_border(color="black")
+
+# use flextable
+tab <- huxres %>% 
+  as_FlexTable %>% 
+  font(fontname = 'Times', part = 'all') %>% 
+  fontsize(size = 12, part = 'all') %>% 
+  border_remove %>%
+  autofit(add_h = 0) %>% 
+  hline_top(part = 'all', border = brd) %>% 
+  hline(i = 1, part = 'body', border = brd) %>% 
+  hline(i= 13, part = 'body', border = brd) %>% 
+  hline(i= 17, part = 'body', border = brd) 
+tab
+
+```
+
 
 # References
 

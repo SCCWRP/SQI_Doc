@@ -18,3 +18,8 @@ mgcv
 directlabels
 SQI
 english
+stargazer
+jtools
+huxtable
+flextable
+officer
