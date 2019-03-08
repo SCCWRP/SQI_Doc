@@ -115,7 +115,7 @@ The inverse of the likelihoods was used to represent an additive effect of both 
 
 The empirical framework for the binomial models and combined biological condition categories established a basis for the categorical descriptions from the SQI output.  These descriptions linked the quantitative data to management actions such that the results were easily interpreted with an indication of biological condition and the relevant stressors which may or may not be related to condition.  For the components in figure \@ref(fig:sqiflo), categorical outputs are provided by the index for the overall SQI, the biological condition, and the stress condition (figure \@ref(fig:sqicat)).  The categorical outputs were created from a matrix combination of the respective inputs.  For example, the overall SQI categories describe the four possible combinations of biology and stressors at a site from the binary categories of altered/unaltered biology and stressed/unstressed conditions: healthy and unstressed, health and resilient, impacted by unknown stress, and impacted and stressed.  
 
-Separate categorical outputs were also created for the biological condition and stressorcondition categories. The four possible outputs for the biological categories were based on the four combinations from the binary categories of high/low CSCI and high/low ASCI: healthy, impacted for CSCI, impacted for ASCI, and impacted for both.  The possible stressor condition categories for a site were based on the four outcomes of the binary combinations of high/low chemistry stress and high/low physical habitat stress: low stress, stressed by chemistry, stressed by habitat, and stressed by both. A fifth stress category was also possible based on the additive combinations of low chemistry and low habitat stress if $pOverall$ exceeded the threshold even though $pChem$ and $pHab$ did not. Thresholds for biological indices that defined high/low condition were based on the tenth percentile distribution of scores at reference sites for each index.  Thresholds for high/low stress were based on the median likelihood across all sites.
+Separate categorical outputs were also created for the biological condition and stressor condition categories. The four possible outputs for the biological categories were based on the four combinations from the binary categories of high/low CSCI and high/low ASCI: healthy, impacted for CSCI, impacted for ASCI, and impacted for both.  The possible stressor condition categories for a site were based on the four outcomes of the binary combinations of high/low chemistry stress and high/low physical habitat stress: low stress, stressed by chemistry, stressed by habitat, and stressed by both. A fifth stress category was also possible based on the additive combinations of low chemistry and low habitat stress if $pOverall$ exceeded the threshold even though $pChem$ and $pHab$ did not. Thresholds for biological indices that defined high/low condition were based on the tenth percentile distribution of scores at reference sites for each index.  Thresholds for high/low stress were based on the median likelihood across all sites.
 
 ## Application
 
@@ -124,6 +124,8 @@ All data for the SQI were from the Stormwater Monitoring Coalition (SMC) regiona
 Finally, precision and sensitivity of the SQI was evaluated to describe 1) how well the underlying empirical model described the likelihood of biological alteration, and 2) sensitivity of the model output to changing thresholds that defined the categorical conditions.  The first analysis evaluated precision in the validation dataset for the SQI to determine agreement between the model and actual stress and biological conditions.  The second analysis evaluated the change in results for the regional database that were caused by changing the categorical thresholds that defined which categories for the SQI were assigned to each site.  For example, the percentage of sites ranked as healthy and unstressed was compared by evaluating a change in the biological threshold for altered/unaltered biology, e.g., at 1\%, 10\%, or 30\% of reference scores for each index.     
 
 # Results
+
+## SQI patterns
 
 Among all sites, the overall SQI categorized a majority as having altered biology under high stress conditions (impacted and stressed, 64\% of sites, Table \@ref(tab:sqicnt)).  Just over 20\% of sites were in the opposite category of unaltered biology in low stress conditions (healthy and unstressed).  For the remaining two categories of the overall SQI, only 2\% had unaltered biology but were under high stress conditions (healthy and resilient), whereas 13\% sites had altered biology not related to physical or chemical stressors (impacted by unknown stress).  For the biological condition category, sites with altered conditions were more often altered for both CSCI and ASCI scores (50\%).  For sites with one low scoring index, more sites were altered for the ASCI (16\%) than the CSCI (11\%).  Less than a quarter of all sites had unaltered biology (23\%).  For stress conditions, 35\% of sites were stressed by both chemistry and physical habitat stressors.  More sites were stressed by water chemistry (12\%) than physical habitat degradation (7\%) if only one stressor was present.  Over 45\% of sites had low stress and no sites were stressed by the additive effect of both low chemistry and physical habitat stressors.    
 
@@ -140,8 +142,33 @@ poveralln <- sum(sqidat$pChemHab > 0.5)
 poverallp <- round(100 * sum(sqidat$pChemHab > 0.5) / nrow(sqidat), 0)
 ```
 
+## Model precision
 
-The underlying empirical models provided insight into instream characteristics that were related to he likelihood of biological alteration (Figures \@ref(fig:strlik), \@ref(fig:rspcrv)).  About `r pchemp`\% of sites (n = `r pchemn`) had greater than 50\% likelihood of biological alteration from water chemistry stressors and `r phabp`\% (n = `r phabn`) had greater than 50\% likelihood of biological alteration from physical habitat stressors (Figure \@ref(fig:strlik)).  Collectively, `r poverallp`% (n = `r poveralln`) of sites had greater than 50\% likelihood of biological alteration from the overall stress of both chemistry and physical habitat stressors. 
+```{r}
+pchemchk <- lm(pChem ~ bio_fp * SiteSet, data = sqidat)
+phabchk <- lm(pHab ~ bio_fp * SiteSet, data = sqidat)
+poverallchk <- lm(pChemHab ~ bio_fp * SiteSet, data = sqidat)
+```
+
+
+The distinction between healthy and impacted biological communities was well described by the estimated likelihood of biological alteration provided by the empirical models (Figure \@ref(fig:boxlik)).  Slightly larger differences between the likelihood of alteration for healthy and impacted communities was observed for the chemistry model compared to the physical habitat model, suggesting an improved fit for the former.  For the overall likelihood of biological alteration (*pOverall*), more sites were greater than 90\% likely to altered in the impacted category as compared to the separate *pChem* and *pHab* models. For all cases, (*pChem*, *pHab*, *pOverall*), there were no systematic differences in model results between calibration and validation datasets ($p >$ 0.05 for the interaction and fixed effect of site type in linear models describing likelihood of alteration between impact categories and site type). 
+
+The underlying empirical models provided insight into instream characteristics that were related to the likelihood of biological alteration (Figures \@ref(fig:strlik), \@ref(fig:rspcrv)).  About `r pchemp`\% of sites (n = `r pchemn`) had greater than 50\% likelihood of biological alteration from water chemistry stressors and `r phabp`\% (n = `r phabn`) had greater than 50\% likelihood of biological alteration from physical habitat stressors (Figure \@ref(fig:strlik)).  Collectively, `r poverallp`% (n = `r poveralln`) of sites had greater than 50\% likelihood of biological alteration from the overall stress of both chemistry and physical habitat stressors. 
+
+```{r}
+calset <- sqidat %>% 
+  filter(SiteSet %in% 'Cal')
+crhab <- cor.test(calset$IPI, calset$indexscore_cram) %>% 
+  .$estimate %>% 
+  round(2)
+
+habglmsub1 <- glm(bio_fp ~ indexscore_cram,
+              family = binomial('logit'), data = calset)
+habglmsub2 <- glm(bio_fp ~ IPI,
+              family = binomial('logit'), data = calset)
+```
+
+Water chemistry and physical habitat predictors included in the empirical response models for *pChem* and *pHab* (equations \@ref(eq:pchem), \@ref(eq:phab)) explained a substantial portion of variability among sites related to the occurrence of biological alteration (Table \@ref(tab:strmod)). The *pChem* explained 64\% of the variation among sites, whereas the *pHab* model explained 42\%.  All predictors in the *pChem* were significantly and positively associated ($p < 0.05$) with the occurrence of biological alteration.  Only the CRAM predictor in the *pHab* model was significantly associated th occurrence of biological alteration.  Both CRAM and IPI are significantly correlated in the calibration dataset ($r =$ `crhab`), which masked the effect of IPI on biological alteration in the *pHab* model. However, exclusion of CRAM from the *pHab* model reduced the explanatory power by approximately 14\% and both were retained for the SQI.
 
 Figure \@ref(fig:rspcrv) demonstrates how the individual components for each stressor model were related to likelihood of alteration.  These partial dependency plots were created by estimating the likelihood of alteration across a range of values for each predictor while holding other predictors constant.  For each plot, the variables in each model (equations \@ref(eq:pchem), \@ref(eq:phab)) not on the x-axis were held at approximate values that were associated with low stress to better understand how biological alteration may be related to each predictor.  For water chemistry stressors, all were positively associated with likelihood of alteration, particularly conductiviity which had the steepest per unit increase in likelihood.  Associations of biological alteration with physical habitat predictors were as expected, except that decreasesin likelihood of biological alteration were observed with increasein IPI and CRAM given that both are indicators of habitat condition.  The strongest relationship was observed with increases in CRAM scores, where likelihood of alteration decreased sharply with CRAM scores greater than 50.  Increases in IPI scores were also associated with decreases in likelihood of alteration except the relationship had more uncertainty than for CRAM scores. 
 
@@ -309,6 +336,44 @@ knitr::include_graphics('figs/sqi_map.png')
 
 
 ```{r, results = 'hide'}
+sqicol <- getdsccol(palfac = 'StreamHealthIndex')
+
+toplo <- sqidat %>% 
+  st_set_geometry(NULL) %>% 
+  dplyr::select(pChem, pHab, pChemHab, bio_fp, SiteSet, StreamHealthIndex) %>% 
+  gather('var', 'val', -bio_fp, -SiteSet, -StreamHealthIndex) %>% 
+  mutate(
+    bio_fp = factor(bio_fp, levels = c(0, 1), labels = c('healthy', 'impacted')), 
+    var = factor(var, levels = c('pChem', 'pHab', 'pChemHab'), labels = c('pChem', 'pHab', 'pOverall'))
+  )
+
+p <- ggplot(toplo, aes(x = bio_fp, y = val, fill = SiteSet)) + 
+  geom_point(aes(group = SiteSet, colour = StreamHealthIndex), position = position_jitterdodge(jitter.width = 0.25)) + 
+  geom_boxplot(alpha = 0.5, outlier.alpha = 0) + 
+  facet_wrap(~var, ncol = 3) + 
+  theme_bw(base_family = 'serif', base_size = 12) + 
+  theme(
+    # axis.title.x = element_blank(), 
+    legend.title = element_blank(), 
+    # legend.position = 'top', 
+    strip.background = element_blank()
+  ) + 
+  scale_colour_manual(values = sqicol$col) + 
+  scale_fill_manual(values = c('lightblue', 'skyblue4')) +
+  ylab('p(Bio): Likelihood of biological alteration') +
+  xlab('Observed biological state (CSCI, ASCI)') #+
+  # guides(colour = guide_legend(override.aes = list(shape = NA)))
+
+
+png('figs/box_lik.png', height = 4, width = 8, family = 'serif', res = 400, units = 'in')
+p
+dev.off()
+```
+```{r boxlik, fig.cap = "Boxplot distributions of the modelled likelihood of biological alteration relative to water chemistry (*pChem*, eqn. \\\\@ref(eq:pchem)) and physical habitat variables (*pHab*, eqn. \\\\@ref(eq:phab)) and the additive overall stress as the product between the two (*pOverall*, eqn. \\\\@ref(eq:poverall)). Groups are separated into healthy or impacted biological condition at each site (Table \\\\@ref(tab:biocmb)) as the response measure for each model and by calibration/validation datasets (3:1 split).  Points show the four possible categorical outcomes from the overall SQI. CSCI: California Stream Condition Index, ASCI: Algal Stream Condition Index"}
+knitr::include_graphics('figs/box_lik.png')
+```
+
+```{r, results = 'hide'}
 toplo <- sqidat %>% 
   st_set_geometry(NULL) %>% 
   select(pChem, pHab, pChemHab) 
@@ -348,7 +413,7 @@ png('figs/str_lik.png', height = 5, width = 4.5, family = 'serif', res = 400, un
 grid.arrange(pleg, p, ncol = 1, heights = c(0.1, 1))
 dev.off()
 ```
-```{r strlik, fig.cap = "Relationship between stress models for water chemistry (*pChem*, eqn. \\\\@ref(eq:pchem)) and physical habitat (*pHab*, eqn. \\\\@ref(eq:phab).  Stress models for water chemistry and physical habitat were created based on the likelihood of biological alteration for the observed stress measures.  The overall stress meaures (*pOverall*, eqn. \\\\@ref(eq:poverall)) is the product of both stress models.  Points represent estimated stress at a single site."}
+```{r strlik, fig.cap = "Relationship between stress models for water chemistry (*pChem*, eqn. \\\\@ref(eq:pchem)) and physical habitat (*pHab*, eqn. \\\\@ref(eq:phab)).  Stress models for water chemistry and physical habitat were created based on the likelihood of biological alteration for the observed stress measures.  The overall stress meaures (*pOverall*, eqn. \\\\@ref(eq:poverall)) is the product of both stress models.  Points represent estimated stress at a single site."}
 knitr::include_graphics('figs/str_lik.png')
 ```
 
@@ -500,7 +565,7 @@ cap.val <- 'Counts of sites in each of the categorical outputs from the SQI.  Fo
 knitr::kable(totab, booktabs = T, caption = cap.val)
 ```
 
-*Table \@ref(tab:strmod): \(\#tab:strmod) Summary of empirical stress models to quantify associations of water chemistry (pChem) and physical habitat (pHab) predictors with biological alteration.  Generalized linear models were fit to predict the likelihood of both healthy benthic macroinvertebrate and algal communities at calibration sites (75\\% of `r nrow(sqidat)` sites).*
+*Table \@ref(tab:strmod): \(\#tab:strmod) Summary of empirical stress models to quantify associations of water chemistry (pChem) and physical habitat (pHab) predictors with biological alteration.  Generalized linear models were fit to predict the likelihood of both healthy benthic macroinvertebrate and algal communities at calibration sites (75\% of n = `r nrow(sqidat)` sites).  The sub models pHab, IPI only and pHab, CRAM only are shown to demonstrate improved precision of the combined pHab model.*
 ```{r, results = 'asis'}
 # use jtools
 coef_names <- c("Constant" = "(Intercept)", "log(TN)" = "log10(1 + TN)", "log(TP)" = "log10(1 + TP)", "Conductivity" = "Cond", "CRAM" = "indexscore_cram", "IPI" = "IPI")
