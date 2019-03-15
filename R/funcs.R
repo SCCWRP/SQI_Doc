@@ -200,3 +200,119 @@ strs_surf <- function(xvar, mod = c('hab_mod', 'wq_mod'), mod_in = NULL, title =
   
 }
 
+# get sqi tally of combos based on threshold for good/bad combined bio
+sqibiosens <- function(sqidat, thrsh){
+  # lookup table of bio BCG class, corresponding score, and combined categorical score
+  xwalk <- read.csv('raw/scoring_xwalkrc.csv', stringsAsFactors = F)
+  
+  # create bio categories for fail/pass combos
+  # for BCG, CSCI 2, 3, 4, 5, 6 is 1.03, 0.83, 0.63, 0.33, ASCI 2, 3, 4, 5, 6 is 1.23, 0.97, 0.67, 0.3
+  # for reference dist thresholds, CSCI li, pa, la, vla is 0.92, 0.79, 0.63, ASCI li, pa, la, vla is 0.93, 0.83, 0.7 
+  sqidat <- sqidat %>%  
+    mutate(
+      CSCI_rc = cut(csci_mean, breaks = c(-Inf, 0.63, 0.79, 0.92, Inf), labels = c('vla', 'la', 'pa', 'li')), 
+      CSCI_rc = as.character(CSCI_rc),
+      ASCI_rc = cut(asci_mean, breaks = c(-Inf, 0.70, 0.83, 0.93, Inf), labels = c('vla', 'la', 'pa', 'li')),
+      ASCI_rc = as.character(ASCI_rc)
+    ) %>% 
+    left_join(xwalk, by = c('CSCI_rc', 'ASCI_rc')) %>% 
+    select(-CSCI_score, -ASCI_score) %>% 
+    mutate(
+      bio_fp = ifelse(Bio_BPJ < thrsh, 1, 0)
+    ) %>% 
+    ungroup
+  
+  # get calibration/validation datasets
+  set.seed(500)
+  mydf.t<- sqidat %>% group_by(bio_fp)
+  my.sites <- unique(mydf.t[, c('MasterID', 'bio_fp')])
+  sites.cal <- sample_frac(my.sites, 0.75, replace = F) %>% 
+    group_by('bio_fp')
+  mydf.t <- mydf.t %>% 
+    mutate(
+      SiteSet = ifelse(MasterID %in% sites.cal$MasterID, 'Cal', 'Val')
+    ) %>% 
+    select(MasterID, yr, SiteSet)
+  sqidat <- sqidat %>% 
+    left_join(mydf.t, by = c('MasterID', 'yr', 'bio_fp'))
+  
+  # separate cal, val data
+  caldat <- sqidat %>% 
+    filter(SiteSet %in% 'Cal')
+  valdat <- sqidat %>% 
+    filter(SiteSet %in% 'Val')
+  
+  # models, glm
+  wqglm <- glm(bio_fp ~ log10(1 + TN) + log10(1 + TP) + Cond,
+               family = binomial('logit'), data = caldat)
+  
+  habglm <- glm(bio_fp ~ indexscore_cram + IPI,
+                family = binomial('logit'), data = caldat)
+  
+  datin <- sqidat %>% 
+    rename(
+      CSCI = csci_mean, 
+      ASCI = asci_mean
+    ) 
+  
+  ##
+  # probability of stress, chem, hab, and overall
+  # model predicts probably of low stress
+  
+  # glm predictions
+  datin$pChem <- predict(wqglm, newdata = datin, type = "response")
+  datin$pHab <- predict(habglm, newdata = datin, type = "response")
+  
+  # combo stress estimate
+  datin$pChemHab<- 1 - ((1 - datin$pChem) * (1 - datin$pHab))
+  
+  out <- datin %>%
+    dplyr::mutate(
+      BiologicalCondition = ifelse(CSCI>=0.79 & ASCI>=0.83,"Healthy",
+                                   ifelse(CSCI<0.79 & ASCI<0.83,"Impacted for CSCI and ASCI",
+                                          ifelse(CSCI<0.79 & ASCI>=0.83,"Impacted for CSCI",
+                                                 ifelse(CSCI>=0.79 & ASCI<0.83,"Impacted for ASCI", "XXXXX"
+                                                 )))
+      ),
+      WaterChemistryCondition = cut(pChem,
+                                    breaks = c(-Inf, 0.87, Inf),
+                                    labels = c('Low', 'Severe'),
+                                    right = F
+      ),
+      HabitatCondition = cut(pHab,
+                             breaks = c(-Inf, 0.72, Inf),
+                             labels = c('Low', 'Severe'),
+                             right = F
+      ),
+      OverallStressCondition = cut(pChemHab,
+                                   breaks = c(-Inf, 0.87, 0.997, Inf),
+                                   labels = c('Low', 'Moderate', 'Severe'),
+                                   right = F
+      ),
+      OverallStressCondition_detail = ifelse(pChemHab<0.87,"Low stress",
+                                             ifelse(pChem>=0.87 & pHab>=0.72, "Stressed by chemistry and habitat degradation",
+                                                    ifelse(pChem>=0.87 & pHab<0.72, "Stressed by chemistry degradation",
+                                                           ifelse(pChem<0.87 & pHab>0.72, "Stressed by habitat degradation",
+                                                                  ifelse(pChem<0.87 & pHab<0.72, "Stressed by low levels of chemistry or habitat degradation",
+                                                                         "XXXXX"))))
+      ),
+      StreamHealthIndex = ifelse(BiologicalCondition=="Healthy" & OverallStressCondition=="Low","Healthy and unstressed",
+                                 ifelse(BiologicalCondition=="Healthy" & OverallStressCondition!="Low","Healthy and resilient",
+                                        ifelse(BiologicalCondition!="Healthy" & OverallStressCondition=="Low","Impacted by unknown stress",
+                                               ifelse(BiologicalCondition!="Healthy" & OverallStressCondition!="Low","Impacted and stressed",
+                                                      "XXXXX")))
+      )
+    ) %>% 
+    dplyr::mutate_if(is.factor, as.character)
+  
+  # summarize output
+  sums <- out %>% 
+    dplyr::select(BiologicalCondition, WaterChemistryCondition, HabitatCondition, OverallStressCondition, OverallStressCondition_detail, StreamHealthIndex) %>% 
+    gather('var', 'val', everything()) %>% 
+    group_by(var, val) %>% 
+    tally 
+  
+  return(sums)
+  
+}
+

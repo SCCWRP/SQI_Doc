@@ -51,13 +51,13 @@ spelling::spell_check_files('Beck_etal_SQI.Rmd')
 
 # Abstract
 
-Monitoring and assessing stream health is a function of the physical, chemical, and biological integrity.  While monitoring all three indicators of stream integrity often occurs, combining all three indicators into a unified assessment of stream health rarely occurs, challenging non-technical environmental managers attempting to interpret complex environmental health information.  The goal of this study was to develop the Stream Quality Index (SQI), a single index that combines physical, chemical, and biological indicators into a scientifically rigorous, yet easy to understand tool for management decision making.  The SQI is based upon a stressor-response conceptual model.  Stress includes commonly measured chemical parameters indicative of anthropogenic inputs (conductivity, nitrogen, phosphorus) and two physical habitat indices that decribe both instream (i.e., substrate) and stream corridor (i.e., riparian) condition. Biological response includes benthic invertebrates and algae. Although the individual stressor and response components are quantitative and have similar meaning across a variety of environmental settings, the final outcome of the SQI is categorical with management connotations including: 1) healthy = unstressed and unimpacted biology, so protection is recommended; 2) resilient = stressed, but biological communities are healthy, so reducing stress is recommended; 3) impacted due to chemistry and/or physical habitat = stressed and impacted biology, so restoration is recommended, or; 4) impacted, causes unknown = unstressed, but biology is impacted, so causal assessment is recommended.  For clear transparency, an internet application was developed to allow quick dissection of the SQI from it’s categorical narrative for mangers to the individual quantitative assessment of stressors or biological response metrics for scientists.
+Monitoring and assessing stream health is a function of the physical, chemical, and biological integrity.  While monitoring all three indicators of stream integrity often occurs, combining all three indicators into a unified assessment of stream health rarely occurs, challenging non-technical environmental managers attempting to interpret complex environmental health information.  The goal of this study was to develop the Stream Quality Index (SQI), a single index that combines physical, chemical, and biological indicators into a scientifically rigorous, yet easy to understand tool for management decision making.  The SQI is based upon a stressor-response conceptual model.  Stress includes commonly measured chemical parameters indicative of anthropogenic inputs (conductivity, nitrogen, phosphorus) and two physical habitat indices that decribe both instream (i.e., substrate) and stream corridor (i.e., riparian) condition. Biological response includes benthic invertebrates and algae. Although the individual stressor and response components are quantitative and have similar meaning across a variety of environmental settings, the final outcome of the SQI is categorical with management connotations including: 1) healthy = unstressed and unimpacted biology, so protection is recommended; 2) resilient = stressed, but biological communities are healthy, so reducing stress is recommended; 3) impacted due to chemistry and/or physical habitat = stressed and impacted biology, so restoration is recommended, or; 4) impacted, causes unknown = unstressed, but biology is impacted, so causal assessment is recommended.  For clear transparency, an internet application was developed to allow quick dissection of the SQI from it’s categorical narrative for managers to the individual quantitative assessment of stressors or biological response metrics for scientists.
 
 # Introduction
 
 Monitoring and assessing stream health is a function of the physical, chemical, and biological integrity (33 USC §§ 1151, 1972).  Monitoring physical habitat integrity ensures all of the necessary environmental niches are present to support a diverse aquatic community [@Maddock99].  Monitoring chemical integrity ensures the absence of toxic compounds, but also the balanced minerals necessary to support aquatic life (ref).  Monitoring biological integrity, closest to the actual assessment of stream health, is necessary because unmeasured habitat or chemical water quality can impact otherwise balanced ecosystems [@Stoddard06;@Ode16]. 
 
-A tremendous amount of effort is spent monitoring all three types of stream integrity indicators.  These monitoring programs can be large and complex or small and straightforward, but all share the same challenge; how to communicate the complex physical, chemical, and biological results in a scientifically rigorous, repeatable, yet readily understandable way to non-scientists [@NRC90].  Most environmental managers and decision makers are not scientists and don’t understand the intricate, nuanced details of ecological data.  An additional challenge is that ecological data are rarely black and white, so many of decisions asked of mangers are made in the “grey zone” (Paulsen et al 2008).  This is particularly true when the different lines of evidence are not in complete agreement.
+A tremendous amount of effort is spent monitoring all three types of stream integrity indicators.  These monitoring programs can be large and complex or small and straightforward, but all share the same challenge; how to communicate the complex physical, chemical, and biological results in a scientifically rigorous, repeatable, yet readily understandable way to non-scientists [@NRC90].  Most environmental managers and decision makers are not scientists and don’t understand the intricate, nuanced details of ecological data.  An additional challenge is that ecological data are rarely black and white, so many of decisions asked of managers are made in the "grey zone" [@Paulsen08].  This is particularly true when the different lines of evidence are not in complete agreement.
 
 Currently, there are many examples of how to effectively communicate single indicators.  Well known examples including biological assessment tools such as the Index of Biological Integrity [@Karr81], Observed to Expected ratios [@Hawkins00b], or hybrids of the IBI and O/E [@Mazor16].  Similarly, assessment tools also exist for chemical indicators such as the CCME Water Quality Index produced by the Canadian Council of Ministers of the Environment [@CCME01;@Hurley12].  Physical habitat assessment tools are less common, such as ____ (maybe CRAM?)
 
@@ -516,6 +516,87 @@ dev.off()
 ```
 ```{r rspcrv, fig.cap = "Modelled likelihood of biological alteration from water quality (top) and physical habitat stressors (bottom). Curves are the binomial likelihood (+/- standard error) of biological condition being altered (as measured by macroinvertebrate and algal indices) across the range of observed values for water quality and physical habitat stressors on the x-axes.  The water chemistry and physical habitat stress plots are derived from equations \\\\@ref(eq:pchem) and \\\\@ref(eq:phab).  Other variables in each model not on the x-axis for each plot are held constant at values for low stress conditions."}
 knitr::include_graphics('figs/rsp_crv.png')
+```
+
+```{r eval = F}
+# dim(sqidat)
+data(sqidatinp)
+
+toshw <- c('OverallStressCondition_detail', 'StreamHealthIndex')
+ests <- seq(5, -4) %>% 
+  enframe %>% 
+  group_by(value) %>% 
+  nest %>% 
+  mutate(
+    est = purrr::map(value, function(x) sqibiosens(sqidatinp, x))
+  ) %>% 
+  select(-data) %>% 
+  unnest %>% 
+  filter(var %in% toshw)
+
+xwalk <- read.csv('raw/scoring_xwalkrc.csv', stringsAsFactors = F)
+toplo1 <- sqidatinp %>%  
+  mutate(
+    CSCI_rc = cut(csci_mean, breaks = c(-Inf, 0.63, 0.79, 0.92, Inf), labels = c('vla', 'la', 'pa', 'li')), 
+    CSCI_rc = as.character(CSCI_rc),
+    ASCI_rc = cut(asci_mean, breaks = c(-Inf, 0.70, 0.83, 0.93, Inf), labels = c('vla', 'la', 'pa', 'li')),
+    ASCI_rc = as.character(ASCI_rc)
+  ) %>% 
+  left_join(xwalk, by = c('CSCI_rc', 'ASCI_rc')) %>% 
+  select(Bio_BPJ) %>% 
+  group_by(Bio_BPJ) %>% 
+  tally
+
+p1 <- ggplot(toplo1, aes(x = factor(Bio_BPJ), y = n)) + 
+  geom_bar(stat = 'identity', fill = 'grey',colour = 'black') + 
+  # scale_x_discrete(expand = c(0,0)) +
+  scale_y_continuous(expand = c(0, 0)) + 
+  theme_bw(base_family = 'serif') +
+  theme(
+    panel.background = element_blank(), 
+    panel.border = element_blank(),
+    axis.title = element_blank(), 
+    panel.grid = element_blank()
+  ) 
+
+toplo2 <- ests %>% 
+  filter(var %in% toshw[1])
+cols1 <- getdsccol(palfac = toshw[1]) %>% 
+  select(nms, col) %>% 
+  deframe
+
+p2 <- ggplot(toplo2, aes(x = factor(value), y = n, fill = val)) + 
+  geom_bar(stat = 'identity', colour = 'black') + 
+  scale_fill_manual('Stress Condition', values = cols1) +
+  scale_y_continuous(expand = c(0, 0)) + 
+  scale_x_discrete(expand = c(0,0)) +
+  theme_bw(base_family = 'serif') +
+  theme(
+    panel.background = element_blank(), 
+    panel.border = element_blank(),
+    axis.title = element_blank()
+  ) 
+  
+toplo3 <- ests %>% 
+  filter(var %in% toshw[2])
+cols2 <- getdsccol(palfac = toshw[2]) %>% 
+  select(nms, col) %>% 
+  deframe
+
+p3 <- ggplot(toplo3, aes(x = factor(value), y = n, fill = val)) + 
+  geom_bar(stat = 'identity', colour = 'black') + 
+  scale_fill_manual('Overall SQI', values = cols2) +
+  scale_y_continuous(expand = c(0, 0)) + 
+  scale_x_discrete(expand = c(0,0)) +
+  theme_bw(base_family = 'serif') + 
+  theme(
+    panel.background = element_blank(), 
+    panel.border = element_blank(),
+    axis.title = element_blank()
+  ) 
+
+p1 + p2 + p3 + plot_layout(ncol = 3)
+
 ```
 
 # Tables
