@@ -336,6 +336,8 @@ sqidat <- sqidat %>%
   left_join(latlon, by = 'MasterID')
 
 # dim(sqidat)
+sqidatinp <- sqidat
+save(sqidatinp, file = 'data/sqidatinp.RData', compress = 'xz')
 
 # create sqi mods ---------------------------------------------------------
 
