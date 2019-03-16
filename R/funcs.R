@@ -200,8 +200,16 @@ strs_surf <- function(xvar, mod = c('hab_mod', 'wq_mod'), mod_in = NULL, title =
   
 }
 
-# get sqi tally of combos based on threshold for good/bad combined bio
-sqibiosens <- function(sqidat, thrsh){
+#' get sqi tally of combos based on threshold for good/bad combined bio
+#' 
+#' @param sqidat input sqi data without sqi calculated, sqidatinp
+#' @param thrsh numeric for value defining limit of healthy/impacted biology for combined asci/csci categories (in xwalk), values less than this thresold are impacted 
+#' @param habthrsh threshold for low/high habitat stress categories in pHab
+#' @param chmthrsh threshold for low/high chemistry stress categories in pChem
+#' @param allthrsh threshold for low/moderate all stress categories in pOverall
+#' @param allthrshhi threshold for moderate/hi all stress categories in pOverall, must be greater than allthrsh, if NULL it is estimated as allthrsh + (1 - allthrsh) / 2
+#' @param thrshemp logical indicating if values in habthrsh, chmthrsh, allthtrsh, and allthrshhi are quantile numbers for deriving the threholds from the percentile distribution of each stress measure, otherwise the threshold is used as is
+sqibiosens <- function(sqidat, thrsh, habthrsh = 0.72, chmthrsh = 0.87, allthrsh = 0.87, allthrshhi = 0.997, thrshemp = F){
   # lookup table of bio BCG class, corresponding score, and combined categorical score
   xwalk <- read.csv('raw/scoring_xwalkrc.csv', stringsAsFactors = F)
   
@@ -266,6 +274,24 @@ sqibiosens <- function(sqidat, thrsh){
   # combo stress estimate
   datin$pChemHab<- 1 - ((1 - datin$pChem) * (1 - datin$pHab))
   
+  if(is.null(allthrshhi)){
+    allthrshhi <- allthrsh + (1 - allthrsh) / 2
+  } else {
+    stopifnot(allthrsh < allthrshhi)
+  }
+    
+  # get thresholds
+  if(thrshemp){
+    chmthrsh <- quantile(datin$pChem, chmthrsh, na.rm = T) %>% 
+      as.numeric
+    habthrsh <- quantile(datin$pHab, habthrsh, na.rm = T) %>% 
+      as.numeric
+    allthrsh <- quantile(datin$pChemHab, allthrsh, na.rm = T) %>% 
+      as.numeric
+    allthrshhi <- quantile(datin$pChemHab, allthrshhi, na.rm = T) %>% 
+      as.numeric
+  }
+  
   out <- datin %>%
     dplyr::mutate(
       BiologicalCondition = ifelse(CSCI>=0.79 & ASCI>=0.83,"Healthy",
@@ -275,25 +301,25 @@ sqibiosens <- function(sqidat, thrsh){
                                                  )))
       ),
       WaterChemistryCondition = cut(pChem,
-                                    breaks = c(-Inf, 0.87, Inf),
+                                    breaks = c(-Inf, chmthrsh, Inf),
                                     labels = c('Low', 'Severe'),
                                     right = F
       ),
       HabitatCondition = cut(pHab,
-                             breaks = c(-Inf, 0.72, Inf),
+                             breaks = c(-Inf, habthrsh, Inf),
                              labels = c('Low', 'Severe'),
                              right = F
       ),
       OverallStressCondition = cut(pChemHab,
-                                   breaks = c(-Inf, 0.87, 0.997, Inf),
+                                   breaks = c(-Inf, allthrsh, allthrshhi, Inf),
                                    labels = c('Low', 'Moderate', 'Severe'),
                                    right = F
       ),
-      OverallStressCondition_detail = ifelse(pChemHab<0.87,"Low stress",
-                                             ifelse(pChem>=0.87 & pHab>=0.72, "Stressed by chemistry and habitat degradation",
-                                                    ifelse(pChem>=0.87 & pHab<0.72, "Stressed by chemistry degradation",
-                                                           ifelse(pChem<0.87 & pHab>0.72, "Stressed by habitat degradation",
-                                                                  ifelse(pChem<0.87 & pHab<0.72, "Stressed by low levels of chemistry or habitat degradation",
+      OverallStressCondition_detail = ifelse(pChemHab<allthrsh,"Low stress",
+                                             ifelse(pChem>=chmthrsh & pHab>=habthrsh, "Stressed by chemistry and habitat degradation",
+                                                    ifelse(pChem>=chmthrsh & pHab<habthrsh, "Stressed by chemistry degradation",
+                                                           ifelse(pChem<chmthrsh & pHab>habthrsh, "Stressed by habitat degradation",
+                                                                  ifelse(pChem<chmthrsh & pHab<habthrsh, "Stressed by low levels of chemistry or habitat degradation",
                                                                          "XXXXX"))))
       ),
       StreamHealthIndex = ifelse(BiologicalCondition=="Healthy" & OverallStressCondition=="Low","Healthy and unstressed",

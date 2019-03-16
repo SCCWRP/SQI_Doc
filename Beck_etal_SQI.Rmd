@@ -519,11 +519,29 @@ knitr::include_graphics('figs/rsp_crv.png')
 ```
 
 ```{r eval = F}
-# dim(sqidat)
 data(sqidatinp)
 
 toshw <- c('OverallStressCondition_detail', 'StreamHealthIndex')
-ests <- seq(5, -4) %>% 
+
+strssens <- crossing(qnt = seq(0.1, 0.9, by = 0.1), thrshfun = c('chmthrsh', 'habthrsh', 'allthrsh')) %>% 
+  group_by(qnt, thrshfun) %>% 
+  nest %>% 
+  mutate(
+    est = purrr::pmap(list(qnt, thrshfun), function(qnt, thrshfun){
+    
+      toeval <- paste0('sqibiosens(sqidatinp, thrsh = 0, ',  thrshfun, ' = ', qnt, ', thrshemp = T)')
+      eval(parse(text = toeval))
+      
+    }) 
+  ) %>% 
+  select(-data) %>% 
+  unnest %>% 
+  filter(var %in% toshw) %>% 
+  mutate(sensed = thrshfun) %>% 
+  select(-thrshfun) %>% 
+  rename(value = qnt)
+
+biolsens <- seq(5, -4) %>% 
   enframe %>% 
   group_by(value) %>% 
   nest %>% 
@@ -532,34 +550,36 @@ ests <- seq(5, -4) %>%
   ) %>% 
   select(-data) %>% 
   unnest %>% 
-  filter(var %in% toshw)
+  filter(var %in% toshw) %>% 
+  mutate(sensed = 'biolthhrs')
 
-xwalk <- read.csv('raw/scoring_xwalkrc.csv', stringsAsFactors = F)
-toplo1 <- sqidatinp %>%  
-  mutate(
-    CSCI_rc = cut(csci_mean, breaks = c(-Inf, 0.63, 0.79, 0.92, Inf), labels = c('vla', 'la', 'pa', 'li')), 
-    CSCI_rc = as.character(CSCI_rc),
-    ASCI_rc = cut(asci_mean, breaks = c(-Inf, 0.70, 0.83, 0.93, Inf), labels = c('vla', 'la', 'pa', 'li')),
-    ASCI_rc = as.character(ASCI_rc)
-  ) %>% 
-  left_join(xwalk, by = c('CSCI_rc', 'ASCI_rc')) %>% 
-  select(Bio_BPJ) %>% 
-  group_by(Bio_BPJ) %>% 
-  tally
+toplo <- rbind(strssens, biolsens)
+# xwalk <- read.csv('raw/scoring_xwalkrc.csv', stringsAsFactors = F)
+# toplo1 <- sqidatinp %>%  
+#   mutate(
+#     CSCI_rc = cut(csci_mean, breaks = c(-Inf, 0.63, 0.79, 0.92, Inf), labels = c('vla', 'la', 'pa', 'li')), 
+#     CSCI_rc = as.character(CSCI_rc),
+#     ASCI_rc = cut(asci_mean, breaks = c(-Inf, 0.70, 0.83, 0.93, Inf), labels = c('vla', 'la', 'pa', 'li')),
+#     ASCI_rc = as.character(ASCI_rc)
+#   ) %>% 
+#   left_join(xwalk, by = c('CSCI_rc', 'ASCI_rc')) %>% 
+#   select(Bio_BPJ) %>% 
+#   group_by(Bio_BPJ) %>% 
+#   tally
+# 
+# p1 <- ggplot(toplo1, aes(x = factor(Bio_BPJ), y = n)) + 
+#   geom_bar(stat = 'identity', fill = 'grey',colour = 'black') + 
+#   scale_x_discrete(expand = c(0,0)) +
+#   scale_y_continuous(expand = c(0, 0)) + 
+#   theme_bw(base_family = 'serif') +
+#   theme(
+#     panel.background = element_blank(), 
+#     panel.border = element_blank(),
+#     axis.title = element_blank(), 
+#     panel.grid = element_blank()
+#   ) 
 
-p1 <- ggplot(toplo1, aes(x = factor(Bio_BPJ), y = n)) + 
-  geom_bar(stat = 'identity', fill = 'grey',colour = 'black') + 
-  # scale_x_discrete(expand = c(0,0)) +
-  scale_y_continuous(expand = c(0, 0)) + 
-  theme_bw(base_family = 'serif') +
-  theme(
-    panel.background = element_blank(), 
-    panel.border = element_blank(),
-    axis.title = element_blank(), 
-    panel.grid = element_blank()
-  ) 
-
-toplo2 <- ests %>% 
+toplo2 <- toplo %>% 
   filter(var %in% toshw[1])
 cols1 <- getdsccol(palfac = toshw[1]) %>% 
   select(nms, col) %>% 
@@ -571,13 +591,15 @@ p2 <- ggplot(toplo2, aes(x = factor(value), y = n, fill = val)) +
   scale_y_continuous(expand = c(0, 0)) + 
   scale_x_discrete(expand = c(0,0)) +
   theme_bw(base_family = 'serif') +
+  facet_wrap(~sensed, scales = 'free_x', ncol = 4) +
   theme(
     panel.background = element_blank(), 
     panel.border = element_blank(),
-    axis.title = element_blank()
+    axis.title = element_blank(),
+    strip.background = element_blank()
   ) 
-  
-toplo3 <- ests %>% 
+
+toplo3 <- toplo %>% 
   filter(var %in% toshw[2])
 cols2 <- getdsccol(palfac = toshw[2]) %>% 
   select(nms, col) %>% 
@@ -589,13 +611,15 @@ p3 <- ggplot(toplo3, aes(x = factor(value), y = n, fill = val)) +
   scale_y_continuous(expand = c(0, 0)) + 
   scale_x_discrete(expand = c(0,0)) +
   theme_bw(base_family = 'serif') + 
+  facet_wrap(~sensed, scales = 'free_x', ncol = 4) +
   theme(
     panel.background = element_blank(), 
     panel.border = element_blank(),
-    axis.title = element_blank()
+    axis.title = element_blank(), 
+    strip.background = element_blank()
   ) 
+p2 + p3 + plot_layout(ncol = 1)
 
-p1 + p2 + p3 + plot_layout(ncol = 3)
 
 ```
 
