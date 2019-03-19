@@ -31,6 +31,7 @@ library(jtools)
 library(huxtable)
 library(flextable)
 library(officer)
+library(patchwork)
 source('R/funcs.R')
 
 # data
@@ -390,9 +391,16 @@ knitr::include_graphics('figs/box_lik.png')
 ```
 
 ```{r, results = 'hide'}
+
+strcol <- getdsccol(palfac = 'OverallStressCondition_detail')
+
 toplo <- sqidat %>% 
   st_set_geometry(NULL) %>% 
-  select(pChem, pHab, pChemHab) 
+  select(pChem, pHab, pChemHab, OverallStressCondition_detail) %>% 
+  mutate(OverallStressCondition_detail = factor(OverallStressCondition_detail,
+                                                levels = c("Low stress", "Stressed by chemistry degradation", "Stressed by habitat degradation", "Stressed by chemistry and habitat degradation", "Stressed by low levels of chemistry or habitat degradation"),
+                                                labels = c("Low stress", "Stressed by chemistry", "Stressed by habitat", "Stressed by chemistry and habitat", "Stressed by low levels of both"
+)))
 
 xgrid <- seq(min(toplo$pHab, na.rm = T), max(toplo$pHab, na.rm = T), length = 100)
 ygrid <- seq(min(toplo$pChem, na.rm = T), max(toplo$pChem, na.rm = T), length = 100)
@@ -410,8 +418,8 @@ mtrxd <- predict(data.loess, newdata = data.fit) %>%
 
 cols <- getdsccol(palfac = 'OverallStressCondition')$col
 
-p <- ggplot(mtrxd, aes(x = pChem, y = pHab, z = pChemHab)) + 
-  stat_contour(aes(colour = ..level..)) + 
+p1 <- ggplot(mtrxd, aes(x = pChem, y = pHab, z = pChemHab)) + 
+  stat_contour(aes(colour = ..level..), breaks = c(seq(0.2, 0.9, by = 0.1))) + 
   geom_point(data = toplo, aes(x = pChem, y = pHab, fill = pChemHab), pch = 21, colour = 'lightgrey', size = 4) +
   theme_bw(base_family= 'serif') + 
   theme(
@@ -420,16 +428,37 @@ p <- ggplot(mtrxd, aes(x = pChem, y = pHab, z = pChemHab)) +
     axis.title = element_text(face = 'italic')
   ) + 
   scale_colour_gradientn('pOverall', colours = cols, guide = F)+
-  scale_fill_gradientn('pOverall', colours = cols)
-pleg <- g_legend(p)
-p <- p + theme(legend.position = 'none')
-p <- direct.label(p, list('bottom.pieces', cex = 0.7))
+  scale_fill_gradientn('pOverall', colours = cols) +
+  guides(fill = guide_colourbar(barheight = 0.5, barwidth = 9, title.position = 'top', title.hjust = 0.5))
+pleg1 <- g_legend(p1)
+p1 <- p1 + theme(legend.position = 'none')
+# p1 <- direct.label(p1, list('bottom.pieces', cex = 0.7))
 
-png('figs/str_lik.png', height = 5, width = 4.5, family = 'serif', res = 400, units = 'in')
-grid.arrange(pleg, p, ncol = 1, heights = c(0.1, 1))
+p2 <- ggplot(mtrxd, aes(x = pChem, y = pHab, z = pChemHab)) + 
+  stat_contour(breaks = c(0.979), colour = 'black', linetype = 'dashed') + 
+  geom_point(data = toplo, aes(x = pChem, y = pHab, fill = OverallStressCondition_detail), pch = 21, colour = 'lightgrey', size = 4) +
+  theme_bw(base_family= 'serif') + 
+  geom_vline(xintercept = 0.87, linetype = 'dashed') + 
+  geom_hline(yintercept = 0.72, linetype = 'dashed') +
+  theme(
+    legend.position = 'top',
+    legend.title = element_text(face = 'italic'), 
+    axis.title = element_text(face = 'italic')
+  ) + 
+  scale_colour_gradientn('pOverall', colours = cols, guide = F) +
+  scale_fill_manual('Stress condition', values = strcol$col) + 
+  guides(fill = guide_legend(title.position = 'top', title.hjust = 0.5, ncol = 2))
+pleg2 <- g_legend(p2)
+p2 <- p2 + theme(legend.position = 'none')
+
+png('figs/str_lik.png', height = 4.5, width = 8, family = 'serif', res = 400, units = 'in')
+
+(wrap_elements(pleg1) + p1 + plot_layout(ncol = 1, heights = c(0.05, 1))) - 
+  (wrap_elements(pleg2) + p2 + plot_layout(ncol = 1, heights = c(0.05, 1))) + plot_layout(ncol = 2, heights = c(0.2, 1))
+
 dev.off()
 ```
-```{r strlik, fig.cap = "Relationship between stress models for water chemistry (*pChem*, eqn. \\\\@ref(eq:pchem)) and physical habitat (*pHab*, eqn. \\\\@ref(eq:phab)).  Stress models for water chemistry and physical habitat were created based on the likelihood of biological alteration for the observed stress measures.  The overall stress meaures (*pOverall*, eqn. \\\\@ref(eq:poverall)) is the product of both stress models.  Points represent estimated stress at a single site."}
+```{r strlik, fig.cap = "Relationship between stress models for water chemistry (*pChem*, eqn. \\\\@ref(eq:pchem)) and physical habitat (*pHab*, eqn. \\\\@ref(eq:phab)).  Stress models for water chemistry and physical habitat were created based on the likelihood of biological alteration for the observed stress measures.  The overall stress meaures (*pOverall*, eqn. \\\\@ref(eq:poverall)) is the product of both stress models shown in the left plot.  Points represent estimated stress at a single site.  The right plot shows the same points but colored by the stress condition categories that are defined by thresholds from the dotted lines."}
 knitr::include_graphics('figs/str_lik.png')
 ```
 
@@ -446,33 +475,53 @@ toplotn <- strs_surf('TN', mod  = 'wq_mod', mod_in = 'wqglm', opt_vrs = opt_vrs)
 toplotp <- strs_surf('TP', mod  = 'wq_mod', mod_in = 'wqglm', opt_vrs = opt_vrs)
 toplocn <- strs_surf('Cond', mod  = 'wq_mod', mod_in = 'wqglm', opt_vrs = opt_vrs)
 
+biocol <- getdsccol(palfac = 'BiologicalCondition')
+
 # plots
-p1 <- ggplot(toplotn, aes(x = TN, y = fit)) +
+p1 <- ggplot(toplotn, aes(x = TN)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_line() +
+  geom_rug(data = sqidat, aes(x = TN, colour = BiologicalCondition), sides = 'b') +
+  geom_line(aes(y = fit)) +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
   theme_bw(base_size = 12,base_family = 'serif') +
+  scale_colour_manual(values = biocol$col) +
   xlab('Total Nitrogen (mg/L)') + 
-  theme(axis.title.y = element_blank())
+  xlim(range(toplotn$TN)) +
+  theme(
+    axis.title.y = element_blank(),
+    legend.position = 'none'
+    )
     
-p2 <- ggplot(toplotp, aes(x = TP, y = fit)) +
+p2 <- ggplot(toplotp, aes(x = TP)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_line() +
+  geom_rug(data = sqidat, aes(x = TP, colour = BiologicalCondition), sides = 'b') +
+  geom_line(aes(y = fit)) +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
   theme_bw(base_size = 12,base_family = 'serif') +
+  scale_colour_manual(values = biocol$col) +
   xlab('Total phosphorus (mg/L)') + 
-  theme(axis.title.y = element_blank())
+  xlim(range(toplotp$TP)) +
+  theme(
+    axis.title.y = element_blank(), 
+    legend.position = 'none'
+    )
     
-p3 <- ggplot(toplocn, aes(x = Cond, y = fit)) +
+p3 <- ggplot(toplocn, aes(x = Cond)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_line() +
+  geom_rug(data = sqidat, aes(x = Cond, colour = BiologicalCondition), sides = 'b') +
+  geom_line(aes(y = fit)) +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
   theme_bw(base_size = 12,base_family = 'serif') +
+  scale_colour_manual(values = biocol$col) +
   xlab('Conductivity (uS/cm)') + 
-  theme(axis.title.y = element_blank())
+  xlim(range(toplocn$Cond)) +
+  theme(
+    axis.title.y = element_blank(),
+    legend.position = 'none'
+    )
   
 opt_vrs <- list(
     indexscore_cram = 100,
@@ -484,38 +533,55 @@ toplocrm <- strs_surf('indexscore_cram', mod  = 'hab_mod', mod_in = 'habglm', op
 toploipi <- strs_surf('IPI', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
 
 # plots
-p4 <- ggplot(toplocrm, aes(x = indexscore_cram, y = fit)) +
+p4 <- ggplot(toplocrm, aes(x = indexscore_cram)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_line() +
+  geom_rug(data = sqidat, aes(x = indexscore_cram, colour = BiologicalCondition), sides = 'b') +
+  geom_line(aes(y = fit)) +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
   theme_bw(base_size = 12,base_family = 'serif') +
+  scale_colour_manual(values = biocol$col) +
   xlab('CRAM') + 
-  theme(axis.title.y = element_blank())
+  xlim(range(toplocrm$indexscore_cram)) +
+  theme(
+    axis.title.y = element_blank(),
+    legend.position = 'none'
+    )
     
-p5 <- ggplot(toploipi, aes(x = IPI, y = fit)) +
+p5 <- ggplot(toploipi, aes(x = IPI)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_line() +
+  geom_rug(data = sqidat, aes(x = IPI, colour = BiologicalCondition), sides = 'b', size = 1) +
+  geom_line(aes(y = fit)) +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
   theme_bw(base_size = 12,base_family = 'serif') +
+  scale_colour_manual('Biological condition', values = biocol$col) +
   xlab('IPI') + 
-  theme(axis.title.y = element_blank())
+  xlim(range(toploipi$IPI)) +
+  theme(
+    axis.title.y = element_blank(),
+    legend.position = 'top'
+    ) + 
+  guides(colour = guide_legend(title.position = 'top', title.hjust = 0.5))
 
-png('figs/rsp_crv.png', height = 6, width = 8, res = 500, units = 'in', family = 'serif')
+pleg <- g_legend(p5)
+p5 <- p5 + theme(legend.position = 'none')
+
+png('figs/rsp_crv.png', height = 6.5, width = 8, res = 500, units = 'in', family = 'serif')
 grid.arrange(
   left = textGrob('Likelihood of alteration', rot = 90), 
   arrangeGrob(
-    textGrob('Water chemistry', just = 'left'), 
+    pleg,
+    textGrob('Water chemistry'), 
     arrangeGrob(p1, p2, p3, ncol = 3),
-    textGrob('Physical habitat', just = 'left'), 
+    textGrob('Physical habitat'), 
     arrangeGrob(p4, p5, ncol = 2), 
-    ncol = 1, heights = c(0.1, 1, 0.1, 1)
+    ncol = 1, heights = c(0.2, 0.1, 1, 0.1, 1)
   )
 )
 dev.off()
 ```
-```{r rspcrv, fig.cap = "Modelled likelihood of biological alteration from water quality (top) and physical habitat stressors (bottom). Curves are the binomial likelihood (+/- standard error) of biological condition being altered (as measured by macroinvertebrate and algal indices) across the range of observed values for water quality and physical habitat stressors on the x-axes.  The water chemistry and physical habitat stress plots are derived from equations \\\\@ref(eq:pchem) and \\\\@ref(eq:phab).  Other variables in each model not on the x-axis for each plot are held constant at values for low stress conditions."}
+```{r rspcrv, fig.cap = "Modelled likelihood of biological alteration from water quality (top) and physical habitat stressors (bottom). Curves are the binomial likelihood (+/- standard error) of biological condition being altered (as measured by macroinvertebrate and algal indices) across the range of observed values for water quality and physical habitat stressors on the x-axes.  The water chemistry and physical habitat stress plots are derived from equations \\\\@ref(eq:pchem) and \\\\@ref(eq:phab).  Other variables in each model not on the x-axis for each plot are held constant at values for low stress conditions.  Biological condition for observations in each stressor model are shown as rug plots on the x-axes."}
 knitr::include_graphics('figs/rsp_crv.png')
 ```
 
