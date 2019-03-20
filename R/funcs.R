@@ -209,7 +209,8 @@ strs_surf <- function(xvar, mod = c('hab_mod', 'wq_mod'), mod_in = NULL, title =
 #' @param allthrsh threshold for low/moderate all stress categories in pOverall
 #' @param allthrshhi threshold for moderate/hi all stress categories in pOverall, must be greater than allthrsh, if NULL it is estimated as allthrsh + (1 - allthrsh) / 2
 #' @param thrshemp logical indicating if values in habthrsh, chmthrsh, allthtrsh, and allthrshhi are quantile numbers for deriving the threholds from the percentile distribution of each stress measure, otherwise the threshold is used as is
-sqibiosens <- function(sqidat, thrsh, habthrsh = 0.72, chmthrsh = 0.87, allthrsh = 0.87, allthrshhi = 0.997, thrshemp = F){
+#' @param talvals logical if tallys as counts for each category or the raw data are returned
+sqibiosens <- function(sqidat, thrsh, habthrsh = 0.72, chmthrsh = 0.87, allthrsh = 0.87, allthrshhi = 0.997, thrshemp = F, talvals = TRUE){
   # lookup table of bio BCG class, corresponding score, and combined categorical score
   xwalk <- read.csv('raw/scoring_xwalkrc.csv', stringsAsFactors = F)
   
@@ -291,7 +292,7 @@ sqibiosens <- function(sqidat, thrsh, habthrsh = 0.72, chmthrsh = 0.87, allthrsh
     allthrshhi <- quantile(datin$pChemHab, allthrshhi, na.rm = T) %>% 
       as.numeric
   }
-  
+
   out <- datin %>%
     dplyr::mutate(
       BiologicalCondition = ifelse(CSCI>=0.79 & ASCI>=0.83,"Healthy",
@@ -330,13 +331,24 @@ sqibiosens <- function(sqidat, thrsh, habthrsh = 0.72, chmthrsh = 0.87, allthrsh
       )
     ) %>% 
     dplyr::mutate_if(is.factor, as.character)
-  
+
   # summarize output
-  sums <- out %>% 
-    dplyr::select(BiologicalCondition, WaterChemistryCondition, HabitatCondition, OverallStressCondition, OverallStressCondition_detail, StreamHealthIndex) %>% 
-    gather('var', 'val', everything()) %>% 
-    group_by(var, val) %>% 
-    tally 
+  if(talvals){
+    
+    sums <- out %>% 
+      dplyr::select(BiologicalCondition, WaterChemistryCondition, HabitatCondition, OverallStressCondition, OverallStressCondition_detail, StreamHealthIndex) %>% 
+      gather('var', 'val', everything()) %>% 
+      group_by(var, val) %>% 
+      tally 
+
+  # otherwise returned site cateogories without tallys     
+  } else {
+    
+    sums <- out %>% 
+      dplyr::select(MasterID, yr, BiologicalCondition, WaterChemistryCondition, HabitatCondition, OverallStressCondition, OverallStressCondition_detail, StreamHealthIndex) %>% 
+      gather('var', 'val', -MasterID, -yr) 
+    
+  }
   
   return(sums)
   

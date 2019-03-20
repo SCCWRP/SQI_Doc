@@ -4,7 +4,7 @@ output:
   bookdown::word_document2:
     reference_docx: my_styles.docx
 bibliography: refs.bib
-author: 'Marcus W. Beck (marcusb@sccwrp.org), Raphael D. Mazor (raphaelm@sccwrp.org), Kenneth C. Schiff (kens@sccwrp.org'
+author: 'Marcus W. Beck (marcusb@sccwrp.org), Raphael D. Mazor (raphaelm@sccwrp.org), Kenneth C. Schiff (kens@sccwrp.org), Susanna Theroux (susannat@sccwrp.org)'
 urlcolor: blue
 csl: ecological-indicators.csl
 link-citations: true
@@ -32,10 +32,12 @@ library(huxtable)
 library(flextable)
 library(officer)
 library(patchwork)
+library(ggalluvial)
 source('R/funcs.R')
 
 # data
 data(sqidat)
+data(sqidatinp)
 data(sheds)
 data(wqglm)
 data(habglm)
@@ -138,7 +140,7 @@ Separate categorical outputs were also created for the biological condition and 
 
 All data for the SQI were from the Stormwater Monitoring Coalition (SMC) regional monitoring program in southern California [@Mazor15].  This coalition represents multiple state, federal, and local agencies that have a shared mission of stormwater management for over 7000 stream kilometers in the region.  The SMC initiated a regional monitoring program in 2009 to assist, in part, with the permitting process among dischargers from the member agencies.  Central monitoring questions focus on assessing biological condition, identifying stressors associated with poor condition, and evaluating trends over time.  This dataset represents the most comprehensive source of stream data in Southern California.  Because the SQI requires synoptic biological, chemistry, and physical habitat data, the final dataset used for model calibration represents a subset of the SMC dataset where all three components were simultaneously collected. This included 266 sites, 75\% of which were used for model calibration.  Sampling dates ranged from 2009 to 2016 with relatively even distribution of samples between years.  Most sample events occurred between May and June following standard protocols for perennial stream surveys [@Ode07].
 
-Finally, precision and sensitivity of the SQI was evaluated to describe 1) how well the underlying empirical model described the likelihood of biological alteration, and 2) sensitivity of the model output to changing thresholds that defined the categorical conditions.  The first analysis evaluated precision in the validation dataset for the SQI to determine agreement between the model and actual stress and biological conditions.  The second analysis evaluated the change in results for the regional database that were caused by changing the categorical thresholds that defined which categories for the SQI were assigned to each site.  For example, the percentage of sites ranked as healthy and unstressed was compared by evaluating a change in the biological threshold for altered/unaltered biology, e.g., at 1\%, 10\%, or 30\% of reference scores for each index.     
+Finally, precision and sensitivity of the SQI was evaluated to describe 1) how well the underlying empirical model described the likelihood of biological alteration, and 2) sensitivity of the model output to changing thresholds that defined the categorical conditions.  The first analysis evaluated precision in the validation dataset for the SQI to determine agreement between the model and actual stress and biological conditions.  The second analysis evaluated the change in results for the regional database that were caused by changing the definitions of healthy or impacted biology that were described by the stress response models.  For example, the percentage of sites categorized as stressed or unstressed was compared by changing the cutoff point for healthy/impacted biology in Table \@ref(tab:biocmb).
 
 # Results
 
@@ -585,109 +587,168 @@ dev.off()
 knitr::include_graphics('figs/rsp_crv.png')
 ```
 
-```{r eval = F}
-data(sqidatinp)
-
-toshw <- c('OverallStressCondition_detail', 'StreamHealthIndex')
-
-strssens <- crossing(qnt = seq(0.1, 0.9, by = 0.1), thrshfun = c('chmthrsh', 'habthrsh', 'allthrsh')) %>% 
-  group_by(qnt, thrshfun) %>% 
-  nest %>% 
-  mutate(
-    est = purrr::pmap(list(qnt, thrshfun), function(qnt, thrshfun){
-    
-      toeval <- paste0('sqibiosens(sqidatinp, thrsh = 0, ',  thrshfun, ' = ', qnt, ', thrshemp = T)')
-      eval(parse(text = toeval))
-      
-    }) 
-  ) %>% 
-  select(-data) %>% 
-  unnest %>% 
-  filter(var %in% toshw) %>% 
-  mutate(sensed = thrshfun) %>% 
-  select(-thrshfun) %>% 
-  rename(value = qnt)
-
-biolsens <- seq(5, -4) %>% 
-  enframe %>% 
-  group_by(value) %>% 
-  nest %>% 
-  mutate(
-    est = purrr::map(value, function(x) sqibiosens(sqidatinp, x))
-  ) %>% 
-  select(-data) %>% 
-  unnest %>% 
-  filter(var %in% toshw) %>% 
-  mutate(sensed = 'biolthhrs')
-
-toplo <- rbind(strssens, biolsens)
-# xwalk <- read.csv('raw/scoring_xwalkrc.csv', stringsAsFactors = F)
-# toplo1 <- sqidatinp %>%  
-#   mutate(
-#     CSCI_rc = cut(csci_mean, breaks = c(-Inf, 0.63, 0.79, 0.92, Inf), labels = c('vla', 'la', 'pa', 'li')), 
-#     CSCI_rc = as.character(CSCI_rc),
-#     ASCI_rc = cut(asci_mean, breaks = c(-Inf, 0.70, 0.83, 0.93, Inf), labels = c('vla', 'la', 'pa', 'li')),
-#     ASCI_rc = as.character(ASCI_rc)
-#   ) %>% 
-#   left_join(xwalk, by = c('CSCI_rc', 'ASCI_rc')) %>% 
-#   select(Bio_BPJ) %>% 
-#   group_by(Bio_BPJ) %>% 
-#   tally
+```{r results = 'hide', eval = F}
+# toshw <- c('OverallStressCondition_detail', 'StreamHealthIndex')
 # 
-# p1 <- ggplot(toplo1, aes(x = factor(Bio_BPJ), y = n)) + 
-#   geom_bar(stat = 'identity', fill = 'grey',colour = 'black') + 
-#   scale_x_discrete(expand = c(0,0)) +
+# strssens <- crossing(qnt = seq(0.1, 0.9, by = 0.1), thrshfun = c('chmthrsh', 'habthrsh', 'allthrsh')) %>% 
+#   group_by(qnt, thrshfun) %>% 
+#   nest %>% 
+#   mutate(
+#     est = purrr::pmap(list(qnt, thrshfun), function(qnt, thrshfun){
+#     
+#       toeval <- paste0('sqibiosens(sqidatinp, thrsh = 0, ',  thrshfun, ' = ', qnt, ', thrshemp = T)')
+#       eval(parse(text = toeval))
+#       
+#     }) 
+#   ) %>% 
+#   select(-data) %>% 
+#   unnest %>% 
+#   filter(var %in% toshw) %>% 
+#   mutate(sensed = thrshfun) %>% 
+#   select(-thrshfun) %>% 
+#   rename(value = qnt)
+# 
+# biolsens <- seq(5, -4) %>% 
+#   enframe %>% 
+#   group_by(value) %>% 
+#   nest %>% 
+#   mutate(
+#     est = purrr::map(value, function(x) sqibiosens(sqidatinp, x))
+#   ) %>% 
+#   select(-data) %>% 
+#   unnest %>% 
+#   filter(var %in% toshw) %>% 
+#   mutate(sensed = 'biolthhrs')
+# 
+# toplo <- rbind(strssens, biolsens)
+# 
+# toplo2 <- toplo %>% 
+#   filter(var %in% toshw[1])
+# cols1 <- getdsccol(palfac = toshw[1]) %>% 
+#   select(nms, col) %>% 
+#   deframe
+# 
+# p2 <- ggplot(toplo2, aes(x = factor(value), y = n, fill = val)) + 
+#   geom_bar(stat = 'identity', colour = 'black') + 
+#   scale_fill_manual('Stress Condition', values = cols1) +
 #   scale_y_continuous(expand = c(0, 0)) + 
+#   scale_x_discrete(expand = c(0,0)) +
 #   theme_bw(base_family = 'serif') +
+#   facet_wrap(~sensed, scales = 'free_x', ncol = 4) +
+#   theme(
+#     panel.background = element_blank(), 
+#     panel.border = element_blank(),
+#     axis.title = element_blank(),
+#     strip.background = element_blank()
+#   ) 
+# 
+# toplo3 <- toplo %>% 
+#   filter(var %in% toshw[2])
+# cols2 <- getdsccol(palfac = toshw[2]) %>% 
+#   select(nms, col) %>% 
+#   deframe
+# 
+# p3 <- ggplot(toplo3, aes(x = factor(value), y = n, fill = val)) + 
+#   geom_bar(stat = 'identity', colour = 'black') + 
+#   scale_fill_manual('Overall SQI', values = cols2) +
+#   scale_y_continuous(expand = c(0, 0)) + 
+#   scale_x_discrete(expand = c(0,0)) +
+#   theme_bw(base_family = 'serif') + 
+#   facet_wrap(~sensed, scales = 'free_x', ncol = 4) +
 #   theme(
 #     panel.background = element_blank(), 
 #     panel.border = element_blank(),
 #     axis.title = element_blank(), 
-#     panel.grid = element_blank()
+#     strip.background = element_blank()
 #   ) 
+# p2 + p3 + plot_layout(ncol = 1)
 
-toplo2 <- toplo %>% 
-  filter(var %in% toshw[1])
-cols1 <- getdsccol(palfac = toshw[1]) %>% 
-  select(nms, col) %>% 
+toshw <- c('OverallStressCondition_detail', 'StreamHealthIndex')
+cols1 <- getdsccol(palfac = toshw[1]) %>%
+  select(nms, col) %>%
+  deframe
+cols2 <- getdsccol(palfac = toshw[2]) %>%
+  select(nms, col) %>%
   deframe
 
-p2 <- ggplot(toplo2, aes(x = factor(value), y = n, fill = val)) + 
-  geom_bar(stat = 'identity', colour = 'black') + 
-  scale_fill_manual('Stress Condition', values = cols1) +
-  scale_y_continuous(expand = c(0, 0)) + 
-  scale_x_discrete(expand = c(0,0)) +
-  theme_bw(base_family = 'serif') +
-  facet_wrap(~sensed, scales = 'free_x', ncol = 4) +
+toploalluv <- seq(5, -4) %>% 
+  enframe %>% 
+  group_by(value) %>% 
+  nest %>% 
+  mutate(
+    est = purrr::map(value, function(x) sqibiosens(sqidatinp, x, talvals = F))
+  ) %>% 
+  select(-data) %>% 
+  unnest 
+
+toplo1 <- toploalluv %>% 
+  filter(var %in% 'OverallStressCondition_detail') %>% 
+  # filter(MasterID %in% sample(unique(MasterID), 50)) %>% 
+  filter(value %in% c(-4, -3, -2, -1, 0, 1, 2, 5)) %>%
+  dplyr::select(MasterID, value, val) %>% 
+  arrange(MasterID, value) %>% 
+  as.data.frame(stingsAsFactors = F) %>% 
+  mutate(val = factor(val,
+                      levels = c("Low stress", "Stressed by chemistry degradation", "Stressed by habitat degradation", "Stressed by chemistry and habitat degradation", "Stressed by low levels of chemistry or habitat degradation"),
+                      labels = c("Low stress", "Stressed by chemistry", "Stressed by habitat", "Stressed by chemistry and habitat", "Stressed by low levels of both")
+                      )
+         )
+
+names(cols1) <- c("Low stress", "Stressed by chemistry", "Stressed by habitat", "Stressed by chemistry and habitat", "Stressed by low levels of both")
+toplo2 <- toploalluv %>% 
+  filter(var %in% 'StreamHealthIndex') %>% 
+  # filter(MasterID %in% sample(unique(MasterID), 50)) %>% 
+  filter(value %in% c(-4, -3, -2, -1, 0, 1, 2, 5)) %>%
+  dplyr::select(MasterID, value, val) %>% 
+  arrange(MasterID, value) %>% 
+  as.data.frame(stingsAsFactors = F) %>% 
+  mutate(val = factor(val,
+                      levels = c("Healthy and unstressed", "Healthy and resilient", "Impacted by unknown stress", "Impacted and stressed")
+                      )
+  )
+
+p1 <- ggplot(toplo1, aes(x = factor(value),
+                  stratum = val, fill = val, label = val,
+                  alluvium = MasterID))+
+  scale_fill_manual('Stress condition', values = cols1)+
+  geom_flow(stat = "alluvium", 
+            lode.guidance = "rightleft"
+            ) + 
+  geom_stratum() + 
+  theme_minimal(base_size = 14) + 
   theme(
-    panel.background = element_blank(), 
-    panel.border = element_blank(),
-    axis.title = element_blank(),
-    strip.background = element_blank()
-  ) 
+    panel.grid = element_blank(), 
+    legend.position = 'top',
+    axis.title = element_blank()
+  ) + 
+  scale_x_discrete('Cut point for combined biological condition', expand = c(0, 0)) + 
+  scale_y_continuous('Number of sites', expand = c(0, 0)) + 
+  guides(fill = guide_legend(ncol = 2, title.position = 'top', title.hjust = 0.5))
 
-toplo3 <- toplo %>% 
-  filter(var %in% toshw[2])
-cols2 <- getdsccol(palfac = toshw[2]) %>% 
-  select(nms, col) %>% 
-  deframe
-
-p3 <- ggplot(toplo3, aes(x = factor(value), y = n, fill = val)) + 
-  geom_bar(stat = 'identity', colour = 'black') + 
-  scale_fill_manual('Overall SQI', values = cols2) +
-  scale_y_continuous(expand = c(0, 0)) + 
-  scale_x_discrete(expand = c(0,0)) +
-  theme_bw(base_family = 'serif') + 
-  facet_wrap(~sensed, scales = 'free_x', ncol = 4) +
+p2 <- ggplot(toplo2, aes(x = factor(value),
+                         stratum = val, fill = val, label = val,
+                         alluvium = MasterID))+
+  scale_fill_manual('Overall SQI', values = cols2)+
+  geom_flow(stat = "alluvium", 
+            lode.guidance = "rightleft"
+  ) + 
+  geom_stratum() + 
+  theme_minimal(base_size = 14) + 
   theme(
-    panel.background = element_blank(), 
-    panel.border = element_blank(),
-    axis.title = element_blank(), 
-    strip.background = element_blank()
-  ) 
-p2 + p3 + plot_layout(ncol = 1)
+    panel.grid = element_blank(), 
+    legend.position = 'top',
+    axis.title = element_blank()
+  ) + 
+  scale_x_discrete('Cut point for combined biological condition', expand = c(0, 0)) + 
+  scale_y_continuous('Number of sites', expand = c(0, 0)) + 
+  guides(fill = guide_legend(ncol = 2, title.position = 'top', title.hjust = 0.5))
 
-
+png('figs/sns_fig.png', height = 6, width = 10, res = 600, units = 'in', family = 'serif')
+wrap_elements(textGrob('Number of sites', rot = 90)) + ((p1 | p2) / wrap_elements(textGrob('Cutpoint for biological conditions')) + plot_layout(ncol = 1, heights = c(1, 0.05))) + plot_layout(ncol = 2, widths = c(0.02, 1))
+dev.off()
+```
+```{r snsfig, fig.cap = "Changes in stress condition (left) and overall SQI categories (right) for different cut points that define healthy or impacted biology.  The columns in each plot show site counts in each category based on results from models in equations \\@ref(eq:pchem), \\@ref(eq:phab), and \\@ref(eq:poverall) that relate stress measures to healthy/impacted biology.  Sites below the cut point for each column have impacted biology and sites including/above the cut point have healthy biology.  The cut point definitions are shown in Table \\@ref(tab:biocmb).  Flow lines connecting columns are individual sites. Results for cut points 3 and 4 were identical to cut point 2 and are not shown."}
+knitr::include_graphics('figs/sns_fig.png')
 ```
 
 # Tables
@@ -697,19 +758,21 @@ biocmb <- read.csv('raw/scoring_xwalkrc.csv', stringsAsFactors = F) %>%
   mutate(
     CSCI_rc = factor(CSCI_rc, 
                      levels = c('li', 'pa', 'la', 'vla'),
-                     labels = c('BMI ref 1: (CSCI > 0.92)', 'BMI ref 2: (CSCI 0.79 - 0.92)', 'BMI ref 3: (CSCI 0.63 - 0.79)', 'BMI ref 4: (CSCI < 0.63)')),
+                     labels = c('BMI li: (CSCI > 0.92)', 'BMI pa: (CSCI 0.79 - 0.92)', 'BMI la: (CSCI 0.63 - 0.79)', 'BMI vla: (CSCI < 0.63)')),
     ASCI_rc = factor(ASCI_rc, 
                      levels = c('li', 'pa', 'la', 'vla'),
-                     labels = c('Algae ref 1: (ASCI > 0.93)', 'Algae ref 2: (ASCI 0.83 - 0.93)', 'Algae ref 3: (ASCI 0.70 - 0.83)', 'Algae ref 4: (ASCI < 0.70'))
+                     labels = c('Algae li: (ASCI > 0.93)', 'Algae pa: (ASCI 0.83 - 0.93)', 'Algae la: (ASCI 0.70 - 0.83)', 'Algae vla: (ASCI < 0.70'))
   ) %>% 
   dplyr::select(-ASCI_score, -CSCI_score) %>% 
   spread(ASCI_rc, Bio_BPJ) %>% 
   column_to_rownames('CSCI_rc')
 
+biocmb[biocmb < 0] <- paste0('__', biocmb[biocmb < 0], '__')
+
 totab <- biocmb
 
 # table stuff
-cap.val <- 'Combined biological condition categories for the benthic macroinvertebrate (BMI) and algal indices. The combined categories were used to model the likelihood of biological alteration given observed physical and chemical habitat stressors. Sites with combined categories greater than zero were considered biologically healthy and those less than or equal to zero were considered biologically impacted (i.e., response variable in equations \\@ref(eq:pchem) and \\@ref(eq:phab)).  Individual biological categories for the BMI and algal indices were based on percentile distributions of scores at reference sites, i.e., 1st, 10th, and 30th percentiles.  The scores associated with the percentiles for each index  (CSCI, ASCI) are in parentheses.'
+cap.val <- 'Combined biological condition categories for the benthic macroinvertebrate (BMI) and algal indices. The combined categories were used to model the likelihood of biological alteration given observed physical and chemical habitat stressors. Sites with combined categories greater than or equal to zero were considered biologically healthy and those less than zero (in bold) were considered biologically impacted (i.e., response variable in equations \\@ref(eq:pchem) and \\@ref(eq:phab)).  Individual biological categories for the BMI and algal indices were based on percentile distributions of scores at reference sites (i.e., 1st, 10th, and 30th percentiles) as likely intact (la), possibly altered (pa), likely altered (la), and very likely altered (vla).  The scores associated with the percentiles for each index  (CSCI, ASCI) are in parentheses.'
 
 # table
 knitr::kable(totab, caption = cap.val)
