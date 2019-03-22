@@ -203,14 +203,12 @@ strs_surf <- function(xvar, mod = c('hab_mod', 'wq_mod'), mod_in = NULL, title =
 #' get sqi tally of combos based on threshold for good/bad combined bio
 #' 
 #' @param sqidat input sqi data without sqi calculated, sqidatinp
-#' @param thrsh numeric for value defining limit of healthy/impacted biology for combined asci/csci categories (in xwalk), values less than this thresold are impacted 
-#' @param habthrsh threshold for low/high habitat stress categories in pHab
-#' @param chmthrsh threshold for low/high chemistry stress categories in pChem
-#' @param allthrsh threshold for low/moderate all stress categories in pOverall
-#' @param allthrshhi threshold for moderate/hi all stress categories in pOverall, must be greater than allthrsh, if NULL it is estimated as allthrsh + (1 - allthrsh) / 2
-#' @param thrshemp logical indicating if values in habthrsh, chmthrsh, allthtrsh, and allthrshhi are quantile numbers for deriving the threholds from the percentile distribution of each stress measure, otherwise the threshold is used as is
+#' @param biocut numeric for value defining limit of healthy/impacted biology for combined asci/csci categories (in xwalk), values less than this thresold are impacted 
+#' @param hithrsh numeric indicating upper threshold for high stress
+#' @param lothrsh numeric indicating lower threshold for low stress
 #' @param talvals logical if tallys as counts for each category or the raw data are returned
-sqibiosens <- function(sqidat, thrsh, habthrsh = 0.72, chmthrsh = 0.87, allthrsh = 0.87, allthrshhi = 0.997, thrshemp = F, talvals = TRUE){
+#' 
+sqibiosens <- function(sqidat, biocut, lothrsh = 0.1, hithrsh = 0.9, talvals = TRUE){
   # lookup table of bio BCG class, corresponding score, and combined categorical score
   xwalk <- read.csv('raw/scoring_xwalkrc.csv', stringsAsFactors = F)
   
@@ -227,7 +225,7 @@ sqibiosens <- function(sqidat, thrsh, habthrsh = 0.72, chmthrsh = 0.87, allthrsh
     left_join(xwalk, by = c('CSCI_rc', 'ASCI_rc')) %>% 
     select(-CSCI_score, -ASCI_score) %>% 
     mutate(
-      bio_fp = ifelse(Bio_BPJ < thrsh, 1, 0)
+      bio_fp = ifelse(Bio_BPJ < biocut, 1, 0)
     ) %>% 
     ungroup
   
@@ -274,24 +272,6 @@ sqibiosens <- function(sqidat, thrsh, habthrsh = 0.72, chmthrsh = 0.87, allthrsh
   
   # combo stress estimate
   datin$pChemHab<- 1 - ((1 - datin$pChem) * (1 - datin$pHab))
-  
-  if(is.null(allthrshhi)){
-    allthrshhi <- allthrsh + (1 - allthrsh) / 2
-  } else {
-    stopifnot(allthrsh < allthrshhi)
-  }
-    
-  # get thresholds
-  if(thrshemp){
-    chmthrsh <- quantile(datin$pChem, chmthrsh, na.rm = T) %>% 
-      as.numeric
-    habthrsh <- quantile(datin$pHab, habthrsh, na.rm = T) %>% 
-      as.numeric
-    allthrsh <- quantile(datin$pChemHab, allthrsh, na.rm = T) %>% 
-      as.numeric
-    allthrshhi <- quantile(datin$pChemHab, allthrshhi, na.rm = T) %>% 
-      as.numeric
-  }
 
   out <- datin %>%
     dplyr::mutate(
@@ -302,31 +282,31 @@ sqibiosens <- function(sqidat, thrsh, habthrsh = 0.72, chmthrsh = 0.87, allthrsh
                                                  )))
       ),
       WaterChemistryCondition = cut(pChem,
-                                    breaks = c(-Inf, chmthrsh, Inf),
-                                    labels = c('Low', 'Severe'),
+                                    breaks = c(-Inf, lothrsh, hithrsh, Inf),
+                                    labels = c('Low', 'Moderate', 'Severe'),
                                     right = F
       ),
       HabitatCondition = cut(pHab,
-                             breaks = c(-Inf, habthrsh, Inf),
-                             labels = c('Low', 'Severe'),
+                             breaks = c(-Inf, lothrsh, hithrsh, Inf),
+                             labels = c('Low', 'Moderate', 'Severe'),
                              right = F
       ),
       OverallStressCondition = cut(pChemHab,
-                                   breaks = c(-Inf, allthrsh, allthrshhi, Inf),
+                                   breaks = c(-Inf, lothrsh, hithrsh, Inf),
                                    labels = c('Low', 'Moderate', 'Severe'),
                                    right = F
       ),
-      OverallStressCondition_detail = ifelse(pChemHab<allthrsh,"Low stress",
-                                             ifelse(pChem>=chmthrsh & pHab>=habthrsh, "Stressed by chemistry and habitat degradation",
-                                                    ifelse(pChem>=chmthrsh & pHab<habthrsh, "Stressed by chemistry degradation",
-                                                           ifelse(pChem<chmthrsh & pHab>habthrsh, "Stressed by habitat degradation",
-                                                                  ifelse(pChem<chmthrsh & pHab<habthrsh, "Stressed by low levels of chemistry or habitat degradation",
+      OverallStressCondition_detail = ifelse(pChemHab<hithrsh,"Low stress",
+                                             ifelse(pChem>=hithrsh & pHab>=hithrsh, "Stressed by chemistry and habitat degradation",
+                                                    ifelse(pChem>=hithrsh & pHab<hithrsh, "Stressed by chemistry degradation",
+                                                           ifelse(pChem<hithrsh & pHab>hithrsh, "Stressed by habitat degradation",
+                                                                  ifelse(pChem<hithrsh & pHab<hithrsh, "Stressed by low levels of chemistry or habitat degradation",
                                                                          "XXXXX"))))
       ),
-      StreamHealthIndex = ifelse(BiologicalCondition=="Healthy" & OverallStressCondition=="Low","Healthy and unstressed",
-                                 ifelse(BiologicalCondition=="Healthy" & OverallStressCondition!="Low","Healthy and resilient",
-                                        ifelse(BiologicalCondition!="Healthy" & OverallStressCondition=="Low","Impacted by unknown stress",
-                                               ifelse(BiologicalCondition!="Healthy" & OverallStressCondition!="Low","Impacted and stressed",
+      StreamHealthIndex = ifelse(BiologicalCondition=="Healthy" & OverallStressCondition!="Severe","Healthy and unstressed",
+                                 ifelse(BiologicalCondition=="Healthy" & OverallStressCondition=="Severe","Healthy and resilient",
+                                        ifelse(BiologicalCondition!="Healthy" & OverallStressCondition!="Severe","Impacted by unknown stress",
+                                               ifelse(BiologicalCondition!="Healthy" & OverallStressCondition=="Severe","Impacted and stressed",
                                                       "XXXXX")))
       )
     ) %>% 

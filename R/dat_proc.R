@@ -341,13 +341,15 @@ save(sqidatinp, file = 'data/sqidatinp.RData', compress = 'xz')
 
 # create sqi mods ---------------------------------------------------------
 
+data(sqidatinp)
+
 # lookup table of bio BCG class, corresponding score, and combined categorical score
 xwalk <- read.csv('raw/scoring_xwalkrc.csv', stringsAsFactors = F)
 
 # create bio categories for fail/pass combos
 # for BCG, CSCI 2, 3, 4, 5, 6 is 1.03, 0.83, 0.63, 0.33, ASCI 2, 3, 4, 5, 6 is 1.23, 0.97, 0.67, 0.3
 # for reference dist thresholds, CSCI li, pa, la, vla is 0.92, 0.79, 0.63, ASCI li, pa, la, vla is 0.93, 0.83, 0.7 
-sqidat <- sqidat %>%  
+sqidat <- sqidatinp %>%  
   mutate(
     CSCI_rc = cut(csci_mean, breaks = c(-Inf, 0.63, 0.79, 0.92, Inf), labels = c('vla', 'la', 'pa', 'li')), 
     CSCI_rc = as.character(CSCI_rc),
@@ -402,7 +404,7 @@ sampdat <- sqidat %>%
 
 save(sampdat, file = '../SQI/data/sampdat.RData', compress = 'xz')
 
-# get SQI model reuslts from combined data ----------------------------------
+# get SQI model results from combined data ----------------------------------
 
 sqidat <- sqidat %>% 
   rename(
