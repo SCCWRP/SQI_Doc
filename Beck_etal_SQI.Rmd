@@ -34,6 +34,9 @@ library(flextable)
 library(officer)
 library(patchwork)
 library(ggalluvial)
+library(ggrepel)
+library(ggsn)
+
 source('R/funcs.R')
 
 # data
@@ -56,25 +59,25 @@ spelling::spell_check_files('Beck_etal_SQI.Rmd')
 
 # Abstract
 
-Assessment of stream health is a function of the physical, chemical, and biological integrity of the water body. While monitoring of all three indicators of stream quality is commonplace, combining these three indicators into a unified assessment of stream quality rarely occurs, complicating the interpretation of complex environmental health information. In this study, a unified index was developed that combines physical, chemical, and biological indicators for southern California wadeable streams into a scientifically rigorous, easy-to-understand tool intended to facilitate management decision-making. Known as the Stream Quality Index (SQI), this tool is based on a stressor-response empirical model that quantifies the expected likelihood that chemical and physical stressors will impact multiple individual components of biological condition. The index’s chemical parameters, which are indicative of anthropogenic inputs, include nutrients and conductivity; the physical parameters include two physical habitat indices that describe instream (i.e., substrate) condition and stream corridor (i.e., riparian) condition, respectively; and the biological response parameters include benthic invertebrates and algae. While the individual stressor and response components are quantitative and have similar meaning across a variety of environmental settings, the final SQI narrative assessment is categorical and designed to be directly actionable within a management decision-making context. The four narrative assessment categories are: (1) "healthy and unstressed" (i.e., unimpacted biology, so protection is recommended); (2) "healthy and resilient" (i.e., stressed, but biological communities are healthy, so reducing stress is recommended); (3) "impacted and stressed" (i.e., impacted biology due to known chemistry and/or physical habitat stressor(s), so restoration is recommended); and (4) "impacted by unknown stress" (i.e., biology is impacted, so causal assessment is recommended to identify stressors). To facilitate adoption by managers, a web-based application also was developed that not only maps overall SQI results, but also enables users to readily access underlying quantitative information for stressors and biological responses to understand likely reasons behind the categorical assessments.
+Assessment of stream health is a function of the physical, chemical, and biological integrity of the water body. While monitoring of all three indicators of stream quality is commonplace, combining these three indicators into a unified assessment of stream quality rarely occurs, complicating the interpretation of complex environmental health information. In this study, a unified index was developed that combines physical, chemical, and biological indicators for southern California wadeable streams into a scientifically rigorous, easy-to-understand tool intended to facilitate management decision-making. Known as the Stream Quality Index (SQI), this tool is based on a stressor-response empirical model that quantifies the expected likelihood that chemical and physical stressors will impact multiple individual components of biological condition. The index’s chemical parameters, which are indicative of anthropogenic inputs, include nutrients and conductivity; the physical parameters include two physical habitat indices that describe instream (i.e., substrate) condition and stream corridor (i.e., riparian) condition, respectively; and the biological response parameters include benthic invertebrates and algae. While the individual stressor and response components are quantitative and have similar meaning across a variety of environmental settings, the final SQI narrative assessment is categorical and designed to be directly actionable within a management decision-making context. The four narrative assessment categories are: (1) "healthy and unstressed" (i.e., unimpacted biology, so protection is recommended); (2) "healthy and resilient" (i.e., stressed, but biological communities are healthy, so reducing stress is recommended); (3) "impacted and stressed" (i.e., impacted biology due to known chemistry and/or physical habitat stressor(s), so remediation or restoration is recommended); and (4) "impacted by unknown stress" (i.e., biology is impacted, so causal assessment is recommended to identify stressors). To facilitate adoption by managers, a web-based application was developed that not only maps overall SQI results, but also enables users to readily access underlying quantitative information for stressors and biological responses to understand likely reasons behind the categorical assessments. This transparent design was intended; high-level output and foundational components of the SQI are relevant for different audidences and details are not sacrificed for accessibility.
 
 # Introduction
 
 Assessments of stream health are a function of monitoring the water body’s physical, chemical, and biological integrity (33 USC §§ 1151, 1972). Monitoring physical habitat integrity facilitates determination of whether all necessary environmental niches are present to support a diverse aquatic community [@Maddock99]. Monitoring chemical integrity facilitates determination of whether toxic compounds are present, as well as whether minerals are sufficiently balanced to support aquatic life [@Wang07;@Maruya16]. Monitoring biological integrity, which is closest to the actual assessment of stream health, facilitates determination of whether unmeasured physical or chemical parameters are impacting otherwise balanced ecosystems [@Stoddard06;@Ode16].
 
-Tremendous management effort is expended annually to monitor all three types of stream integrity indicators. Whether monitoring programs are large and complex or small and straightforward, all share the challenge of how to communicate physical, chemical, and biological data in a scientifically rigorous, repeatable, and readily understandable way to non-scientists [@NRC90]. Because most environmental managers and decision-makers are not scientists, they often struggle to interpret the intricate, nuanced details of ecological data. Furthermore, ecological data are rarely black and white, leading to many management decisions made in the "grey zone" [@Paulsen08]. This is particularly true when physical, chemical, and biological lines of evidence are not in complete agreement with one another.
+Tremendous management effort is expended annually to monitor all three types of stream integrity indicators. Whether monitoring programs are large and complex or small and straightforward, all share the challenge of how to communicate physical, chemical, and biological data in a scientifically rigorous, repeatable, and readily understandable way to non-scientists [@NRC90]. Because most environmental managers and decision-makers are not scientists, and similarly, scientists may not appreciate the applied context for tehcnical products, the communication of ecological data for decision-making can be challenging. Furthermore, ecological data are rarely black and white, leading to many management decisions made in the "grey zone" [@Paulsen08]. This is particularly true when physical, chemical, and biological lines of evidence are not in complete agreement with one another.
 
-Multiple well-known tools exist for effectively communicating information for a single line of evidence. Bioassessment tools include the Index of Biological Integrity (IBI; @Karr81), Observed to Expected ratios (O/E; @Hawkins00b), and hybrids of the IBI and O/E [@Mazor16]. Chemical assessment tools include the Canadian Council of Ministers of the Environment (CCME) Water Quality Index [@CCME01;@Hurley12]. Physical habitat assessment tools, which are less common, include the California Rapid Assessment Method [@Collins07;@Solek11] and the more recently developed Index of Physical Integirty [@Rehn18].  These established tools have been used as single lines of evidence to separately address chemical, physical, and biological components of the United States CWA.
+Multiple well-known tools exist for effectively communicating information for a single line of evidence. Bioassessment tools include the Index of Biological Integrity (IBI; @Karr81), Observed to Expected ratios (O/E; @Hawkins00b), and hybrids of the IBI and O/E [@Mazor16]. Chemical assessment tools include the Canadian Council of Ministers of the Environment (CCME) Water Quality Index [@CCME01;@Hurley12]. Physical habitat assessment tools, which are less common, include the California Rapid Assessment Method [@Collins07;@Solek11] and the more recently developed Index of Physical Integrity [@Rehn18].  These established tools have been used as single lines of evidence to separately address chemical, physical, and biological components of the United States CWA.
 
 An assessment tool that combines physical, chemical, and biological indicators into a single unified assessment is exceedingly rare [@Bay12]. Much more commonplace are instances where multiple indicators are individually simplified and presented as a group, leaving managers to decide which is most important [@Paulsen08]. However, a single unified assessment is preferential when communicating stream health to non-technical managers. A single scale provides straightforward context for comparing one site to another, for ranking sites for management actions, and for monitoring improvements at a site following implementation of management actions (or monitoring potential degradation where management actions are not implemented). 
 
-While such a unified assessment tool is possible to develop for use in a single environmental setting, it has long been a challenge to design a technically robust tool that produces assessments that have similar meanings in different environmental settings, that provides clues as to which indicator(s) are impacted and thus need to be remediated, and that can be replicated elsewhere. The goal of this study was to develop a tool that meets all three criteria.  Southern California wadeable streams were selected as the focus of this effort because of the extensive and varied levels of stress and biological impacts. Moreover, southern California is home to a multitude of environmental managers with a wide variety of backgrounds and experience in technical and policy issues.
-
-The conceptual approach used in this study is based on a stressor-response relationship between biology and in-stream stressors (Figure \@ref(fig:sqiflo)). Specifically, the underlying stressor-response relationships that define the final narrative categories for overall stream condition are based on empirical models that quantify an expected likelihood of chemical or physical stressors impacting the separate components of biological condition. Because biological indicators provide direct measures of aquatic life, while physical and chemical measures provide ancillary information about the stressors that may affect aquatic life, this study sought to develop a method for combining the three indicators in a way that would preserve the types of information provided by each line of evidence.  This is fundamentally different than treating indicators as equivalent lines of evidence and simply "averaging" results to assess overall condition. 
+While such a unified assessment tool is possible to develop for use in a single environmental setting, it has long been a challenge to design a technically robust tool that produces assessments that have similar meanings in different environmental settings, that provides clues as to which indicator(s) are impacted and thus need to be remediated, and that can be replicated elsewhere. The goal of this study was to develop a tool that meets all three criteria.  Because biological indicators provide direct measures of aquatic life, while physical and chemical measures provide ancillary information about the stressors that may affect aquatic life, this study sought to develop a method for combining the three indicators in a way that would preserve the types of information provided by each line of evidence.  This is fundamentally different than treating indicators as equivalent lines of evidence and simply "averaging" results to assess overall condition. 
 
 # Methods
 
 ## General Approach
+
+The conceptual approach used in this study is based on a stressor-response relationship between biology and in-stream stressors (Figure \@ref(fig:sqiflo)). Specifically, the underlying stressor-response relationships that define the final narrative categories for overall stream condition are based on empirical models that quantify an expected likelihood of chemical or physical stressors impacting the separate components of biological condition. Southern California wadeable streams were selected as the focus of this effort because of the extensive and varied levels of stress and biological impacts. Moreover, southern California is home to many environmental managers with a variety of backgrounds and experience in technical and policy issues.  
 
 Biological response components were selected based on bioassessment indices developed for California wadeable streams (i.e., benthic macroinvertebrates, algae).  Water chemistry stressors were selected that are strongly associated with biological condition in perennial streams (i.e., nutrients, conductivity). Physical habitat metrics were selected that quantify flow, channel, and riparian condition observed at a site. 
 
@@ -101,11 +104,11 @@ The assigned biological condition categories for each index were combined using 
 
 ### Characterizing stress
 
-Water chemistry and physical habitat measurements, which were used to describe stressors associated with low CSCI and ASCI scores [@Mazor15;@Therouxip], have a conceptual relationship with both invertebrate and algal assemblages [@Richards97;@Pan02;@Wang07]. Depending on the context, physical habitat can be considered  response metric of stream health. However, physical habitat herein is considered a stressor that can affect biological condition at different taxonomic levels within the stressor-response model.
+Water chemistry and physical habitat measurements, which were used to describe stressors associated with low CSCI and ASCI scores [@Mazor15;@Therouxip], have a conceptual relationship with both invertebrate and algal assemblages [@Richards97;@Pan02;@Wang07]. Depending on the context, physical habitat can be considered a response metric of stream health. However, physical habitat herein is considered a stressor that can affect biological condition at different taxonomic levels within the stressor-response model.
 
-The water chemistry indicators consisted of nutrients - specifically, total nitrogen (mg/L) and total phosphorus (mg/L) - and specific conductivity ($\mu$S/cm).  Nitrogen, phosphorus, and conductivity are widely measured in many regional and statewide monitoring programs, and collectively act as surrogates for unmeasured or alternative water quality problems at a site (e.g., temperature, light penetration).  Although other contaminants that can affect aquatic organisms are sometimes measured (e.g., metals, pesticides, pharmaceuticals), observations can be sparsely distributed in the study region [@Mazor15] and contaminants often co-occur with elevated nutrients or specific conductivity.  As such, the selected indicators may be an effective proxy for other unmeasured water quality stressors in southern California streams. 
+The water chemistry indicators consisted of nutrients - specifically, total nitrogen (mg/L) and total phosphorus (mg/L) - and specific conductivity ($\mu$S/cm).  Nitrogen, phosphorus, and conductivity are widely measured in many regional and statewide monitoring programs, and collectively act as surrogates for unmeasured or alternative water quality problems at a site (e.g., temperature, light penetration).  Although other contaminants that can affect aquatic organisms are sometimes measured (e.g., metals, pesticides, pharmaceuticals), observations can be sparsely distributed in the study region [@Mazor15] and contaminants often co-occur with elevated nutrients or specific conductivity.  As such, the selected indicators are an effective proxy for stressors that are in the minority of water quality data available for southern California streams. 
 
-Physical habitat conditions at a site were quantified using two indices of habitat condition developed for California water bodies: the Index of Physical-Habitat Integrity (IPI; @Rehn18) and the California Rapid Assessment Method (CRAM) for riverine wetlands [@Collins07;@Solek11]. 
+Physical habitat conditions at a site were quantified using two indices of habitat condition developed for California water bodies: the Index of Physical-Habitat Integrity (IPI; @Rehn18) and the California Rapid Assessment Method (CRAM) for riverine wetlands [@Collins07;@Solek11]. Although IPI and CRAM scores can be correlated, both were included in the SQI because they provide unique information about physical habitat; IPI scores better describe instream condition and CRAM scores better describe riparian condition.
 
 The IPI is an O/E index [@Hawkins00b]based on physical habitat metrics (PHAB, [@Rehn18]) that collectively characterize five components of in-stream habitat quality: percent sands, fines, or concrete, Shannon diversity of aquatic habitat types, Shannon diversity of natural substrate types, evenness of flow habitat types, and riparian vegetation cover. All five metrics are positively associated with physical habitat integrity, such that an increase in each was generally considered an improvement in site condition (percent sands and fines is inversely scored). All physical data used to calculate these metrics were collected using standard field protocols described in @Ode07, which are derived from protocols used in national assessments [@USEPA16]. As with the CSCI, the IPI is a predictive index, and values for most metrics are compared to site-specific expectations appropriate for the stream's environmental setting. The IPI ranges from 0 to ~1.4, with values less than 1 indicating departure from reference conditions.
 
@@ -144,11 +147,11 @@ The empirical framework for the binomial models and combined biological conditio
 
 The overall SQI assessment categories describe four possible combinations of biology and stressors at a site from the binary categories of altered/unaltered biology and stressed/unstressed conditions: (1) healthy and unstressed, (2) healthy and resilient, (3) impacted by unknown stress, and (4) impacted and stressed.  
 
-Separate categorical outputs were also created for the biological condition and stressor condition categories. The four possible outputs for the biological categories were based on the four combinations from the binary categories of high/low CSCI and high/low ASCI: healthy, impacted for CSCI, impacted for ASCI, and impacted for both.  The possible stressor condition categories for a site were based on the four outcomes of the binary combinations of high/low chemistry stress and high/low physical habitat stress: low stress, stressed by chemistry, stressed by habitat, and stressed by both. A fifth stress category was also possible based on the additive combinations of low chemistry and low habitat stress (i.e., if $pOverall$ exceeded the threshold even though $pChem$ and $pHab$ did not). Thresholds for biological indices that defined high/low condition were based on the tenth percentile distribution of scores at reference sites for each index.  Thresholds for high/low stress were based on the median likelihood across all sites.
+Separate categorical outputs were also created for the biological condition and stressor condition categories. The four possible outputs for the biological categories were based on the four combinations from the binary categories of high/low CSCI and high/low ASCI: healthy, impacted for CSCI, impacted for ASCI, and impacted for both.  The possible stressor condition categories for a site were based on the four outcomes of the binary combinations of high/low chemistry stress and high/low physical habitat stress: low stress, stressed by chemistry, stressed by habitat, and stressed by both. A fifth stress category was also possible based on the additive combinations of low chemistry and low habitat stress (i.e., if $pOverall$ exceeded the threshold even though $pChem$ and $pHab$ did not). Thresholds for biological indices that defined high/low condition were based on the tenth percentile distribution of scores at reference sites for each index.  Thresholds for low/moderate/high stress were based on 10\% ad 90\% likelihoods of observing a biological impact.
 
 ## Calibration and validation of the SQI
 
-All data used to calibrate and validate the SQI were from the Southern California Stormwater Monitoring Coalition (SMC) regional watershed monitoring program in coastal southern California [@Mazor15]. Representing multiple state, federal, and local agencies that have a shared mission of stormwater management for over 7000 stream kilometers in the region, the SMC initiated regional watershed monitoring in 2009 to assist, in part, with the permitting process among dischargers from the member agencies. Central SMC watershed monitoring questions focus on assessing biological condition, identifying stressors associated with poor condition, and evaluating trends over time. The SMC dataset represents the most comprehensive source of wadeable stream data in southern California. Because the SQI requires synoptic biological, chemistry, and physical habitat data, the final dataset used for model calibration represents only the subset of the SMC dataset where all three components were simultaneously collected. Made up of 266 sites – 75\% of which were used for model calibration – this subset includes sampling dates ranging from 2009 to 2016, with relatively even distribution of samples between years. Most sample events occurred between May and June following standard protocols for perennial stream surveys [@Ode07].
+All data used to calibrate and validate the SQI were from the Southern California Stormwater Monitoring Coalition (SMC) regional watershed monitoring program in coastal southern California [@Mazor15]. The SMC dataset represents the most comprehensive source of wadeable stream data in southern California. Because the SQI requires synoptic biological, chemistry, and physical habitat data, the final dataset used for model calibration represents only the subset of the SMC dataset where all three components were simultaneously collected. Made up of 266 sites – 75\% of which were used for model calibration – this subset includes sampling dates ranging from 2009 to 2016, with relatively even distribution of samples between years. Most sample events occurred between May and June following standard protocols for perennial stream surveys [@Ode07].
 
 The SQI was evaluated for precision (i.e., how well the underlying empirical model described the likelihood of biological alteration) and sensitivity (i.e., how sensitive the model output is to changing thresholds that define the categorical conditions). The first analysis evaluated precision in the validation dataset to determine agreement between the model and actual stress and biological conditions. For the second analysis, a critical decision point in the SQI is the definition of healthy or impacted biological condition based on the combined information for the CSCI and ASCI.  In Table \@ref(tab:biocmb), all sites with combined values greater than or equal to zero were considered healthy and those less than zero were considered impacted.  Changes in the cutoff point influence the SQI output since the empirical models in equations \@ref(eq:pchem), \@ref(eq:phab), and \@ref(eq:poverall) are based on the likelihood of observing healthy or impacted biology and the SQI categories are based on the model results.  The effect of varying the cutoff point for healthy and impacted biology was analyzed by comparing changes in the SQI assessment categories at different levels from -5 (all healthy) to 4 (all unhealthy).  
 
@@ -156,9 +159,13 @@ The SQI was evaluated for precision (i.e., how well the underlying empirical mod
 
 ## SQI patterns
 
-Among all sites, the overall SQI categorized a majority as having altered biology under high stress conditions (impacted and stressed, 64\% of sites, Table \@ref(tab:sqicnt)).  Just over 20\% of sites were in the opposite category of unaltered biology in low stress conditions (healthy and unstressed).  For the remaining two categories of the overall SQI, only 2\% had unaltered biology but were under high stress conditions (healthy and resilient), whereas 13\% sites had altered biology not related to physical or chemical stressors (impacted by unknown stress).  For the biological condition category, sites with altered conditions were more often altered for both CSCI and ASCI scores (50\%).  For sites with one low-scoring index, more sites were altered for the ASCI (16\%) than the CSCI (11\%).  Less than a quarter of all sites had unaltered biology (23\%).  For stress conditions, 35\% of sites were stressed by both chemistry and physical habitat stressors.  More sites were stressed by water chemistry (12\%) than physical habitat degradation (7\%) if only one stressor was present.  Over 45\% of sites had low stress, and no sites were stressed by the additive effect of both low chemistry and physical habitat stressors.    
+Among all sites, the overall SQI categorized a majority as having altered biology under high stress conditions (impacted and stressed, 61\% of sites, Table \@ref(tab:sqicnt)).  Just over 20\% of sites were in the opposite category of unaltered biology in low stress conditions (healthy and unstressed).  For the remaining two categories of the overall SQI, only 2\% had unaltered biology but were under high stress conditions (healthy and resilient), whereas 16\% sites had altered biology not related to physical or chemical stressors (impacted by unknown stress).  
 
-Spatial patterns among SQI categories in southern California generally followed elevation and land use gradients (Figure \@ref(fig:sqimap)).  More altered biological communities and high stress conditions were observed toward coastal areas in the lower watersheds where urbanization is highest (e.g., Los Angeles, Orange County, Ventura, San Diego).  Sites with altered biological condition showed similar spatial patterns as the overall SQI, although sites altered only for the ASCI were more often observed at mid-elevation across the study region, whereas sites altered only for the CSCI were more common at higher elevation areas in central and northern areas of the study region. Stress condition patterns were similar to biology, although low stress conditions also occured closer to coastal areas in addition to higher elevation areas in each watershed.  This produced a handful of sites that had altered biology under low stress conditions at mid-elevation ranges (i.e., impacted by unknown stress, Table \@ref(tab:sqicnt)).    
+For the biological condition category, sites with altered conditions were more often altered for both CSCI and ASCI scores (50\%).  For sites with one low-scoring index, more sites were altered for the ASCI (16\%) than the CSCI (11\%).  Less than a quarter of all sites had unaltered biology (23\%).  
+
+For stress conditions, 21\% of sites were stressed by both chemistry and physical habitat stressors.  More sites were stressed by water chemistry (26\%) than physical habitat degradation (10\%) if only one stressor was present.  Over 37\% of sites had low stress, and 6\% of sites were stressed by the additive effect of both low chemistry and physical habitat stressors.    
+
+Spatial patterns among SQI categories in southern California generally followed elevation and land use gradients (Figure \@ref(fig:sqimap)).  More altered biological communities and high stress conditions were observed toward coastal areas in the lower watersheds where urbanization is highest (e.g., Los Angeles, Orange County, Ventura, San Diego).  Sites with altered biological condition showed similar spatial patterns as the overall SQI, although sites altered only for the ASCI were more often observed at mid-elevation across the study region, whereas sites altered only for the CSCI were more common at higher elevation areas in central and northern areas of the study region. Stress condition patterns were similar to biology, although low stress conditions also occured at higher elevation areas in each watershed.  This produced a handful of sites that had altered biology under low stress conditions at mid-elevation ranges (i.e., impacted by unknown stress, Table \@ref(tab:sqicnt)).    
 
 ```{r eval = T, echo = F}
 pchemn <- sum(sqidat$pChem > 0.5) 
@@ -179,8 +186,7 @@ phabchk <- lm(pHab ~ bio_fp * SiteSet, data = sqidat)
 poverallchk <- lm(pChemHab ~ bio_fp * SiteSet, data = sqidat)
 ```
 
-
-The distinction between healthy and impacted biological communities was well-described by the estimated likelihood of biological alteration provided by the empirical models (Figure \@ref(fig:boxlik)).  Slightly larger differences between the likelihood of alteration for healthy and impacted communities was observed for the chemistry model compared to the physical habitat model, suggesting an improved fit for the former.  For the overall likelihood of biological alteration (*pOverall*), more sites were greater than 90\% likely to altered in the impacted category as compared to the separate *pChem* and *pHab* models. For all cases (*pChem*, *pHab*, *pOverall*), there were no systematic differences in model results between calibration and validation datasets ($p >$ 0.05 for the interaction and fixed effect of site type in linear models describing likelihood of alteration between impact categories and site type). 
+The distinction between healthy and impacted biological communities was well-described by the estimated likelihood of biological alteration provided by the empirical models (Figure \@ref(fig:boxlik)).  Slightly larger differences between the likelihood of alteration for healthy and impacted communities were observed for the chemistry model compared to the physical habitat model, suggesting an improved fit for the former.  For the overall likelihood of biological alteration (*pOverall*), more sites were greater than 90\% likely to be altered in the impacted category as compared to the separate *pChem* and *pHab* models. For all cases (*pChem*, *pHab*, *pOverall*), there were no systematic differences in model results between calibration and validation datasets ($p >$ 0.05 for the interaction and fixed effect of site type in linear models describing likelihood of alteration between impact categories and site type). 
 
 The underlying empirical models provided insight into instream characteristics that were related to the likelihood of biological alteration (Figures \@ref(fig:strlik), \@ref(fig:rspcrv)).  About `r pchemp`\% of sites (n = `r pchemn`) had greater than 50\% likelihood of biological alteration from water chemistry stressors, and `r phabp`\% (n = `r phabn`) had greater than 50\% likelihood of biological alteration from physical habitat stressors (Figure \@ref(fig:strlik)).  Collectively, `r poverallp`% (n = `r poveralln`) of sites had greater than 50\% likelihood of biological alteration from the overall stress of both chemistry and physical habitat stressors. 
 
@@ -197,9 +203,9 @@ habglmsub2 <- glm(bio_fp ~ IPI,
               family = binomial('logit'), data = calset)
 ```
 
-Water chemistry and physical habitat predictors included in the empirical response models for *pChem* and *pHab* (equations \@ref(eq:pchem), \@ref(eq:phab)) explained a substantial portion of variability among sites related to the occurrence of biological alteration (Table \@ref(tab:strmod)). The *pChem* explained 64\% of the variation among sites, whereas the *pHab* model explained 42\%.  All predictors in the *pChem* were significantly and positively associated ($p < 0.05$) with the occurrence of biological alteration.  Only the CRAM predictor in the *pHab* model was significantly associated with occurrence of biological alteration.  Both CRAM and IPI are significantly correlated in the calibration dataset ($r =$ `r crhab`), which masked the effect of IPI on biological alteration in the *pHab* model. However, exclusion of CRAM from the *pHab* model reduced the explanatory power by approximately 14\%, and both were retained for the SQI.
+Water chemistry and physical habitat predictors included in the empirical response models for *pChem* and *pHab* (equations \@ref(eq:pchem), \@ref(eq:phab)) explained a substantial portion of variability among sites related to the occurrence of biological alteration (Table \@ref(tab:strmod)). The *pChem* model explained 64\% of the variation among sites, whereas the *pHab* model explained 42\%.  All predictors in the *pChem* were significantly and positively associated ($p < 0.05$) with the occurrence of biological alteration.  Only the CRAM predictor in the *pHab* model was significantly associated with occurrence of biological alteration.  Both CRAM and IPI are significantly correlated in the calibration dataset ($r =$ `r crhab`), which masked the effect of IPI on biological alteration in the *pHab* model. However, exclusion of CRAM from the *pHab* model reduced the explanatory power by approximately 14\%, and both were retained for the SQI.
 
-Figure \@ref(fig:rspcrv) demonstrates how the individual components for each stressor model were related to likelihood of alteration.  These partial dependency plots were created by estimating the likelihood of alteration across a range of values for each predictor, while holding other predictors constant.  For each plot, the variables in each model (equations \@ref(eq:pchem), \@ref(eq:phab)) not on the x-axis were held at approximate values that were associated with low stress to better understand how biological alteration may be related to each predictor.  For water chemistry stressors, all were positively associated with likelihood of alteration, particularly conductivity which had the steepest per-unit increase in likelihood.  Associations of biological alteration with physical habitat predictors were as expected, except that decreases in likelihood of biological alteration were observed with increases in IPI and CRAM (both are indicators of habitat integrity).  The strongest relationship was observed with increases in CRAM scores, where likelihood of alteration decreased sharply with CRAM scores greater than 50.  Increases in IPI scores were also associated with decreases in likelihood of alteration, except the relationship had more uncertainty than for CRAM scores. 
+Figure \@ref(fig:rspcrv) demonstrates how the individual components for each stressor model were related to likelihood of alteration.  These partial dependency plots were created by estimating the likelihood of alteration across a range of values for each predictor, while holding other predictors constant.  For each plot, the variables in each model (equations \@ref(eq:pchem), \@ref(eq:phab)) not on the x-axis were held at approximate values that were associated with low stress to better understand how biological alteration may be related to each predictor.  For water chemistry stressors, all were positively associated with likelihood of alteration, particularly conductivity which had the steepest per-unit increase in likelihood.  Associations of biological alteration with physical habitat predictors were as expected, except that decreases in likelihood of biological alteration were observed with increases in IPI and CRAM (both are indicators of habitat integrity).  The strongest relationship was observed with increases in CRAM scores, where likelihood of alteration decreased sharply with CRAM scores greater than 50.  Increases in IPI scores were also associated with decreases in likelihood of alteration, except the relationship had more uncertainty than for CRAM scores. Increased uncertainty for the IPI is linked to correlation with CRAM scores and limitations of the linear model.
 
 ## Model sensitivity to biological decision points
 
@@ -209,17 +215,17 @@ A distinction between the stress condition categories and overall SQI was also o
 
 # Discussion
 
-The Stream Quality Index offers a solution for watershed managers seeking to synthesize large amounts of physical, chemical, and biological data about stream health. Using the SQI, users can both recognize large-scale patterns in data from multiple lines of evidence, and improve how the data are communicated to high-level, non-technical environmental managers. This need is particularly pressing in regions like southern California, where large-scale landscape alteration and competing demands for water usage require managers to prioritize limited resources and management actions. As shown via the application of the SQI to stream data from the southern California Stormwater Monitoring Coalition, this tool can be used to prioritize sites for restoration, protection, and other management activities on a large scale. 
+The Stream Quality Index offers a solution for watershed managers seeking to synthesize large amounts of physical, chemical, and biological data about stream health. Using the SQI, users can both recognize large-scale patterns in data from multiple lines of evidence, and improve how the data are communicated to high-level, non-technical environmental managers. This need is particularly pressing in regions like southern California, where large-scale landscape alteration and competing demands for water usage require managers to prioritize limited resources and management actions. As shown via the application of the SQI to stream data from the southern California, this tool can be used to prioritize sites for restoration, protection, and other management activities on a large scale. 
 
 While the simplest way to synthesize three lines of evidence would be to treat them equivalently and simply "average" the results, this approach would mask the types of information provided by each, and ultimately could not effectively characterize situations where these indicators disagreed – a common situation in the SMC data set. To properly capture relationships among indicators of stream quality in a way that is consistent with conceptual modeling of a healthy stream ecosystem, it was crucial to develop an index that accurately reflects biology’s role as a direct measure of condition, and that reflects physical and chemical indicators as measures of stress. In other words, a finding of good water chemistry should not obscure or distort an indication of poor biology, and vice versa. 
 
-As a categorical index, the SQI provides a readily interpretable description of stream conditions. The four condition categories defined by the index (i.e., healthy and unstressed, healthy and resilient, impacted and stressed, impacted by unknown stress) can be understood by a general audience with little familiarity with the underlying data and tools used to analyze them. In contrast, numeric indices demand a higher level of experience to interpret; without training, an unfamiliar audience cannot easily identify which values of a numeric index correspond to healhy conditions requiring protection, and which values correspond to impacted conditions requiring intervention. Although categorical indices create challenges for assessing trends or identifying borderline conditions, we have addressed this by making the core data easily accessible through a web-based application.  Defining the condition categories from empirical models that are ultimately linked to continuous data also provided a quantiative link between the two.
+As a categorical index, the SQI provides a readily interpretable description of stream conditions that is easily accessible though a web-based application. The four condition categories defined by the index (i.e., healthy and unstressed, healthy and resilient, impacted and stressed, impacted by unknown stress) can be understood by a general audience that may not need the underlying data and tools used to analyze them. In contrast, numeric indices require a benchmark or other appropriate context to interpret scores; without this information, it can be difficult to identify which values of a numeric index correspond to healthy conditions requiring protection, and which values correspond to impacted conditions requiring intervention.  Defining the condition categories from empirical models that are ultimately linked to continuous data provided a quantitative link between the two.
 
-The SQI also addresses the challenge of synthesizing large amounts of information about stream condition without losing the individual components, which are readily available to the user for more in-depth exploration because the index is hierarchical. This provides a critical service by allowing users to identify likely reasons behind the categorical classification for a given site. In other words, users can determine which biological indicators account for a stream's health rating, along with which stressors may or not be associated with biological condition.  Users also can identify presence or absence of physical and/or chemical stressors, and which components in equations \@ref(eq:pchem) and \@ref(eq:phab) may be linked to their respective stressor categories.  Further, physical habitat measures (i.e., CRAM and IPI) include additional metrics that were used to calculate scores at each site. Although these metrics were not explicit components in the empirical models of the SQI, they can serve as additional diagnostic information to describe physical conditions. 
+The SQI also addresses the challenge of synthesizing large amounts of information about stream condition without losing the individual components, which are readily available to the user for more in-depth exploration because the index is hierarchical. This provides a critical service by allowing users to identify likely reasons behind the categorical classification for a given site. In other words, users can determine which biological indicators account for a stream's health rating, along with which stressors may or not be associated with biological condition.  Users also can identify presence or absence of physical and/or chemical stressors, and which components in equations \@ref(eq:pchem) and \@ref(eq:phab) may be linked to their respective stressor categories.  Further, physical habitat measures (i.e., CRAM and IPI) include component metrics that can serve as additional diagnostic information to describe physical conditions (e.g., percent sands and fines, shading, diversity of natural substrates, etc.).  An evaluation of component metrics for sites that are stressed by physical habitat may reveal which stream characteristics could be prioritized to improve condition (e.g., reduce bank erosion or increase riparian cover).
 
-Because the SQI approach to characterizing stressors differs from similar past efforts, the SQI is well-suited for use with ambient monitoring programs.  For example, the Canadian Water Quality Index (CWQI, @CCME01, @Hurley12) is a similar tool that evaluates the scope, frequency, and amplitude  of water quality objective exceedances for numerous parameters, resulting in a numeric value that ranges from 0 (poor) to 100 (excellent). This approach is appropriate for assessing compliance  with regulatory criteria at sites where monitoring covers many parameters and occurs at regular intervals (i.e., at selected sites of interest, such as below discharge points or at mass-emission stations). In contrast, the SQI is better suited for ambient monitoring programs (e.g., the Stream Monitoring Coalition, @Mazor15; and the National Rivers and Streams Assessment, @USEPA16) that typically sample many sites with little or no replication and that focus on just a few indicators broadly indicative of water chemistry conditions rather than a large suite of potential stressors. Our approach is also applicable to indicators where thresholds are unavailable (e.g., CRAM or IPI), but where the relevance for measuring aquatic life support is maintained even when it has less bearing on regulatory compliance than with other approaches, such as the CWQI. Finally, the SQI approach can be directly interpreted without familiarity of established benchmarks because the empirical stress models in the SQI are expressed as probabilities of degrading biological condition, rather than abstract numbers.
+Because the SQI approach to characterizing stressors differs from similar past efforts, the SQI is well-suited for use with ambient monitoring programs.  For example, the Canadian Water Quality Index (CWQI, @CCME01, @Hurley12) is a similar tool that evaluates the scope, frequency, and amplitude  of water quality objective exceedances for numerous parameters, resulting in a numeric value that ranges from 0 (poor) to 100 (excellent). This approach is appropriate for assessing compliance  with regulatory criteria at sites where monitoring covers many parameters and occurs at regular intervals (i.e., at selected sites of interest, such as below discharge points or at mass-emission stations). In contrast, the SQI is better suited for ambient monitoring programs (e.g., @Mazor15; @USEPA16) that typically sample many sites with little or no replication and that focus on just a few indicators broadly indicative of water chemistry conditions rather than a large suite of potential stressors. Our approach is also applicable to indicators where thresholds are unavailable (e.g., CRAM or IPI), but where the relevance for measuring aquatic life support is maintained even when it has less bearing on regulatory compliance than with other approaches, such as the CWQI. Finally, the SQI approach can be directly interpreted without familiarity of established benchmarks because the empirical stress models in the SQI are expressed as probabilities of degrading biological condition, rather than abstract numbers.
 
-Our theoretical framework for the SQI is not without drawbacks. The index as designed cannot accommodate additional or fewer indicators of stream condition/stress - a contrast to the CWQI that can include any number of available parameters. Missing data (e.g., lost samples or incomplete coverage of required data at a site) prevent calculation of the SQI, and the index cannot be estimated without recalibration to include or exclude individual components.  At the same time, the initial SQI described herein was purposefully restricted to a limited number of parameters to focus on developing the foundation of the index, as we were aware that a broader scope could preclude many sites from analysis.  For example, CSCI and ASCI scores for the biological components of the SQI are available at over 1,000 sites in southern California, but combining these data with the required chemical and physical stressor data reduced the total number of sites where all components were available to `r nrow(sqidat)` sites.  Additional work on the SQI should explore how the categorical descriptions can be provided in the absence of all the necessary components.  For example, missing IPI data could be replaced with a mean value appropriate for the region so as not to bias the outcome, whereas the effect of this estimation should be explicitly demonstrated as a component of uncertainty in the final SQI output. Similarly, a mechanism for adding additional components to the SQI that are not currently included should be explored.
+Our theoretical framework for the SQI is not without drawbacks. The index as designed cannot accommodate additional or fewer indicators of stream condition/stress - a contrast to the CWQI that can include any number of available parameters. Missing data (e.g., lost samples or incomplete coverage of required data at a site) prevent calculation of the SQI, and the index cannot be estimated without recalibration to include or exclude individual components.  At the same time, the initial SQI described herein was purposefully restricted to a limited number of parameters to focus on developing the foundation of the index, as we were aware that a broader scope could preclude many sites from analysis.  For example, CSCI and ASCI scores for the biological components of the SQI are available at over 1,000 sites in southern California, but combining these data with the required chemical and physical stressor data reduced the total number of sites where all components were available to `r nrow(sqidat)` sites.  Additional work on the SQI should explore how the categorical descriptions can be provided in the absence of all the necessary components.
 
 ## The SQI web application 
 
@@ -229,9 +235,9 @@ The web app's visualization features also support exploration of the data at bot
 
 ## Conclusions 
 
-An integrated stream health index that synthesizes physical, chemical and biological lines of evidence has the potential to transform watershed management. The SQI accurately captures our understanding of the roles that physical, chemical and biological indicators play in describing stream health. Furthermore, the SQI not only combines the three lines of evidence into a single, managerially relevant categorical classification, but the tool also preserves the data underlying the integrated assessment, enabling managers to readily access this information as they work to better understand the reasons behind the overall assessment.
+An integrated stream health index that synthesizes physical, chemical and biological lines of evidence could be a powerful tool to support watershed management. The SQI accurately captures our understanding of the roles that physical, chemical and biological indicators play in describing stream health. Furthermore, the SQI not only combines the three lines of evidence into a single, managerially relevant categorical classification, but the tool also preserves the data underlying the integrated assessment, enabling managers to readily access this information as they work to better understand the reasons behind the overall assessment.
 
-The SQI provides a viable alternative for managers struggling to synthesize large amounts of data, assign priorities based on this synthesis, and communicate these decisions to a broad range of high-level managers and other stakeholders who may lack familiarity with bioassessment and/or watershed science. In particular, the SQI can be used to convey critical insights for routine watershed assessments, permit reporting, and environmental report cards. Although the SQI is calibrated and validated specifically for southern California, USA, the approach could be applied anywhere that sufficient data are available.  Many national and international monitoring programs that have collected data for several years could easily apply our SQI framework with alternative biological endpoints or stressor data.
+The SQI is a viable approach for managers that need to synthesize large amounts of data, assign priorities based on this synthesis, and communicate these decisions to a broad range of high-level managers and other stakeholders who may lack familiarity with bioassessment and/or watershed science. In particular, the SQI could be used to convey critical insights for routine watershed assessments, permit reporting, and environmental report cards. Although the SQI is calibrated and validated specifically for southern California, USA, the approach could be applied anywhere with sufficient data.  Many national and international monitoring programs that have collected data for several years could easily apply the SQI framework with alternative biological endpoints or stressor data.
 
 
 # Figures
@@ -259,21 +265,21 @@ toplo1 <- toplo %>%
   mutate(
     val = factor(val, 
                  levels = c("Healthy and unstressed", "Healthy and resilient", "Impacted by unknown stress", "Impacted and stressed")
-                 )
+    )
   )
 toplo2 <- toplo %>% 
   filter(var %in% 'Biological condition') %>% 
   mutate(
     val = factor(val, 
                  levels = c("Healthy", "Impacted for CSCI", "Impacted for ASCI", "Impacted for CSCI and ASCI")
-                 )
+    )
   )
 toplo3 <- toplo %>% 
   filter(var %in% 'Stress condition') %>% 
   mutate(
     val = factor(val, 
                  levels = c("Low stress", "Stressed by chemistry degradation", "Stressed by habitat degradation", "Stressed by chemistry and habitat degradation", "Stressed by low levels of chemistry or habitat degradation")
-                 )
+    )
   )
 
 sqicol <- getdsccol(palfac = 'StreamHealthIndex')
@@ -292,9 +298,12 @@ p1 <- ggplot() +
   theme(
     legend.position = legpos,
     legend.title = element_blank(),
-    legend.justification = "left"
+    legend.justification = "left", 
+    panel.grid =
   ) +
-  guides(fill = guide_legend(override.aes = list(size = 0.5)))
+  guides(fill = guide_legend(override.aes = list(size = 0.5))) + 
+  north(sheds, scale = 0.2, symbol = 3) +
+  scalebar(toplo1, dist = 50, dd2km = T, location = 'bottomleft', st.dist = 0.05, st.size = 3, height = 0.03, border.size = 0.5)
 p1leg <- g_legend(p1)
 p1 <- p1 +
   theme(
@@ -302,7 +311,7 @@ p1 <- p1 +
     panel.grid = element_line(colour = NA),
     strip.background = element_blank(),
     legend.title = element_blank()
-    )
+  )
 p2 <- ggplot() + 
   geom_sf(data = sheds, colour = 'lightgrey') + 
   geom_sf(data = toplo2, aes(fill = val), pch = 21, colour = 'black', size = sz) + 
@@ -322,7 +331,7 @@ p2 <- p2 +
     panel.grid = element_line(colour = NA),
     strip.background = element_blank(),
     legend.title = element_blank()
-    )
+  )
 
 p3 <- ggplot() + 
   geom_sf(data = sheds, colour = 'lightgrey') + 
@@ -343,24 +352,46 @@ p3 <- p3 +
     panel.grid = element_line(colour = NA),
     strip.background = element_blank(),
     legend.title = element_blank()
-    )
+  )
+
+shedfrt <- sheds %>% 
+  as('Spatial') %>% 
+  fortify 
+
+country <- map_data('state')
+pinset <- ggplot(country, aes(x = long, y = lat, group = group)) +
+  geom_polygon( fill = NA, color = "darkgrey", size = 0.3) +
+  geom_polygon(data = shedfrt, aes(x = long, y = lat, group = group), fill = 'red') +
+  coord_map() +
+  theme_void() 
 
 maxWidth = grid::unit.pmax(p1leg$widths[2:5], p2leg$widths[2:5], p3leg$widths[2:5])
- p1leg$widths[2:5] <- as.list(maxWidth)
- p2leg$widths[2:5] <- as.list(maxWidth)
- p3leg$widths[2:5] <- as.list(maxWidth)
+p1leg$widths[2:5] <- as.list(maxWidth)
+p2leg$widths[2:5] <- as.list(maxWidth)
+p3leg$widths[2:5] <- as.list(maxWidth)
 
-png('figs/sqi_map.png', height = 8, width = 8, units = 'in', res = 500)
-grid.arrange(
-  arrangeGrob(p1, p2, p3, ncol=1),
-  arrangeGrob(p1leg, p2leg, p3leg, ncol=1),
-  ncol = 2)
+grid.newpage()
+v1 <- viewport(width = 0.4, height = 0.4, x = 0.25, y = 0.85) 
+v2 <- viewport(width = 0.4, height = 0.4, x = 0.25, y = 0.5) 
+v3 <- viewport(width = 0.4, height = 0.4, x = 0.25, y = 0.15)
+v4 <- viewport(width = 0.4, height = 0.4, x = 0.75, y = 0.85) 
+v5 <- viewport(width = 0.4, height = 0.4, x = 0.75, y = 0.5)
+v6 <- viewport(width = 0.4, height = 0.4, x = 0.75, y = 0.15)
+v7 <- viewport(width = 0.2, height = 0.2, x = 0.15, y = 0.05)
+
+png('figs/sqi_map.png', height = 9, width = 8, units = 'in', res = 500)
+print(p1, vp = v1) 
+print(p2, vp = v2)
+print(p3, vp = v3)
+print(wrap_elements(p1leg), vp = v4)
+print(wrap_elements(p2leg), vp = v5)
+print(wrap_elements(p3leg), vp = v6)
+print(pinset, vp = v7)
 dev.off()
 ```
 ```{r sqimap, fig.cap = "Categorical site descriptions for the Stream Quality Index (SQI) at monitoring sites in Southern California.  The overall SQI (top) is described as the possible outcomes from biological (middle) and stress conditions (bottom).  The biological conditions are described by the possible outcomes from the CSCI and ASCI.  The stress conditions are described by the possible outcomes from the chemistry and habitat stressors."}
 knitr::include_graphics('figs/sqi_map.png')
 ```
-
 
 ```{r, results = 'hide'}
 sqicol <- getdsccol(palfac = 'StreamHealthIndex')
@@ -410,26 +441,29 @@ toplo <- sqidat %>%
   mutate(OverallStressCondition_detail = factor(OverallStressCondition_detail,
                                                 levels = c("Low stress", "Stressed by chemistry degradation", "Stressed by habitat degradation", "Stressed by chemistry and habitat degradation", "Stressed by low levels of chemistry or habitat degradation"),
                                                 labels = c("Low stress", "Stressed by chemistry", "Stressed by habitat", "Stressed by chemistry and habitat", "Stressed by low levels of both"
-)))
+                                                )))
 
 xgrid <- seq(min(toplo$pHab, na.rm = T), max(toplo$pHab, na.rm = T), length = 100)
 ygrid <- seq(min(toplo$pChem, na.rm = T), max(toplo$pChem, na.rm = T), length = 100)
 
-data.fit <- expand.grid(pHab = xgrid, pChem = ygrid)
-
-data.loess <- loess(pChemHab ~ pHab * pChem, data = toplo)
-mtrxd <- predict(data.loess, newdata = data.fit) %>% 
-  reshape2::melt() %>% 
-  mutate(
-    pHab = as.numeric(gsub('^pHab=', '', pHab)), 
-    pChem = as.numeric(gsub('^pChem=', '', pChem))
+mtrxd <- crossing(
+  pHab = xgrid, 
+  pChem = ygrid
   ) %>% 
-  rename(pChemHab = value)
+  mutate(
+    pChemHab = 1 - ((1 - pHab) * (1 - pChem))
+  )
 
+xin <- 0.75
+labs <- tibble(
+  x = c(0.3, 0.9, xin),
+  y = c(0.9, 0.6, ((xin - 0.9)/(xin - 1))),
+  lb = paste0('italic(', c('"pHab"', '"pChem"', '"pOverall"'), ')')      
+)
 cols <- getdsccol(palfac = 'OverallStressCondition')$col
 
-p1 <- ggplot(mtrxd, aes(x = pChem, y = pHab, z = pChemHab)) + 
-  stat_contour(aes(colour = ..level..), breaks = c(seq(0.2, 0.9, by = 0.1))) + 
+p1 <- ggplot(mtrxd) + 
+  stat_contour(aes(x = pChem, y = pHab, z = pChemHab, colour = ..level..), breaks = c(seq(0.2, 0.9, by = 0.1))) + 
   geom_point(data = toplo, aes(x = pChem, y = pHab, fill = pChemHab), pch = 21, colour = 'lightgrey', size = 4) +
   theme_bw(base_family= 'serif') + 
   theme(
@@ -444,12 +478,13 @@ pleg1 <- g_legend(p1)
 p1 <- p1 + theme(legend.position = 'none')
 # p1 <- direct.label(p1, list('bottom.pieces', cex = 0.7))
 
-p2 <- ggplot(mtrxd, aes(x = pChem, y = pHab, z = pChemHab)) + 
-  stat_contour(breaks = c(0.9), colour = 'black', linetype = 'dashed') + 
+p2 <- ggplot(mtrxd) + 
+  stat_contour(aes(x = pChem, y = pHab, z = pChemHab), breaks = c(0.9), colour = 'black', linetype = 'dotted', size = 1) + 
   geom_point(data = toplo, aes(x = pChem, y = pHab, fill = OverallStressCondition_detail), pch = 21, colour = 'lightgrey', size = 4) +
+  geom_vline(xintercept = 0.9, linetype = 'dotted', size = 1) + 
+  geom_hline(yintercept = 0.9, linetype = 'dotted', size = 1) +
+  geom_label_repel(data = labs, aes(x = x, y = y, label = lb), box.padding = 2.5, parse = T, size = 2.5, alpha = 0.75) +
   theme_bw(base_family= 'serif') + 
-  geom_vline(xintercept = 0.9, linetype = 'dashed') + 
-  geom_hline(yintercept = 0.9, linetype = 'dashed') +
   theme(
     legend.position = 'top',
     legend.title = element_text(face = 'italic'), 
@@ -468,7 +503,7 @@ png('figs/str_lik.png', height = 4.5, width = 8, family = 'serif', res = 400, un
 
 dev.off()
 ```
-```{r strlik, fig.cap = "Relationship between stress models for water chemistry (*pChem*, eqn. \\\\@ref(eq:pchem)) and physical habitat (*pHab*, eqn. \\\\@ref(eq:phab)).  Stress models for water chemistry and physical habitat were created based on the likelihood of biological alteration for the observed stress measures.  The overall stress meaures (*pOverall*, eqn. \\\\@ref(eq:poverall)) is the product of both stress models shown in the left plot.  Points represent estimated stress at a single site.  The right plot shows the same points but colored by the stress condition categories that are defined by thresholds from the dotted lines."}
+```{r strlik, fig.cap = "Relationship between stress models for water chemistry (*pChem*, eqn. \\\\@ref(eq:pchem)) and physical habitat (*pHab*, eqn. \\\\@ref(eq:phab)).  Stress models for water chemistry and physical habitat were created based on the likelihood of biological alteration for the observed stress measures.  The overall stress measures (*pOverall*, eqn. \\\\@ref(eq:poverall)) is the product of both stress models shown in the left plot.  Points represent estimated stress at a single site.  The right plot shows the same points but colored by the stress condition categories that are defined by thresholds from the dotted lines."}
 knitr::include_graphics('figs/str_lik.png')
 ```
 
@@ -490,7 +525,8 @@ biocol <- getdsccol(palfac = 'BiologicalCondition')
 # plots
 p1 <- ggplot(toplotn, aes(x = TN)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_rug(data = sqidat, aes(x = TN, colour = BiologicalCondition), sides = 'b') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = TN, colour = BiologicalCondition), sides = 'b') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = TN, colour = BiologicalCondition), sides = 't') +
   geom_line(aes(y = fit)) +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
@@ -505,7 +541,8 @@ p1 <- ggplot(toplotn, aes(x = TN)) +
     
 p2 <- ggplot(toplotp, aes(x = TP)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_rug(data = sqidat, aes(x = TP, colour = BiologicalCondition), sides = 'b') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = TP, colour = BiologicalCondition), sides = 'b') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = TP, colour = BiologicalCondition), sides = 't') +
   geom_line(aes(y = fit)) +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
@@ -520,7 +557,8 @@ p2 <- ggplot(toplotp, aes(x = TP)) +
     
 p3 <- ggplot(toplocn, aes(x = Cond)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_rug(data = sqidat, aes(x = Cond, colour = BiologicalCondition), sides = 'b') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = Cond, colour = BiologicalCondition), sides = 'b') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = Cond, colour = BiologicalCondition), sides = 't') +
   geom_line(aes(y = fit)) +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
@@ -545,7 +583,8 @@ toploipi <- strs_surf('IPI', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_
 # plots
 p4 <- ggplot(toplocrm, aes(x = indexscore_cram)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_rug(data = sqidat, aes(x = indexscore_cram, colour = BiologicalCondition), sides = 'b') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = indexscore_cram, colour = BiologicalCondition), sides = 'b') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = indexscore_cram, colour = BiologicalCondition), sides = 't') +
   geom_line(aes(y = fit)) +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
@@ -560,7 +599,8 @@ p4 <- ggplot(toplocrm, aes(x = indexscore_cram)) +
     
 p5 <- ggplot(toploipi, aes(x = IPI)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_rug(data = sqidat, aes(x = IPI, colour = BiologicalCondition), sides = 'b', size = 1) +
+  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = IPI, colour = BiologicalCondition), sides = 'b') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = IPI, colour = BiologicalCondition), sides = 't') +
   geom_line(aes(y = fit)) +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
@@ -591,7 +631,7 @@ grid.arrange(
 )
 dev.off()
 ```
-```{r rspcrv, fig.cap = "Modelled likelihood of biological alteration from water quality (top) and physical habitat stressors (bottom). Curves are the binomial likelihood (+/- standard error) of biological condition being altered (as measured by macroinvertebrate and algal indices) across the range of observed values for water quality and physical habitat stressors on the x-axes.  The water chemistry and physical habitat stress plots are derived from equations \\\\@ref(eq:pchem) and \\\\@ref(eq:phab).  Other variables in each model not on the x-axis for each plot are held constant at values for low stress conditions.  Biological condition for observations in each stressor model are shown as rug plots on the x-axes."}
+```{r rspcrv, fig.cap = "Modelled likelihood of biological alteration from water quality (top) and physical habitat stressors (bottom). Curves are the binomial likelihood (+/- standard error) of biological condition being altered (as measured by macroinvertebrate and algal indices) across the range of observed values for water quality and physical habitat stressors on the x-axes.  The water chemistry and physical habitat stress plots are derived from equations \\\\@ref(eq:pchem) and \\\\@ref(eq:phab).  Other variables in each model not on the x-axis for each plot are held constant at values for low stress conditions.  Biological condition for observations in each stressor model are shown as rug plots on the x-axes, with impacted sites on the bottom and healthy on the top."}
 knitr::include_graphics('figs/rsp_crv.png')
 ```
 
@@ -766,10 +806,10 @@ biocmb <- read.csv('raw/scoring_xwalkrc.csv', stringsAsFactors = F) %>%
   mutate(
     CSCI_rc = factor(CSCI_rc, 
                      levels = c('li', 'pa', 'la', 'vla'),
-                     labels = c('BMI li: (CSCI > 0.92)', 'BMI pa: (CSCI 0.79 - 0.92)', 'BMI la: (CSCI 0.63 - 0.79)', 'BMI vla: (CSCI < 0.63)')),
+                     labels = c('BMI likely intact: (CSCI > 0.92)', 'BMI possibly altered: (CSCI 0.79 - 0.92)', 'BMI likely altered: (CSCI 0.63 - 0.79)', 'BMI very likely altered: (CSCI < 0.63)')),
     ASCI_rc = factor(ASCI_rc, 
                      levels = c('li', 'pa', 'la', 'vla'),
-                     labels = c('Algae li: (ASCI > 0.93)', 'Algae pa: (ASCI 0.83 - 0.93)', 'Algae la: (ASCI 0.70 - 0.83)', 'Algae vla: (ASCI < 0.70'))
+                     labels = c('Algae likely intact: (ASCI > 0.93)', 'Algae possibly altered: (ASCI 0.83 - 0.93)', 'Algae likely altered: (ASCI 0.70 - 0.83)', 'Algae very likely altered: (ASCI < 0.70'))
   ) %>% 
   dplyr::select(-ASCI_score, -CSCI_score) %>% 
   spread(ASCI_rc, Bio_BPJ) %>% 
@@ -780,7 +820,7 @@ biocmb[biocmb < 0] <- paste0('__', biocmb[biocmb < 0], '__')
 totab <- biocmb
 
 # table stuff
-cap.val <- 'Combined biological condition categories for the benthic macroinvertebrate (BMI) and algal indices. The combined categories were used to model the likelihood of biological alteration given observed physical and chemical habitat stressors. Sites with combined categories greater than or equal to zero were considered biologically healthy and those less than zero (in bold) were considered biologically impacted (i.e., response variable in equations \\@ref(eq:pchem) and \\@ref(eq:phab)).  Individual biological categories for the BMI and algal indices were based on percentile distributions of scores at reference sites (i.e., 1st, 10th, and 30th percentiles) as likely intact (la), possibly altered (pa), likely altered (la), and very likely altered (vla).  The scores associated with the percentiles for each index  (CSCI, ASCI) are in parentheses.'
+cap.val <- 'Combined biological condition categories for the benthic macroinvertebrate (BMI) and algal indices. The combined categories were used to model the likelihood of biological alteration given observed physical and chemical habitat stressors. Sites with combined categories greater than or equal to zero were considered biologically healthy and those less than zero (in bold) were considered biologically impacted (i.e., response variable in equations \\@ref(eq:pchem) and \\@ref(eq:phab)).  Individual biological categories for the BMI and algal indices were based on percentile distributions of scores at reference sites (i.e., 1st, 10th, and 30th percentiles) as likely intact (> 30th), possibly altered (10th - 30th), likely altered (1st - 10th), and very likely altered (< 10th).  The scores associated with the percentiles for each index (CSCI, ASCI) are in parentheses.'
 
 # table
 knitr::kable(totab, caption = cap.val)
