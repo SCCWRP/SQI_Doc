@@ -635,82 +635,7 @@ dev.off()
 knitr::include_graphics('figs/rsp_crv.png')
 ```
 
-```{r results = 'hide', eval = F}
-# toshw <- c('OverallStressCondition_detail', 'StreamHealthIndex')
-# 
-# strssens <- crossing(qnt = seq(0.1, 0.9, by = 0.1), thrshfun = c('chmthrsh', 'habthrsh', 'allthrsh')) %>% 
-#   group_by(qnt, thrshfun) %>% 
-#   nest %>% 
-#   mutate(
-#     est = purrr::pmap(list(qnt, thrshfun), function(qnt, thrshfun){
-#     
-#       toeval <- paste0('sqibiosens(sqidatinp, thrsh = 0, ',  thrshfun, ' = ', qnt, ', thrshemp = T)')
-#       eval(parse(text = toeval))
-#       
-#     }) 
-#   ) %>% 
-#   select(-data) %>% 
-#   unnest %>% 
-#   filter(var %in% toshw) %>% 
-#   mutate(sensed = thrshfun) %>% 
-#   select(-thrshfun) %>% 
-#   rename(value = qnt)
-# 
-# biolsens <- seq(5, -4) %>% 
-#   enframe %>% 
-#   group_by(value) %>% 
-#   nest %>% 
-#   mutate(
-#     est = purrr::map(value, function(x) sqibiosens(sqidatinp, x))
-#   ) %>% 
-#   select(-data) %>% 
-#   unnest %>% 
-#   filter(var %in% toshw) %>% 
-#   mutate(sensed = 'biolthhrs')
-# 
-# toplo <- rbind(strssens, biolsens)
-# 
-# toplo2 <- toplo %>% 
-#   filter(var %in% toshw[1])
-# cols1 <- getdsccol(palfac = toshw[1]) %>% 
-#   select(nms, col) %>% 
-#   deframe
-# 
-# p2 <- ggplot(toplo2, aes(x = factor(value), y = n, fill = val)) + 
-#   geom_bar(stat = 'identity', colour = 'black') + 
-#   scale_fill_manual('Stress Condition', values = cols1) +
-#   scale_y_continuous(expand = c(0, 0)) + 
-#   scale_x_discrete(expand = c(0,0)) +
-#   theme_bw(base_family = 'serif') +
-#   facet_wrap(~sensed, scales = 'free_x', ncol = 4) +
-#   theme(
-#     panel.background = element_blank(), 
-#     panel.border = element_blank(),
-#     axis.title = element_blank(),
-#     strip.background = element_blank()
-#   ) 
-# 
-# toplo3 <- toplo %>% 
-#   filter(var %in% toshw[2])
-# cols2 <- getdsccol(palfac = toshw[2]) %>% 
-#   select(nms, col) %>% 
-#   deframe
-# 
-# p3 <- ggplot(toplo3, aes(x = factor(value), y = n, fill = val)) + 
-#   geom_bar(stat = 'identity', colour = 'black') + 
-#   scale_fill_manual('Overall SQI', values = cols2) +
-#   scale_y_continuous(expand = c(0, 0)) + 
-#   scale_x_discrete(expand = c(0,0)) +
-#   theme_bw(base_family = 'serif') + 
-#   facet_wrap(~sensed, scales = 'free_x', ncol = 4) +
-#   theme(
-#     panel.background = element_blank(), 
-#     panel.border = element_blank(),
-#     axis.title = element_blank(), 
-#     strip.background = element_blank()
-#   ) 
-# p2 + p3 + plot_layout(ncol = 1)
-
+```{r results = 'hide', eval = T}
 toshw <- c('OverallStressCondition_detail', 'StreamHealthIndex')
 cols1 <- getdsccol(palfac = toshw[1]) %>%
   select(nms, col) %>%
@@ -719,81 +644,147 @@ cols2 <- getdsccol(palfac = toshw[2]) %>%
   select(nms, col) %>%
   deframe
 
-toploalluv <- seq(5, -4) %>% 
+toploct <- seq(5, -4) %>% 
   enframe %>% 
   group_by(value) %>% 
   nest %>% 
   mutate(
-    est = purrr::map(value, function(x) sqibiosens(sqidatinp, x, talvals = F))
+    est = purrr::map(value, function(x) sqibiosens(sqidatinp, x, talvals = T))
   ) %>% 
   select(-data) %>% 
   unnest 
 
-toplo1 <- toploalluv %>% 
+toplo1 <- toploct %>% 
   filter(var %in% 'OverallStressCondition_detail') %>% 
-  # filter(MasterID %in% sample(unique(MasterID), 50)) %>% 
   filter(value %in% c(-4, -3, -2, -1, 0, 1, 2, 5)) %>%
-  dplyr::select(MasterID, value, val) %>% 
-  arrange(MasterID, value) %>% 
   as.data.frame(stingsAsFactors = F) %>% 
   mutate(val = factor(val,
                       levels = c("Low stress", "Stressed by chemistry degradation", "Stressed by habitat degradation", "Stressed by chemistry and habitat degradation", "Stressed by low levels of chemistry or habitat degradation"),
                       labels = c("Low stress", "Stressed by chemistry", "Stressed by habitat", "Stressed by chemistry and habitat", "Stressed by low levels of both")
-                      )
-         )
+  )
+  )
 
 names(cols1) <- c("Low stress", "Stressed by chemistry", "Stressed by habitat", "Stressed by chemistry and habitat", "Stressed by low levels of both")
-toplo2 <- toploalluv %>% 
+toplo2 <- toploct %>% 
   filter(var %in% 'StreamHealthIndex') %>% 
-  # filter(MasterID %in% sample(unique(MasterID), 50)) %>% 
   filter(value %in% c(-4, -3, -2, -1, 0, 1, 2, 5)) %>%
-  dplyr::select(MasterID, value, val) %>% 
-  arrange(MasterID, value) %>% 
   as.data.frame(stingsAsFactors = F) %>% 
   mutate(val = factor(val,
                       levels = c("Healthy and unstressed", "Healthy and resilient", "Impacted by unknown stress", "Impacted and stressed")
-                      )
+  )
   )
 
-p1 <- ggplot(toplo1, aes(x = factor(value),
-                  stratum = val, fill = val, label = val,
-                  alluvium = MasterID))+
-  scale_fill_manual('Stress condition', values = cols1)+
-  geom_flow(stat = "alluvium", 
-            lode.guidance = "rightleft"
-            ) + 
-  geom_stratum() + 
+p1 <- ggplot(toplo1, aes(x = factor(value), y = n, fill = val, label = val))+
+  scale_fill_manual('Stress condition', values = cols1) +
+  # scale_colour_manual('Stress condition', values = cols1) +
+  geom_bar(stat = 'identity', colour = 'black') +
   theme_minimal(base_size = 14) + 
   theme(
-    panel.grid = element_blank(), 
+    panel.grid = element_blank(),
     legend.position = 'top',
     axis.title = element_blank()
   ) + 
-  scale_x_discrete('Cut point for combined biological condition', expand = c(0, 0)) + 
-  scale_y_continuous('Number of sites', expand = c(0, 0)) + 
+  scale_x_discrete('Cut point for combined biological condition') + 
+  scale_y_continuous('Number of sites') + 
   guides(fill = guide_legend(ncol = 2, title.position = 'top', title.hjust = 0.5))
+p1leg <- g_legend(p1)
+p1 <- p1 + theme(legend.position ='none')
 
-p2 <- ggplot(toplo2, aes(x = factor(value),
-                         stratum = val, fill = val, label = val,
-                         alluvium = MasterID))+
-  scale_fill_manual('Overall SQI', values = cols2)+
-  geom_flow(stat = "alluvium", 
-            lode.guidance = "rightleft"
-  ) + 
-  geom_stratum() + 
+p2 <- ggplot(toplo2, aes(x = factor(value), y = n, fill = val, label = val))+
+  scale_fill_manual('Overall SQI', values = cols2) +
+  # scale_colour_manual('Stress condition', values = cols1) +
+  geom_bar(stat = 'identity', colour = 'black') +
   theme_minimal(base_size = 14) + 
   theme(
-    panel.grid = element_blank(), 
+    panel.grid = element_blank(),
     legend.position = 'top',
     axis.title = element_blank()
   ) + 
-  scale_x_discrete('Cut point for combined biological condition', expand = c(0, 0)) + 
-  scale_y_continuous('Number of sites', expand = c(0, 0)) + 
+  scale_x_discrete('Cut point for combined biological condition') + 
+  scale_y_continuous('Number of sites') + 
+  guides(fill = guide_legend(ncol = 2, title.position = 'top', title.hjust = 0.5))
+p2leg <- g_legend(p2)
+p2 <- p2 + theme(legend.position ='none')
+
+toplost <- seq(0.55, 0.95, by = 0.05) %>% 
+  enframe %>% 
+  group_by(value) %>% 
+  nest %>% 
+  mutate(
+    est = purrr::map(value, function(x) sqibiosens(sqidatinp, lothrsh = 1 - x, hithrsh = x, talvals = T))
+  ) %>% 
+  select(-data) %>% 
+  unnest 
+
+
+toplo3 <- toplost %>% 
+  filter(var %in% 'OverallStressCondition_detail') %>% 
+  # filter(value %in% c(-4, -3, -2, -1, 0, 1, 2, 5)) %>%
+  as.data.frame(stingsAsFactors = F) %>% 
+  mutate(val = factor(val,
+                      levels = c("Low stress", "Stressed by chemistry degradation", "Stressed by habitat degradation", "Stressed by chemistry and habitat degradation", "Stressed by low levels of chemistry or habitat degradation"),
+                      labels = c("Low stress", "Stressed by chemistry", "Stressed by habitat", "Stressed by chemistry and habitat", "Stressed by low levels of both")
+  )
+  )
+
+names(cols1) <- c("Low stress", "Stressed by chemistry", "Stressed by habitat", "Stressed by chemistry and habitat", "Stressed by low levels of both")
+toplo4 <- toplost %>% 
+  filter(var %in% 'StreamHealthIndex') %>% 
+  # filter(value %in% c(-4, -3, -2, -1, 0, 1, 2, 5)) %>%
+  as.data.frame(stingsAsFactors = F) %>% 
+  mutate(val = factor(val,
+                      levels = c("Healthy and unstressed", "Healthy and resilient", "Impacted by unknown stress", "Impacted and stressed")
+  )
+  )
+
+p3 <- ggplot(toplo3, aes(x = factor(value), y = n, fill = val, label = val))+
+  scale_fill_manual('Stress condition', values = cols1) +
+  # scale_colour_manual('Stress condition', values = cols1) +
+  geom_bar(stat = 'identity', colour = 'black') +
+  theme_minimal(base_size = 14) + 
+  theme(
+    panel.grid = element_blank(),
+    legend.position = 'none',
+    axis.title = element_blank()
+  ) + 
+  scale_x_discrete('Stress threshold') + 
+  scale_y_continuous('Number of sites') + 
   guides(fill = guide_legend(ncol = 2, title.position = 'top', title.hjust = 0.5))
 
-png('figs/sns_fig.png', height = 6, width = 10, res = 600, units = 'in', family = 'serif')
-wrap_elements(textGrob('Number of sites', rot = 90)) + ((p1 | p2) / wrap_elements(textGrob('Cutpoint for biological conditions')) + plot_layout(ncol = 1, heights = c(1, 0.05))) + plot_layout(ncol = 2, widths = c(0.02, 1))
+p4 <- ggplot(toplo4, aes(x = factor(value), y = n, fill = val, label = val))+
+  scale_fill_manual('Overall SQI', values = cols2) +
+  # scale_colour_manual('Stress condition', values = cols1) +
+  geom_bar(stat = 'identity', colour = 'black') +
+  theme_minimal(base_size = 14) + 
+  theme(
+    panel.grid = element_blank(),
+    legend.position = 'none',
+    axis.title = element_blank()
+  ) + 
+  scale_x_discrete('Stress threshold') + 
+  scale_y_continuous('Number of sites') + 
+  guides(fill = guide_legend(ncol = 2, title.position = 'top', title.hjust = 0.5))
+
+png('figs/sns_fig.png', height = 7, width = 10, res = 400, units = 'in', family = 'serif')
+grid.arrange(
+  
+  arrangeGrob(textGrob(''), p1leg, p2leg, ncol = 3, widths = c(0.25, 1, 1)), 
+  arrangeGrob(
+    textGrob('Number of Sites', rot = 90),
+    arrangeGrob(
+      arrangeGrob(p1, p2, ncol = 2),
+      textGrob('Cutpoint for biological conditions'), 
+      arrangeGrob(p3, p4, ncol = 2),
+      textGrob('Stress threshold (symmetric about 0.5)'), 
+      ncol = 1, heights = c(1, 0.05, 1, 0.05)
+    ), 
+    ncol = 2, widths = c(0.05, 1)
+  ), 
+  ncol = 1, heights = c(0.2, 1)
+  
+)
 dev.off()
+
 ```
 ```{r snsfig, fig.cap = "Changes in stress condition (left) and overall SQI categories (right) for different cut points that define healthy or impacted biology.  The columns in each plot show site counts in each category based on results from models in equations \\@ref(eq:pchem), \\@ref(eq:phab), and \\@ref(eq:poverall) that relate stress measures to healthy/impacted biology.  Sites below the cut point for each column have impacted biology and sites including/above the cut point have healthy biology.  The cut point definitions are shown in Table \\@ref(tab:biocmb).  Flow lines connecting columns are individual sites. Results for cut points 3 and 4 were identical to cut point 2 and are not shown."}
 knitr::include_graphics('figs/sns_fig.png')

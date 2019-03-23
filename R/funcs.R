@@ -208,7 +208,7 @@ strs_surf <- function(xvar, mod = c('hab_mod', 'wq_mod'), mod_in = NULL, title =
 #' @param lothrsh numeric indicating lower threshold for low stress
 #' @param talvals logical if tallys as counts for each category or the raw data are returned
 #' 
-sqibiosens <- function(sqidat, biocut, lothrsh = 0.1, hithrsh = 0.9, talvals = TRUE){
+sqibiosens <- function(sqidat, biocut = 0, lothrsh = 0.1, hithrsh = 0.9, talvals = TRUE){
   # lookup table of bio BCG class, corresponding score, and combined categorical score
   xwalk <- read.csv('raw/scoring_xwalkrc.csv', stringsAsFactors = F)
   
