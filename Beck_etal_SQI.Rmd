@@ -239,6 +239,10 @@ An integrated stream health index that synthesizes physical, chemical and biolog
 
 The SQI is a viable approach for managers that need to synthesize large amounts of data, assign priorities based on this synthesis, and communicate these decisions to a broad range of high-level managers and other stakeholders who may lack familiarity with bioassessment and/or watershed science. In particular, the SQI could be used to convey critical insights for routine watershed assessments, permit reporting, and environmental report cards. Although the SQI is calibrated and validated specifically for southern California, USA, the approach could be applied anywhere with sufficient data.  Many national and international monitoring programs that have collected data for several years could easily apply the SQI framework with alternative biological endpoints or stressor data.
 
+# Supplement 
+
+An interactive website is available for viewing results of the SQI:  <https://sccwrp.shinyapps.io/SQI_Shiny> [@Beck19]. An R package is also available for calculating SQI scores: <https://github.com/SCCWRP/SQI> [@Beck18f].
+
 # Acknowledgments
 
 We thank the Stormwater Monitoring Coalition and Surface Water Ambient Monitoring Program of the California State Water Board for data collection.  We thank Scott Martindale for providing editorial comments on an earlier draft.  We thank the Stormwater Monitoring Coalition executive committee and science advisory group for feedback during the development of the Stream Quality Index.  
@@ -803,7 +807,7 @@ biocmb <- read.csv('raw/scoring_xwalkrc.csv', stringsAsFactors = F) %>%
                      labels = c('BMI likely intact: (CSCI > 0.92)', 'BMI possibly altered: (CSCI 0.79 - 0.92)', 'BMI likely altered: (CSCI 0.63 - 0.79)', 'BMI very likely altered: (CSCI < 0.63)')),
     ASCI_rc = factor(ASCI_rc, 
                      levels = c('li', 'pa', 'la', 'vla'),
-                     labels = c('Algae likely intact: (ASCI > 0.93)', 'Algae possibly altered: (ASCI 0.83 - 0.93)', 'Algae likely altered: (ASCI 0.70 - 0.83)', 'Algae very likely altered: (ASCI < 0.70'))
+                     labels = c('Algae likely intact: (ASCI > 0.93)', 'Algae possibly altered: (ASCI 0.83 - 0.93)', 'Algae likely altered: (ASCI 0.70 - 0.83)', 'Algae very likely altered: (ASCI < 0.70)'))
   ) %>% 
   dplyr::select(-ASCI_score, -CSCI_score) %>% 
   spread(ASCI_rc, Bio_BPJ) %>% 
