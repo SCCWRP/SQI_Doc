@@ -70,6 +70,19 @@ g_legend <- function(a.gplot){
   legend <- tmp$grobs[[leg]]
   return(legend)}
 
+# function for formatting p-values in tables
+p_ast <- function(x){
+  
+  sig_cats <- c('*p* < 0.001', '*p* < 0.01', '*p* < 0.05', 'ns')
+  sig_vals <- c(-Inf, 0.001, 0.01, 0.05, Inf)
+  
+  out <- cut(x, breaks = sig_vals, labels = sig_cats, right = FALSE)
+  out <- as.character(out)
+  
+  return(out)
+  
+}
+
 strs_surf <- function(xvar, mod = c('hab_mod', 'wq_mod'), mod_in = NULL, title = TRUE, lenv = 200, opt_vrs = NULL, low = "#2c7bb6", mid = "#ffffbf", high = "#d7191c"){
   
   # get mod arg
