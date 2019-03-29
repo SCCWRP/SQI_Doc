@@ -312,6 +312,7 @@ nutdat <- rbind(cond, tntpsmc, tntpabc) %>%
   summarise(val = mean(val, na.rm = T))
 
 # combine all -------------------------------------------------------------
+
 sqidat <- bind_rows(cscidat, ascidat, ipidat, nutdat, cramdat) %>%
   ungroup %>%
   left_join(mastid, by  = 'StationCode') %>%
@@ -332,8 +333,13 @@ latlon <- mastid %>%
     Longitude = mean(Longitude, na.rm = T)
   )
 
+comid <- read.csv('raw/All_SMC_COMIDs.csv', stringsAsFactors = F) %>% 
+  select(MasterID, COMID) %>% 
+  unique
+
 sqidat <- sqidat %>% 
-  left_join(latlon, by = 'MasterID')
+  left_join(latlon, by = 'MasterID') %>% 
+  left_join(comid, by = 'MasterID')
 
 # dim(sqidat)
 sqidatinp <- sqidat
@@ -402,7 +408,7 @@ sampdat <- sqidat %>%
     ASCI = asci_mean
   )
 
-save(sampdat, file = '../SQI/data/sampdat.RData', compress = 'xz')
+# save(sampdat, file = '../SQI/data/sampdat.RData', compress = 'xz')
 
 # get SQI model results from combined data ----------------------------------
 
