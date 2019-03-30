@@ -274,7 +274,7 @@ We thank the Stormwater Monitoring Coalition and Surface Water Ambient Monitorin
 
 # Figures
 
-```{r sqiflo, fig.cap = "Flowchart representation of the Stream Quality Index (SQI).  The overall SQI is a function of the likelihood of observing degraded biological condition given the stressors at a site.  Biological condition is assessed using macroinvertebrate (California Stream Condition Index, CSCI) and algal (Algal Stream Condition Index, ASCI) indices and stressors are evaluated based on water quality measures (total nitrogen, total phosphorus, conductivity) and physical habitat (California Rapid Assessment Method or CRAM, physical habitat metrics or PHAB). Stress condition is empirically linked to biological condition by separate probability functions for chemistry (pCHem) and physical habitat (pHab)."}
+```{r sqiflo, fig.cap = "Flowchart representation of the Stream Quality Index (SQI).  The overall SQI is a function of the likelihood of observing degraded biological condition given the stressors at a site.  Biological condition is assessed using macroinvertebrate (California Stream Condition Index, CSCI) and algal (Algal Stream Condition Index, ASCI) indices and stressors are evaluated based on water quality measures (total nitrogen, total phosphorus, conductivity) and physical habitat (California Rapid Assessment Method, CRAM; Index of Physical Integrity, IPI). Stress condition is empirically linked to biological condition by separate probability functions for chemistry (pCHem) and physical habitat (pHab)."}
 knitr::include_graphics('figs/sqi_flo.png')
 ```
 
