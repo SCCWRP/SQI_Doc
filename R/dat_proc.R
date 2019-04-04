@@ -363,7 +363,7 @@ sqidat <- sqidatinp %>%
     ASCI_rc = as.character(ASCI_rc)
   ) %>% 
   left_join(xwalk, by = c('CSCI_rc', 'ASCI_rc')) %>% 
-  select(-CSCI_score, -ASCI_score) %>% 
+  select(-CSCI_score, -ASCI_score) %>%
   mutate(
     bio_fp = ifelse(Bio_BPJ < 0, 1, 0)
   ) %>% 
@@ -390,11 +390,14 @@ valdat <- sqidat %>%
   filter(SiteSet %in% 'Val')
 
 # models, glm
-wqglm <- glm(bio_fp ~ log10(1 + TN) + log10(1 + TP) + Cond,
+wqglm <- glm(bio_fp ~ log10(0.1 + TN) + log10(0.01 + TP) + Cond,
              family = binomial('logit'), data = caldat)
 
 habglm <- glm(bio_fp ~ indexscore_cram + IPI,
               family = binomial('logit'), data = caldat)
+# habglm <- glm(bio_fp ~ blc + bs + hy + ps + Ev_FlowHab + H_AqHab + H_SubNat + PCT_SAFN + XCMG,
+              # family = binomial('logit'), data = caldat)
+# habglm <- step(habglm)
 
 # save to package 
 save(wqglm, file = '../SQI/data/wqglm.RData', compress = 'xz')

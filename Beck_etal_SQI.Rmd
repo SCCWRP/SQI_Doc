@@ -889,7 +889,7 @@ knitr::kable(totab, booktabs = T, caption = cap.val)
 *Table \@ref(tab:strmod): \(\#tab:strmod) Summary of empirical stress models to quantify associations of water chemistry (pChem) and physical habitat (pHab) predictors with biological alteration.  Generalized linear models were fit to predict the likelihood of both healthy benthic macroinvertebrate and algal communities at calibration sites (75\% of n = `r nrow(sqidat)` sites).*
 ```{r, results = 'asis'}
 # use jtools
-coef_names <- c("Constant" = "(Intercept)", "log(TN)" = "log10(1 + TN)", "log(TP)" = "log10(1 + TP)", "Conductivity" = "Cond", "CRAM" = "indexscore_cram", "IPI" = "IPI")
+coef_names <- c("Constant" = "(Intercept)", "log(TN)" = "log10(0.1 + TN)", "log(TP)" = "log10(0.01 + TP)", "Conductivity" = "Cond", "CRAM" = "indexscore_cram", "IPI" = "IPI")
 huxres <- export_summs(wqglm, habglm, coefs = coef_names, model.names = c('pChem', 'pHab'))
 
 brd <- fp_border(color="black")
