@@ -604,16 +604,20 @@ p3 <- ggplot(toplocn, aes(x = Cond)) +
     )
   
 opt_vrs <- list(
-    indexscore_cram = 100,
-    IPI = 1
+    blc = 100,
+    bs = 100, 
+    hy = 100, 
+    H_SubNat = 1
   )
 
 # hab
-toplocrm <- strs_surf('indexscore_cram', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
-toploipi <- strs_surf('IPI', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
+toploblc <- strs_surf('blc', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
+toplobs <- strs_surf('bs', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
+toplohy <- strs_surf('hy', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
+toploH_SubNat <- strs_surf('H_SubNat', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
 
 # plots
-p4 <- ggplot(toplocrm, aes(x = indexscore_cram)) +
+p4 <- ggplot(toploblc, aes(x = blc)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
   geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = indexscore_cram, colour = BiologicalCondition), sides = 'b') +
   geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = indexscore_cram, colour = BiologicalCondition), sides = 't') +
@@ -622,14 +626,46 @@ p4 <- ggplot(toplocrm, aes(x = indexscore_cram)) +
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
   theme_bw(base_size = 12,base_family = 'serif') +
   scale_colour_manual(values = biocol$col) +
-  xlab('CRAM') + 
-  xlim(range(toplocrm$indexscore_cram)) +
+  xlab('CRAM buffer\nlandscape condition') + 
+  xlim(range(toploblc$blc)) +
+  theme(
+    axis.title.y = element_blank(),
+    legend.position = 'none'
+    )
+
+p5 <- ggplot(toplobs, aes(x = bs)) +
+  geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
+  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = indexscore_cram, colour = BiologicalCondition), sides = 'b') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = indexscore_cram, colour = BiologicalCondition), sides = 't') +
+  geom_line(aes(y = fit)) +
+  geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
+  geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
+  theme_bw(base_size = 12,base_family = 'serif') +
+  scale_colour_manual(values = biocol$col) +
+  xlab('CRAM biotic structure\n') + 
+  xlim(range(toplobs$bs)) +
+  theme(
+    axis.title.y = element_blank(),
+    legend.position = 'none'
+    )
+
+p6 <- ggplot(toplohy, aes(x = hy)) +
+  geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
+  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = indexscore_cram, colour = BiologicalCondition), sides = 'b') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = indexscore_cram, colour = BiologicalCondition), sides = 't') +
+  geom_line(aes(y = fit)) +
+  geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
+  geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
+  theme_bw(base_size = 12,base_family = 'serif') +
+  scale_colour_manual(values = biocol$col) +
+  xlab('CRAM hydrology\n') + 
+  xlim(range(toplohy$hy)) +
   theme(
     axis.title.y = element_blank(),
     legend.position = 'none'
     )
     
-p5 <- ggplot(toploipi, aes(x = IPI)) +
+p7 <- ggplot(toploH_SubNat, aes(x = H_SubNat)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
   geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = IPI, colour = BiologicalCondition), sides = 'b') +
   geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = IPI, colour = BiologicalCondition), sides = 't') +
@@ -638,16 +674,16 @@ p5 <- ggplot(toploipi, aes(x = IPI)) +
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
   theme_bw(base_size = 12,base_family = 'serif') +
   scale_colour_manual('Biological condition', values = biocol$col) +
-  xlab('IPI') + 
-  xlim(range(toploipi$IPI)) +
+  xlab('IPI evenness of\nnatural substrate') + 
+  xlim(range(toploH_SubNat$H_SubNat)) +
   theme(
     axis.title.y = element_blank(),
     legend.position = 'top'
     ) + 
   guides(colour = guide_legend(title.position = 'top', title.hjust = 0.5))
 
-pleg <- g_legend(p5)
-p5 <- p5 + theme(legend.position = 'none')
+pleg <- g_legend(p7)
+p7 <- p7 + theme(legend.position = 'none')
 
 png('figs/rsp_crv.png', height = 6.5, width = 8, res = 500, units = 'in', family = 'serif')
 grid.arrange(
@@ -657,7 +693,7 @@ grid.arrange(
     textGrob('Water chemistry'), 
     arrangeGrob(p1, p2, p3, ncol = 3),
     textGrob('Physical habitat'), 
-    arrangeGrob(p4, p5, ncol = 2), 
+    arrangeGrob(p4, p5, p6, p7, ncol = 4), 
     ncol = 1, heights = c(0.2, 0.1, 1, 0.1, 1)
   )
 )
@@ -889,7 +925,7 @@ knitr::kable(totab, booktabs = T, caption = cap.val)
 *Table \@ref(tab:strmod): \(\#tab:strmod) Summary of empirical stress models to quantify associations of water chemistry (pChem) and physical habitat (pHab) predictors with biological alteration.  Generalized linear models were fit to predict the likelihood of both healthy benthic macroinvertebrate and algal communities at calibration sites (75\% of n = `r nrow(sqidat)` sites).*
 ```{r, results = 'asis'}
 # use jtools
-coef_names <- c("Constant" = "(Intercept)", "log(TN)" = "log10(0.1 + TN)", "log(TP)" = "log10(0.01 + TP)", "Conductivity" = "Cond", "CRAM" = "indexscore_cram", "IPI" = "IPI")
+coef_names <- c("Constant" = "(Intercept)", "log(TN)" = "log10(0.1 + TN)", "log(TP)" = "log10(0.01 + TP)", "Conductivity" = "Cond", "CRAM buffer landscape condition" = "blc", "CRAM biotic structure" = "bs", "CRAM hydrology" = "hy", "IPI evenness of natural substrate" = "H_SubNat")
 huxres <- export_summs(wqglm, habglm, coefs = coef_names, model.names = c('pChem', 'pHab'))
 
 brd <- fp_border(color="black")
@@ -903,8 +939,8 @@ tab <- huxres %>%
   autofit(add_h = 0) %>% 
   hline_top(part = 'all', border = brd) %>% 
   hline(i = 1, part = 'body', border = brd) %>% 
-  hline(i= 13, part = 'body', border = brd) %>% 
-  hline(i= 17, part = 'body', border = brd) 
+  hline(i= 17, part = 'body', border = brd) %>% 
+  hline(i= 21, part = 'body', border = brd) 
 tab
 
 ```

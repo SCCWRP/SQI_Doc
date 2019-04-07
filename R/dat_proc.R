@@ -392,22 +392,19 @@ valdat <- sqidat %>%
 # models, glm
 wqglm <- glm(bio_fp ~ log10(0.1 + TN) + log10(0.01 + TP) + Cond,
              family = binomial('logit'), data = caldat)
-
-habglm <- glm(bio_fp ~ indexscore_cram + IPI,
-              family = binomial('logit'), data = caldat)
-# habglm <- glm(bio_fp ~ blc + bs + hy + ps + Ev_FlowHab + H_AqHab + H_SubNat + PCT_SAFN + XCMG,
-              # family = binomial('logit'), data = caldat)
-# habglm <- step(habglm)
+wqglm <- step(wqglm)
+habglm <- glm(bio_fp ~ blc + hy + ps + Ev_FlowHab + H_AqHab + H_SubNat + PCT_SAFN + XCMG, family = binomial('logit'), data = caldat)
+habglm <- step(habglm)
 
 # save to package 
 save(wqglm, file = '../SQI/data/wqglm.RData', compress = 'xz')
 save(habglm, file = '../SQI/data/habglm.RData', compress = 'xz')
 
 # sample data for package
-sampdat <- sqidat %>% 
-  select(MasterID, yr, csci_mean, asci_mean,IPI, PCT_SAFN, H_AqHab, H_SubNat, Ev_FlowHab, XCMG, IPI, indexscore_cram, Cond, TN, TP, SiteSet) %>% 
+sampdat <- sqidat %>%
+  select(MasterID, yr, csci_mean, asci_mean, IPI, PCT_SAFN, H_AqHab, H_SubNat, Ev_FlowHab, XCMG, IPI, blc, bs, hy, ps, indexscore_cram, Cond, TN, TP, SiteSet) %>%
   rename(
-    CSCI = csci_mean, 
+    CSCI = csci_mean,
     ASCI = asci_mean
   )
 
