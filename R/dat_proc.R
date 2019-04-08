@@ -2,8 +2,8 @@ library(tidyverse)
 library(readxl)
 library(lubridate)
 library(randomForest)
-library(SQI)
-# devtools::load_all('../SQI/.')
+# library(SQI)
+devtools::load_all('../SQI/.')
 library(sf)
 
 prj <- 4326 # geographic wgs84
@@ -390,10 +390,17 @@ valdat <- sqidat %>%
   filter(SiteSet %in% 'Val')
 
 # models, glm
+# tmp <- caldat %>% 
+#   mutate(
+#     TN = log10(0.1 + TN), 
+#     TP = log10(0.01 + TP)
+#     )
+# vif_func(tmp[, c('TN', 'TP', 'Cond')], thresh = 3)
 wqglm <- glm(bio_fp ~ log10(0.1 + TN) + log10(0.01 + TP) + Cond,
              family = binomial('logit'), data = caldat)
 wqglm <- step(wqglm)
-habglm <- glm(bio_fp ~ blc + hy + ps + Ev_FlowHab + H_AqHab + H_SubNat + PCT_SAFN + XCMG, family = binomial('logit'), data = caldat)
+# vif_func(caldat[, c('blc', 'bs', 'hy', 'ps', 'Ev_FlowHab', 'H_AqHab', 'H_SubNat', 'PCT_SAFN', 'XCMG')], thresh = 3)
+habglm <- glm(bio_fp ~ blc + ps + Ev_FlowHab + H_AqHab + PCT_SAFN + XCMG, family = binomial('logit'), data = caldat)
 habglm <- step(habglm)
 
 # save to package 
@@ -408,7 +415,7 @@ sampdat <- sqidat %>%
     ASCI = asci_mean
   )
 
-# save(sampdat, file = '../SQI/data/sampdat.RData', compress = 'xz')
+save(sampdat, file = '../SQI/data/sampdat.RData', compress = 'xz')
 
 # get SQI model results from combined data ----------------------------------
 

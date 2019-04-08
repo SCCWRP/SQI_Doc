@@ -98,7 +98,7 @@ Index scores were compared to the distribution of scores at reference sites to i
 
 ### Integrating multiple measures of biological condition 
 
-The assigned biological condition categories for each index were combined using a ranking system to create a single numeric value that represents an overall condition reflected by both biological indices. These values were assigned based on the judgment of stakeholders, in accordance with two principles. First, the two indices should be independently applicable, so that an indication of good health in one index cannot negate indications of poor health in the other. Second, the numeric values should be sensitive to differences between sites in marginal or extreme conditions. For example, the numeric value for a sample where both indices indicate likely intact biological communities will be higher than for a sample where one index indicates likely intact and the other indicates possibly altered. This sensitivity improves detection of small changes in condition. The final numeric values ranged from -4 to +4 (Table \@ref(tab:biocmb)). All negative values indicate impacted conditions.
+The assigned biological condition categories for each index were combined using a ranking system to create a single numeric value that represented an overall condition reflected by both biological indices. These values were assigned based on the judgment of stakeholders, in accordance with two principles. First, the two indices should be independently applicable, so that an indication of good health in one index cannot negate indications of poor health in the other. Second, the numeric values should be sensitive to differences between sites in marginal or extreme conditions. For example, the numeric value for a sample where both indices indicate likely intact biological communities will be higher than for a sample where one index indicates likely intact and the other indicates possibly altered. This sensitivity improves detection of small changes in condition. The final numeric values ranged from -6 to +5 (Table \@ref(tab:biocmb)). All negative values indicate impacted conditions.
 
 ## Stressor components
 
@@ -126,11 +126,11 @@ pChem: p\left(bio\right) \sim \beta_{0} + \beta_{1}TN + \beta_{2}TP + \beta_{3}c
 \end{equation}
 
 \begin{equation}
-pHab: p\left(bio\right) \sim \beta_{0} + \beta_{1}IPI + \beta_{2}CRAM
+pHab: p\left(bio\right) \sim \beta_{0} + \beta_{1}CRAM_{blc} + \beta_{2}CRAM_{ps} + \beta_{3}IPI_{PCT\_SAFN}
 (\#eq:phab)
 \end{equation}
 
-where $p\left(bio\right)$ is the probability of biological alteration in equations \@ref(eq:pchem) and \@ref(eq:phab) given the indicators for each chemistry or physical habitat variable.  The probability of alteration is modelled using a logit link function for binomial variables, as $log\left(p / \left(1 - p\right)\right)$, where $p$ defines the presence or absence of altered biology described above.
+where $p\left(bio\right)$ is the probability of biological alteration in equations \@ref(eq:pchem) and \@ref(eq:phab) given the indicators for each chemistry or physical habitat variable.  The probability of alteration is modelled using a logit link function for binomial variables, as $log\left(p / \left(1 - p\right)\right)$, where $p$ defines the presence or absence of altered biology described above.  Both models were created by screening collinear predictors by removing those with variance inflation factors (VIF) greater than three [@Zuur07].  The most parsimonious model was then identified using backward and forward selection to minimize Akaike Information Criterion [@Akaike73;@Venables02]. The selected variables for each model are shown above (equation \@ref(eq:pchem), TN: total nitrogen, TP: total phosphorus, cond: specific conductivity; equation \@ref(eq:phab), CRAM$_{blc}$: CRAM buffer landscape condition, CRAM$_{ps}$: CRAM physical structure, IPI$_{PCT\_SAFN}$: IPI \% sands and fines).
 
 An overall likelihood of biological alteration from both chemistry and physical habitat stressors was also estimated as a multiplicative function for $pChem$ and $pHab$:
 
@@ -153,17 +153,17 @@ Separate categorical outputs were also created for the biological condition and 
 
 All data used to calibrate and validate the SQI were from the Southern California Stormwater Monitoring Coalition (SMC) regional watershed monitoring program in coastal southern California [@Mazor15]. The SMC dataset represents the most comprehensive source of wadeable stream data in southern California. Because the SQI requires synoptic biological, chemistry, and physical habitat data, the final dataset used for model calibration represents only the subset of the SMC dataset where all three components were simultaneously collected. Made up of 266 sites – 75\% of which were used for model calibration – this subset includes sampling dates ranging from 2009 to 2016, with relatively even distribution of samples between years. Most sample events occurred between May and June following standard protocols for perennial stream surveys [@Ode07]. Only one sample event for each site was considered. 
 
-The SQI was evaluated for precision (i.e., how well the underlying empirical model described the likelihood of biological alteration) and sensitivity (i.e., how sensitive the model output is to changing thresholds that define the categorical conditions). The first analysis evaluated precision in the validation dataset to determine agreement between the model and actual stress and biological conditions. For the second analysis, two critical decisions points that affected the model output and categorical results of the SQI were varied to evaluate changes on overall site counts in each final SQI category.  In Table \@ref(tab:biocmb), all sites with combined values greater than or equal to zero were considered healthy and those less than zero were considered impacted.  The effect of varying the cutoff point for healthy and impacted biology was analyzed by comparing changes in the SQI assessment categories at different levels from -5 (all healthy) to 4 (all unhealthy).  Changes in the threshold for the likelihood of observing altered biology that defined the categorical results were also evaluated.
+The SQI was evaluated for precision (i.e., how well the underlying empirical model described the likelihood of biological alteration) and sensitivity (i.e., how sensitive the model output is to changing thresholds that define the categorical conditions). The first analysis evaluated precision in the validation dataset to determine agreement between the model and actual stress and biological conditions. For the second analysis, two critical decisions points that affected the model output and categorical results of the SQI were varied to evaluate changes on overall site counts in each final SQI category.  In Table \@ref(tab:biocmb), all sites with combined values greater than or equal to zero were considered healthy and those less than zero were considered impacted.  The effect of varying the cutoff point for healthy and impacted biology was analyzed by comparing changes in the SQI assessment categories at different levels from -6 (all healthy) to 6 (all unhealthy).  Changes in the threshold for the likelihood of observing altered biology that defined the categorical results were also evaluated.
 
 # Results
 
 ## SQI patterns
 
-Among all sites, the overall SQI categorized a majority of sites as having altered biology under high stress conditions (impacted and stressed, 61\% of sites, Table \@ref(tab:sqicnt)).  Just over 20\% of sites were in the opposite category of unaltered biology in low stress conditions (healthy and unstressed).  For the remaining two categories of the overall SQI, only 2\% had unaltered biology but were under high stress conditions (healthy and resilient), whereas 16\% sites had altered biology not related to physical or chemical stressors (impacted by unknown stress).  
+Among all sites, the overall SQI categorized a majority of sites as having altered biology under high stress conditions (impacted and stressed, 71\% of sites, Table \@ref(tab:sqicnt)).  Almost 20\% of sites were in the opposite category of unaltered biology in low stress conditions (healthy and unstressed).  For the remaining two categories of the overall SQI, only 3\% had unaltered biology but were under high stress conditions (healthy and resilient), whereas 6\% sites had altered biology not related to physical or chemical stressors (impacted by unknown stress).  
 
 For the biological condition category, sites with altered conditions were more often altered for both CSCI and ASCI scores (50\%).  For sites with one low-scoring index, more sites were altered for the ASCI (16\%) than the CSCI (11\%).  Less than a quarter of all sites had unaltered biology (23\%).  
 
-For stress conditions, 21\% of sites were stressed by both chemistry and physical habitat stressors.  More sites were stressed by water chemistry (26\%) than physical habitat degradation (10\%) if only one stressor was present.  Over 37\% of sites had low stress, and 6\% of sites were stressed by the additive effect of both low chemistry and physical habitat stressors.    
+For stress conditions, 40\% of sites were stressed by both chemistry and physical habitat stressors.  More sites were stressed by water chemistry (22\%) than physical habitat degradation (5\%) if only one stressor was present.  Over 25\% of sites had low stress, and 8\% of sites were stressed by the additive effect of both low chemistry and physical habitat stressors.    
 
 Spatial patterns among SQI categories in southern California generally followed elevation and land use gradients (Figure \@ref(fig:sqimap)).  More altered biological communities and high stress conditions were observed toward coastal areas in the lower watersheds where urbanization is highest (e.g., Los Angeles, Orange County, Ventura, San Diego).  Sites with altered biological condition showed similar spatial patterns as the overall SQI, although sites altered only for the ASCI were more often observed at mid-elevation across the study region, whereas sites altered only for the CSCI were more common at higher elevation areas in central and northern areas of the study region. Stress condition patterns were similar to biology, although low stress conditions also occurred at higher elevation areas in each watershed.  This produced a handful of sites that had altered biology under low stress conditions at mid-elevation ranges (i.e., impacted by unknown stress, Table \@ref(tab:sqicnt)).    
 
@@ -228,13 +228,13 @@ habglmsub2 <- glm(bio_fp ~ IPI,
               family = binomial('logit'), data = calset)
 ```
 
-Water chemistry and physical habitat predictors included in the empirical response models for *pChem* and *pHab* (equations \@ref(eq:pchem), \@ref(eq:phab)) explained a substantial portion of variability among sites related to the occurrence of biological alteration (Table \@ref(tab:strmod)). The *pChem* model explained 64\% of the variation among sites, whereas the *pHab* model explained 42\%.  All predictors in the *pChem* were significantly and positively associated ($p < 0.05$) with the occurrence of biological alteration.  Only the CRAM predictor in the *pHab* model was significantly associated with occurrence of biological alteration.  Both CRAM and IPI are significantly correlated in the calibration dataset ($r =$ `r crhab`), which masked the effect of IPI on biological alteration in the *pHab* model. However, exclusion of CRAM from the *pHab* model reduced the explanatory power by approximately 14\%, and both were retained for the SQI.
+Water chemistry and physical habitat predictors included in the empirical response models for *pChem* and *pHab* (equations \@ref(eq:pchem), \@ref(eq:phab)) explained a substantial portion of variability among sites related to the occurrence of biological alteration (Table \@ref(tab:strmod)). The *pChem* model explained 64\% of the variation among sites, whereas the *pHab* model explained 42\%.  All variables in the *pChem* model had VIF values less than 3 and were also included in the final set of predictors after model selection.  All predictors in the *pChem* model were significantly and positively associated ($p < 0.05$) with the occurrence of biological alteration.  For the *pHab* model, three predictors were removed that had VIF values greater than three (diversity of natural substrate, biological structure, and hydrology).  Predictors included in the final *pHab* model after variable selection were buffer and landscape condition, physical structure, and percent sands and fines.  All predictors were negatively associated with the likelihood of biological alteration, whereas buffer landscape condition had the only significant association.   
 
-Figure \@ref(fig:rspcrv) demonstrates how the individual components for each stressor model were related to likelihood of alteration.  These partial dependency plots were created by estimating the likelihood of alteration across a range of values for each predictor, while holding other predictors constant.  For each plot, the variables in each model (equations \@ref(eq:pchem), \@ref(eq:phab)) not on the x-axis were held at approximate values that were associated with low stress to better understand how biological alteration may be related to each predictor.  For water chemistry stressors, all were positively associated with likelihood of alteration, particularly conductivity which had the steepest per-unit increase in likelihood.  Associations of biological alteration with physical habitat predictors were as expected, except that decreases in likelihood of biological alteration were observed with increases in IPI and CRAM (both are indicators of habitat integrity).  The strongest relationship was observed with increases in CRAM scores, where likelihood of alteration decreased sharply with CRAM scores greater than 50.  Increases in IPI scores were also associated with decreases in likelihood of alteration, except the relationship had more uncertainty than for CRAM scores. Increased uncertainty for the IPI is linked to correlation with CRAM scores and limitations of the linear model.
+Figure \@ref(fig:rspcrv) demonstrates how the individual components for each stressor model were related to likelihood of alteration.  These partial dependency plots were created by estimating the likelihood of alteration across a range of values for each predictor, while holding other predictors constant.  For each plot, the variables in each model (equations \@ref(eq:pchem), \@ref(eq:phab)) not on the x-axis were held at approximate values that were associated with low stress to better understand how biological alteration may be related to each predictor.  For water chemistry stressors, all were positively associated with likelihood of alteration, particularly conductivity which had the steepest per-unit increase in likelihood.  Associations of biological alteration with physical habitat predictors were also as expected, except that decreases in likelihood of biological alteration were observed with increases in the three predictors (all are associated with habitat integrity).  The strongest relationship was observed with increases in CRAM buffer landscape condition, where likelihood of alteration decreased sharply with scores greater than 60. 
 
 ## Model sensitivity to biological decision points
 
-Results in Figure \@ref(fig:snsfig) show changes in the the categorical results based on different decision points that defined biological condition and stress thresholds.  As a general trend, lowering the cutpoint for healthy/impacted to designate more sites as healthy (-4) caused in increase in the amount of sites as "low stress" for the stress condition and sites as "healthy and unstressed" or "impacted by unknown stress" for the overall SQI.  Conversely, increasing the cutpoint for healthy/impacted to designate more sites as impacted (-4) caused in increase in the amount of sites as "stressed by chemistry and habitat" for the stress condition and sites as "impacted and stressed" or "health and resilient" for the overall SQI.  
+Results in Figure \@ref(fig:snsfig) show changes in the the categorical results based on different decision points that defined biological condition and stress thresholds.  As a general trend, lowering the cutpoint for healthy/impacted to designate more sites as healthy (-6) caused in increase in the amount of sites as "low stress" for the stress condition and sites as "healthy and unstressed" or "impacted by unknown stress" for the overall SQI.  Conversely, increasing the cutpoint for healthy/impacted to designate more sites as impacted (-6) caused in increase in the amount of sites as "stressed by chemistry and habitat" for the stress condition and sites as "impacted and stressed" or "health and resilient" for the overall SQI.  
 
 Changing the threshold for the likelihood values that defined stressed biology also affected the categorical results (Figure \@ref(fig:snsfig), bottom row). Higher thresholds shifted the number of sites to low stress conditions, whereas lower thresholds had the opposite effect of assigning more sites to high stress conditions.  The number of sites that were stressed by low levels of both water chemistry and habitat conditions were relatively unchanged with different thresholds. The overall SQI categories were less affected by changing thresholds for the stress condition than for changing the cutpoint that defined healthy/impacted biology.  However, higher thresholds shifted some sites from the impacted and stressed category to the impacted by unknown stress category and from the healthy and resilient category to the healthy and unstressed category.
 
@@ -434,11 +434,12 @@ toplo <- sqidat %>%
   gather('var', 'val', -bio_fp, -SiteSet, -StreamHealthIndex) %>% 
   mutate(
     bio_fp = factor(bio_fp, levels = c(0, 1), labels = c('healthy', 'impacted')), 
-    var = factor(var, levels = c('pChem', 'pHab', 'pChemHab'), labels = c('pChem', 'pHab', 'pOverall'))
+    var = factor(var, levels = c('pChem', 'pHab', 'pChemHab'), labels = c('pChem', 'pHab', 'pOverall')), 
+    StreamHealthIndex = factor(StreamHealthIndex, levels = c('Healthy and unstressed', 'Healthy and resilient', 'Impacted by unknown stress', 'Impacted and stressed'))
   )
 
 p <- ggplot(toplo, aes(x = bio_fp, y = val, fill = SiteSet)) + 
-  geom_point(aes(group = SiteSet, colour = StreamHealthIndex), position = position_jitterdodge(jitter.width = 0.25)) + 
+  geom_point(aes(group = SiteSet, colour = StreamHealthIndex), position = position_jitterdodge(jitter.width = 0.35)) + 
   geom_boxplot(alpha = 0.5, outlier.alpha = 0) + 
   facet_wrap(~var, ncol = 3) + 
   theme_bw(base_family = 'serif', base_size = 12) + 
@@ -469,11 +470,15 @@ strcol <- getdsccol(palfac = 'OverallStressCondition_detail')
 
 toplo <- sqidat %>% 
   st_set_geometry(NULL) %>% 
-  select(pChem, pHab, pChemHab, OverallStressCondition_detail) %>% 
+  select(pChem, pHab, pChemHab, BiologicalCondition, OverallStressCondition_detail) %>% 
   mutate(OverallStressCondition_detail = factor(OverallStressCondition_detail,
                                                 levels = c("Low stress", "Stressed by chemistry degradation", "Stressed by habitat degradation", "Stressed by chemistry and habitat degradation", "Stressed by low levels of chemistry or habitat degradation"),
                                                 labels = c("Low stress", "Stressed by chemistry", "Stressed by habitat", "Stressed by chemistry and habitat", "Stressed by low levels of both"
-                                                )))
+                                                )),
+         BiologicalCondition = factor(BiologicalCondition, 
+                                      levels = c("Healthy", "Impacted for ASCI", "Impacted for CSCI", "Impacted for CSCI and ASCI"), 
+                                      labels = c("Healthy", "Impacted for ASCI", "Impacted for CSCI", "Impacted for both"))
+         )
 
 xgrid <- seq(min(toplo$pHab, na.rm = T), max(toplo$pHab, na.rm = T), length = 100)
 ygrid <- seq(min(toplo$pChem, na.rm = T), max(toplo$pChem, na.rm = T), length = 100)
@@ -496,23 +501,36 @@ cols <- getdsccol(palfac = 'OverallStressCondition')$col
 
 p1 <- ggplot(mtrxd) + 
   stat_contour(aes(x = pChem, y = pHab, z = pChemHab, colour = ..level..), breaks = c(seq(0.2, 0.9, by = 0.1))) + 
-  geom_point(data = toplo, aes(x = pChem, y = pHab, fill = pChemHab), pch = 21, colour = 'lightgrey', size = 4) +
+  geom_point(data = toplo, aes(x = pChem, y = pHab, fill = pChemHab, shape = BiologicalCondition), size = 4, colour = 'lightgrey') +
   theme_bw(base_family= 'serif') + 
   theme(
     legend.position = 'top',
     legend.title = element_text(face = 'italic'), 
     axis.title = element_text(face = 'italic')
   ) + 
+  scale_shape_manual('Biological condition', values = c(21, 24, 25, 23), guide = F) + 
   scale_colour_gradientn('pOverall', colours = cols, guide = F)+
   scale_fill_gradientn('pOverall', colours = cols) +
   guides(fill = guide_colourbar(barheight = 0.5, barwidth = 9, title.position = 'top', title.hjust = 0.5))
-pleg1 <- g_legend(p1)
-p1 <- p1 + theme(legend.position = 'none')
 # p1 <- direct.label(p1, list('bottom.pieces', cex = 0.7))
+
+shpleg <- ggplot(mtrxd) + 
+  stat_contour(aes(x = pChem, y = pHab, z = pChemHab, colour = ..level..), breaks = c(seq(0.2, 0.9, by = 0.1))) + 
+  geom_point(data = toplo, aes(x = pChem, y = pHab, shape = BiologicalCondition), size = 4, colour = 'black') +
+  theme_bw(base_family= 'serif') + 
+  theme(
+    legend.position = 'top',
+    legend.title = element_text(face = 'italic'), 
+    axis.title = element_text(face = 'italic')
+  ) + 
+  scale_shape_manual('Biological condition', values = c(21, 24, 25, 23)) +
+  scale_colour_gradientn('pOverall', colours = cols, guide = F)+
+  scale_fill_gradientn('pOverall', colours = cols, guide = F)
+shpleg <- g_legend(shpleg)
 
 p2 <- ggplot(mtrxd) + 
   stat_contour(aes(x = pChem, y = pHab, z = pChemHab), breaks = c(0.9), colour = 'black', linetype = 'dotted', size = 1) + 
-  geom_point(data = toplo, aes(x = pChem, y = pHab, fill = OverallStressCondition_detail), pch = 21, colour = 'lightgrey', size = 4) +
+  geom_point(data = toplo, aes(x = pChem, y = pHab, shape = BiologicalCondition, fill = OverallStressCondition_detail), colour = 'lightgrey', size = 4) +
   geom_vline(xintercept = 0.9, linetype = 'dotted', size = 1) + 
   geom_hline(yintercept = 0.9, linetype = 'dotted', size = 1) +
   geom_label_repel(data = labs, aes(x = x, y = y, label = lb), box.padding = 2.5, parse = T, size = 2.5, alpha = 0.75) +
@@ -522,20 +540,18 @@ p2 <- ggplot(mtrxd) +
     legend.title = element_text(face = 'italic'), 
     axis.title = element_text(face = 'italic')
   ) + 
-  scale_colour_gradientn('pOverall', colours = cols, guide = F) +
+  scale_shape_manual(values = c(21, 24, 25, 23), guide = F) +
   scale_fill_manual('Stress condition', values = strcol$col) + 
-  guides(fill = guide_legend(title.position = 'top', title.hjust = 0.5, ncol = 2))
-pleg2 <- g_legend(p2)
-p2 <- p2 + theme(legend.position = 'none')
+  guides(fill = guide_legend(title.position = 'top', title.hjust = 0.5, ncol = 2, 
+                             override.aes = list(shape = 15, colour = strcol$col, size = 2)))
 
-png('figs/str_lik.png', height = 4.5, width = 8, family = 'serif', res = 400, units = 'in')
-
-(wrap_elements(pleg1) + p1 + plot_layout(ncol = 1, heights = c(0.05, 1))) - 
-  (wrap_elements(pleg2) + p2 + plot_layout(ncol = 1, heights = c(0.05, 1))) + plot_layout(ncol = 2, heights = c(0.25, 1))
-
+png('figs/str_lik.png', height = 5.5, width = 8, family = 'serif', res = 400, units = 'in')
+wrap_elements(shpleg) + {
+  p1 + p2 + plot_layout(ncol = 2)
+} + plot_layout(ncol = 1, heights = c(0.1, 1))
 dev.off()
 ```
-```{r strlik, fig.cap = "Relationship between stress models for water chemistry (*pChem*, eqn. \\\\@ref(eq:pchem)) and physical habitat (*pHab*, eqn. \\\\@ref(eq:phab)).  Stress models for water chemistry and physical habitat were created based on the likelihood of biological alteration for the observed stress measures.  The overall stress measures (*pOverall*, eqn. \\\\@ref(eq:poverall)) is the product of both stress models shown in the left plot.  Points represent estimated stress at a single site.  The right plot shows the same points but colored by the stress condition categories that are defined by thresholds from the dotted lines."}
+```{r strlik, fig.cap = "Relationship between stress models for water chemistry (*pChem*, eqn. \\\\@ref(eq:pchem)) and physical habitat (*pHab*, eqn. \\\\@ref(eq:phab)).  Stress models for water chemistry and physical habitat were created based on the likelihood of biological alteration for the observed stress measures.  The overall stress measures (*pOverall*, eqn. \\\\@ref(eq:poverall)) is the product of both stress models shown in the left plot.  Points represent estimated stress at a single site, with shapes showing the biological condition.  The right plot shows the same points but colored by the stress condition categories that are defined by thresholds from the dotted lines."}
 knitr::include_graphics('figs/str_lik.png')
 ```
 
@@ -605,22 +621,20 @@ p3 <- ggplot(toplocn, aes(x = Cond)) +
   
 opt_vrs <- list(
     blc = 100,
-    bs = 100, 
-    hy = 100, 
-    H_SubNat = 1
+    ps = 100, 
+    PCT_SAFN = 1
   )
 
 # hab
 toploblc <- strs_surf('blc', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
-toplobs <- strs_surf('bs', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
-toplohy <- strs_surf('hy', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
-toploH_SubNat <- strs_surf('H_SubNat', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
+toplops <- strs_surf('ps', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
+toploPCT_SAFN <- strs_surf('PCT_SAFN', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
 
 # plots
 p4 <- ggplot(toploblc, aes(x = blc)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = indexscore_cram, colour = BiologicalCondition), sides = 'b') +
-  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = indexscore_cram, colour = BiologicalCondition), sides = 't') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = blc, colour = BiologicalCondition), sides = 'b') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = blc, colour = BiologicalCondition), sides = 't') +
   geom_line(aes(y = fit)) +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
@@ -633,57 +647,40 @@ p4 <- ggplot(toploblc, aes(x = blc)) +
     legend.position = 'none'
     )
 
-p5 <- ggplot(toplobs, aes(x = bs)) +
+p5 <- ggplot(toplops, aes(x = ps)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = indexscore_cram, colour = BiologicalCondition), sides = 'b') +
-  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = indexscore_cram, colour = BiologicalCondition), sides = 't') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = ps, colour = BiologicalCondition), sides = 'b') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = ps, colour = BiologicalCondition), sides = 't') +
   geom_line(aes(y = fit)) +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
   theme_bw(base_size = 12,base_family = 'serif') +
   scale_colour_manual(values = biocol$col) +
-  xlab('CRAM biotic structure\n') + 
-  xlim(range(toplobs$bs)) +
+  xlab('CRAM physical structure\n') + 
+  xlim(range(toplops$ps)) +
   theme(
     axis.title.y = element_blank(),
     legend.position = 'none'
     )
 
-p6 <- ggplot(toplohy, aes(x = hy)) +
+p6 <- ggplot(toploPCT_SAFN, aes(x = PCT_SAFN)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = indexscore_cram, colour = BiologicalCondition), sides = 'b') +
-  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = indexscore_cram, colour = BiologicalCondition), sides = 't') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = PCT_SAFN, colour = BiologicalCondition), sides = 'b') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = PCT_SAFN, colour = BiologicalCondition), sides = 't') +
   geom_line(aes(y = fit)) +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
   theme_bw(base_size = 12,base_family = 'serif') +
   scale_colour_manual(values = biocol$col) +
-  xlab('CRAM hydrology\n') + 
-  xlim(range(toplohy$hy)) +
-  theme(
-    axis.title.y = element_blank(),
-    legend.position = 'none'
-    )
-    
-p7 <- ggplot(toploH_SubNat, aes(x = H_SubNat)) +
-  geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = IPI, colour = BiologicalCondition), sides = 'b') +
-  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = IPI, colour = BiologicalCondition), sides = 't') +
-  geom_line(aes(y = fit)) +
-  geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
-  geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
-  theme_bw(base_size = 12,base_family = 'serif') +
-  scale_colour_manual('Biological condition', values = biocol$col) +
-  xlab('IPI evenness of\nnatural substrate') + 
-  xlim(range(toploH_SubNat$H_SubNat)) +
+  xlab('IPI % sands and fines\n') + 
+  xlim(range(toploPCT_SAFN$PCT_SAFN)) +
   theme(
     axis.title.y = element_blank(),
     legend.position = 'top'
-    ) + 
-  guides(colour = guide_legend(title.position = 'top', title.hjust = 0.5))
+    )
 
-pleg <- g_legend(p7)
-p7 <- p7 + theme(legend.position = 'none')
+pleg <- g_legend(p6)
+p6 <- p6 + theme(legend.position = 'none')
 
 png('figs/rsp_crv.png', height = 6.5, width = 8, res = 500, units = 'in', family = 'serif')
 grid.arrange(
@@ -693,8 +690,8 @@ grid.arrange(
     textGrob('Water chemistry'), 
     arrangeGrob(p1, p2, p3, ncol = 3),
     textGrob('Physical habitat'), 
-    arrangeGrob(p4, p5, p6, p7, ncol = 4), 
-    ncol = 1, heights = c(0.2, 0.1, 1, 0.1, 1)
+    arrangeGrob(p4, p5, p6, ncol = 3), 
+    ncol = 1, heights = c(0.2, 0.1, 0.95, 0.1, 1)
   )
 )
 dev.off()
@@ -712,7 +709,7 @@ cols2 <- getdsccol(palfac = toshw[2]) %>%
   select(nms, col) %>%
   deframe
 
-toploct <- seq(5, -4) %>% 
+toploct <- seq(6, -6) %>% 
   enframe %>% 
   group_by(value) %>% 
   nest %>% 
@@ -724,7 +721,6 @@ toploct <- seq(5, -4) %>%
 
 toplo1 <- toploct %>% 
   filter(var %in% 'OverallStressCondition_detail') %>% 
-  filter(value %in% c(-4, -3, -2, -1, 0, 1, 2, 5)) %>%
   as.data.frame(stingsAsFactors = F) %>% 
   mutate(val = factor(val,
                       levels = c("Low stress", "Stressed by chemistry degradation", "Stressed by habitat degradation", "Stressed by chemistry and habitat degradation", "Stressed by low levels of chemistry or habitat degradation"),
@@ -735,7 +731,6 @@ toplo1 <- toploct %>%
 names(cols1) <- c("Low stress", "Stressed by chemistry", "Stressed by habitat", "Stressed by chemistry and habitat", "Stressed by low levels of both")
 toplo2 <- toploct %>% 
   filter(var %in% 'StreamHealthIndex') %>% 
-  filter(value %in% c(-4, -3, -2, -1, 0, 1, 2, 5)) %>%
   as.data.frame(stingsAsFactors = F) %>% 
   mutate(val = factor(val,
                       levels = c("Healthy and unstressed", "Healthy and resilient", "Impacted by unknown stress", "Impacted and stressed")
@@ -774,12 +769,12 @@ p2 <- ggplot(toplo2, aes(x = factor(value), y = n, fill = val, label = val))+
 p2leg <- g_legend(p2)
 p2 <- p2 + theme(legend.position ='none')
 
-toplost <- seq(0.55, 0.95, by = 0.05) %>% 
+toplost <- seq(0.35, 0.95, by = 0.05) %>% 
   enframe %>% 
   group_by(value) %>% 
   nest %>% 
   mutate(
-    est = purrr::map(value, function(x) sqibiosens(sqidatinp, lothrsh = 1 - x, hithrsh = x, talvals = T))
+    est = purrr::map(value, function(x) sqibiosens(sqidatinp, lothrsh = 0.1, hithrsh = x, talvals = T))
   ) %>% 
   select(-data) %>% 
   unnest 
@@ -925,7 +920,7 @@ knitr::kable(totab, booktabs = T, caption = cap.val)
 *Table \@ref(tab:strmod): \(\#tab:strmod) Summary of empirical stress models to quantify associations of water chemistry (pChem) and physical habitat (pHab) predictors with biological alteration.  Generalized linear models were fit to predict the likelihood of both healthy benthic macroinvertebrate and algal communities at calibration sites (75\% of n = `r nrow(sqidat)` sites).*
 ```{r, results = 'asis'}
 # use jtools
-coef_names <- c("Constant" = "(Intercept)", "log(TN)" = "log10(0.1 + TN)", "log(TP)" = "log10(0.01 + TP)", "Conductivity" = "Cond", "CRAM buffer landscape condition" = "blc", "CRAM biotic structure" = "bs", "CRAM hydrology" = "hy", "IPI evenness of natural substrate" = "H_SubNat")
+coef_names <- c("Constant" = "(Intercept)", "log(TN)" = "log10(0.1 + TN)", "log(TP)" = "log10(0.01 + TP)", "Conductivity" = "Cond", "CRAM buffer landscape condition" = "blc", "CRAM physical structure" = "ps", "IPI percent sands and fines" = "PCT_SAFN")
 huxres <- export_summs(wqglm, habglm, coefs = coef_names, model.names = c('pChem', 'pHab'))
 
 brd <- fp_border(color="black")
@@ -939,8 +934,8 @@ tab <- huxres %>%
   autofit(add_h = 0) %>% 
   hline_top(part = 'all', border = brd) %>% 
   hline(i = 1, part = 'body', border = brd) %>% 
-  hline(i= 17, part = 'body', border = brd) %>% 
-  hline(i= 21, part = 'body', border = brd) 
+  hline(i= 15, part = 'body', border = brd) %>% 
+  hline(i= 19, part = 'body', border = brd) 
 tab
 
 ```
