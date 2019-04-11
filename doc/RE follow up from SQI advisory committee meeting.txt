@@ -1,0 +1,126 @@
+From:	Anderson-Abbs, Bev@Waterboards <Bev.Anderson-Abbs@Waterboards.ca.gov>
+Sent:	Wednesday, April 10, 2019 3:48 PM
+To:	Marcus Beck
+Cc:	Raphael Mazor
+Subject:	RE: follow up from SQI advisory committee meeting
+Attachments:	Beck_etal_SQI (003)baa_ad.docx
+
+Hi Marcus
+Attached is a version of the draft manuscript with SWRBC comments and suggested edits. These are 
+mostly from me and a few from Ali, nobody else provided comments.
+
+Some of the comments are summarized below, if this helps
+General comments on the SQI:
+
+-	For those less familiar with watershed science, it may be helpful to include a watershed process 
+and function conceptual model or model of a healthy stream ecosystem to illustrate key 
+linkages between chemistry, physical habitat and biology.  
+-	Page 2, Line 45: suggest re-wording to state “Despite varying spatial scales and complexities 
+Whether monitoring programs are large and complex or small and straightforward, all 
+monitoring programs share the challenge of how to effectively communicate physical, chemical, 
+and biological data in a scientifically rigorous…”
+o	We can have small and complex too, or conversely, large and simple. 
+-	Why is ‘lines of evidence’ used as a blanket term to describe conditions assessment, indicators, 
+etc.? This term is specific to Water Board’s Integrated Assessment program. Suggest either 
+clearly defining the term up front, or replacing with something less integrated report-centric. 
+For example, ‘condition assessment’ or simply removing the term (depending on context). 
+-	On page 1, Lines 17-18 stated that the physical parameters include two indices that describe in-
+stream (substrate) and stream corridor (riparian) conditions.  Page 3, Lines 86-87 the general 
+approach is then described as being based on biology and in-stream. Shouldn’t it also include 
+stream corridor/riparian? 
+Also on the tool (and I believe these were all brought up at the meeting)-
+-if stream name could somehow be added to the pop-up along with the id number, at least in those 
+cases where it exists
+-make the date, or dates of data collection accessible somewhere, and especially if the tool gets to the 
+point where there might be multiple sample collections so trends might be seen
+-have the data set accessible, somehow, either through the app directly so if I pull up a sight I can access 
+all the background data, or with a link to the database (but I want the data filtered for the site(s) I’m 
+interested in ??
+-	Thank you for developing a model and tool that highlights biology’s role as a direct measure of 
+stream condition. This work provides a strong communication tool and resource to highlight the 
+importance of biological data when assessing water quality conditions.  
+
+Thanks to you both for all the work on this tool, it has been interesting to watch its development 
+through the whole process.
+
+
+Beverley Anderson-Abbs, M.S.
+Senior Environmental Scientist (Specialist)
+Office of Information Management and Analysis (OIMA)
+State Water Resources Control Board
+Ph (916)322-2014       email bev.anderson-abbs@waterboards.ca.gov 
+
+
+
+
+From: Marcus Beck <MarcusB@sccwrp.org>  
+Sent: Wednesday, April 10, 2019 8:21 AM 
+To: Hoan Tang <htang@dpw.lacounty.gov>; Grant Sharp2 <Grant.Sharp@ocpw.ocgov.com>; Phil Markle 
+<pmarkle@lacsd.org>; Katherine Pease <kpease@healthebay.org>; Loflen, Chad@Waterboards 
+<Chad.Loflen@waterboards.ca.gov>; Anderson-Abbs, Bev@Waterboards <Bev.Anderson-
+Abbs@Waterboards.ca.gov>; Dunn, Ali@Waterboards <Ali.Dunn@Waterboards.ca.gov>; Joshua 
+Westfall <jwestfall@lacsd.org> 
+Cc: Raphael Mazor <raphaelm@sccwrp.org>; Susanna Theroux <susannat@sccwrp.org>; Ken Schiff 
+<kens@sccwrp.org> 
+Subject: RE: follow up from SQI advisory committee meeting
+
+Good morning, 
+
+Just a friendly reminder that we are anticipating comments from you all today on our SQI draft 
+manuscript.  I’ve already spoken with some of you, but please let me know if you are not able to get 
+comments back by the end of the day.  
+
+Also, please remember to fill out the Doodle poll for our follow-up webinar: 
+https://doodle.com/poll/bvrs972cc4a84y5z
+
+Thanks,
+Marcus
+
+From: Marcus Beck  
+Sent: Thursday, April 4, 2019 11:00 AM 
+To: Hoan Tang <htang@dpw.lacounty.gov>; Grant Sharp2 <Grant.Sharp@ocpw.ocgov.com>; Phil Markle 
+<pmarkle@lacsd.org>; Katherine Pease <kpease@healthebay.org>; Chad Loflen 
+<Chad.Loflen@waterboards.ca.gov>; Beverley Anderson-Abbs <bev.anderson-
+abbs@waterboards.ca.gov>; Ali Dunn <Ali.Dunn@waterboards.ca.gov>; Joshua Westfall 
+<jwestfall@lacsd.org> 
+Cc: Raphael Mazor <raphaelm@sccwrp.org>; Susanna Theroux <susannat@sccwrp.org>; Ken Schiff 
+<kens@sccwrp.org> 
+Subject: follow up from SQI advisory committee meeting
+
+Hi everyone, 
+
+Thanks to all of you for participating yesterday in our advisory panel meeting for the SQI.  We had a 
+productive discussion and we all agreed that we can move forward on the technical products.
+
+Our next step is to present our final products to the SMC steering committee in June.  In prep for this 
+meeting, we have a few action items from yesterday that we need to address.  
+
+-	Please return any final comments on the manuscript to me by Wednesday 4/10.  Emailed word 
+documents with track changes are fine.  
+-	Email any comments/questions to me about the website 
+(https://sccwrp.shinyapps.io/SQI_Shiny) by Wednesday 4/10.  I have a list of suggestions from 
+yesterday that I will address in the next few weeks, so anything in addition to what was 
+discussed yesterday is welcome. 
+-	Email or call me if there are any case studies you wish to discuss that we can include in the 
+manuscript.  As a reminder, we are looking for specific examples of how the SQI can help 
+support management.  I have suggestions from yesterday and will reach out personally to those 
+of you that provided them.  
+
+Finally, we agreed that a final webinar in May would be appropriate to discuss any changes to the 
+products prior to the steering committee meeting in June.  Please fill out the Doodle Poll for availability 
+in May: https://doodle.com/poll/bvrs972cc4a84y5z
+
+Thanks, 
+
+Marcus
+
+Marcus W Beck
+Scientist, Biology Department
+Southern California Coastal Water Research Project
+3535 Harbor Blvd, Suite 110
+Costa Mesa, CA 92626
+(714) 755-3217
+marcusb@sccwrp.org
+http://sccwrp.org
+
+
