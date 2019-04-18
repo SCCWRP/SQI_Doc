@@ -155,6 +155,10 @@ All data used to calibrate and validate the SQI were from the Southern Californi
 
 The SQI was evaluated for precision (i.e., how well the underlying empirical model described the likelihood of biological alteration) and sensitivity (i.e., how sensitive the model output is to changing thresholds that define the categorical conditions). The first analysis evaluated precision in the validation dataset to determine agreement between the model and actual stress and biological conditions. For the second analysis, two critical decisions points that affected the model output and categorical results of the SQI were varied to evaluate changes on overall site counts in each final SQI category.  In Table \@ref(tab:biocmb), all sites with combined values greater than or equal to zero were considered healthy and those less than zero were considered impacted.  The effect of varying the cutoff point for healthy and impacted biology was analyzed by comparing changes in the SQI assessment categories at different levels from -6 (all healthy) to 6 (all unhealthy).  Changes in the threshold for the likelihood of observing altered biology that defined the categorical results were also evaluated.
 
+## Selected case studies
+
+SQI results for three selected sites were explored in detail to provide a narrative description of how the index can be used to inform management of water quality in perennial streams.  The first example describes SQI results in an urban channel with impacted biology (County of Orange) to complement a previous causal assessment study to identify potential stressors of low CSCI scores.  The second example describes a natural channel with impacted biology but low stress that is highlighted in a [draft regional basin plan](https://www.waterboards.ca.gov/sandiego/water_issues/programs/basin_plan/bio_objectives/doc/R9_Biological_Objectives_Staff_Report_Feb2019.pdf) for biological objectives for the San Diego region.  The third and final example demonstrates use of the SQI to assess pre- and post-fire impacts in a high elevation mountain stream (County of Los Angeles). In all examples, the SQI results are evaluated relative to additional data to demonstrate how the index can be used in the context of existing, site-specific information to suppport management.
+
 # Results
 
 ## SQI patterns
@@ -237,6 +241,53 @@ Figure \@ref(fig:rspcrv) demonstrates how the individual components for each str
 Results in Figure \@ref(fig:snsfig) show changes in the the categorical results based on different decision points that defined biological condition and stress thresholds.  As a general trend, lowering the cutpoint for healthy/impacted to designate more sites as healthy (-6) caused in increase in the amount of sites as "low stress" for the stress condition and sites as "healthy and unstressed" or "impacted by unknown stress" for the overall SQI.  Conversely, increasing the cutpoint for healthy/impacted to designate more sites as impacted (-6) caused in increase in the amount of sites as "stressed by chemistry and habitat" for the stress condition and sites as "impacted and stressed" or "health and resilient" for the overall SQI.  
 
 Changing the threshold for the likelihood values that defined stressed biology also affected the categorical results (Figure \@ref(fig:snsfig), bottom row). Higher thresholds shifted the number of sites to low stress conditions, whereas lower thresholds had the opposite effect of assigning more sites to high stress conditions.  The number of sites that were stressed by low levels of both water chemistry and habitat conditions were relatively unchanged with different thresholds. The overall SQI categories were less affected by changing thresholds for the stress condition than for changing the cutpoint that defined healthy/impacted biology.  However, higher thresholds shifted some sites from the impacted and stressed category to the impacted by unknown stress category and from the healthy and resilient category to the healthy and unstressed category.
+
+## Case study results
+
+### San Diego Creek
+
+San Diego Creek is a coastal stream in the County of Orange that drains the San Joaquin Hills and Loma Ridge into the Newport Bay estuary.  The watershed is heavily urbanized and most of the creek has been engineered for flood control as a concrete-lined or reinforced channel with no riparian structure. The creek is designated for aquatic life (wildlife and warmwater habitat) and recreational (contact and non-contact) uses under the water quality control plan.  Bioassessment results from the CSCI have shown that the structure and function of macroinvertebrate communities is very likely altered from regional reference conditions.  
+
+```{r}
+sdc_sites <- sqidat %>% 
+  filter(MasterID %in% c("SMC00766", "801S03971", "801M12649", "SMC06019", "SMC01923"))
+sdc_ascirng <- sdc_sites$ASCI %>% 
+  range %>% 
+  round(2)
+sdc_cscirng <- sdc_sites$CSCI %>% 
+  range %>% 
+  round(2)
+sdc_tn <- sdc_sites$TN %>% 
+  mean %>% 
+  round(1)
+sdc_tp <- sdc_sites$TP %>% 
+  mean %>% 
+  round(1)
+sdc_cond <- sdc_sites$Cond %>% 
+  mean %>% 
+  round(0)
+sdc_cram <- sdc_sites$indexscore_cram %>% 
+  mean %>% 
+  round(0)
+sdc_ipi <- sdc_sites$IPI %>% 
+  mean %>% 
+  round(2)
+sdc_tnqnt <- ecdf(sqidat$TN)(sdc_tn) %>% perc_suff
+sdc_tpqnt <- ecdf(sqidat$TP)(sdc_tp) %>% perc_suff
+sdc_condqnt <- ecdf(sqidat$Cond)(sdc_cond) %>% perc_suff
+sdc_cramqnt <- ecdf(sqidat$indexscore_cram)(sdc_cram) %>% perc_suff
+sdc_ipiqnt <- ecdf(sqidat$IPI)(sdc_ipi) %>% perc_suff
+```
+
+The dataset used to develop the SQI included five sites on San Diego Creek with one sample in 2010, three in 2011, and one in 2016. Biological condition at these sites was poor with ASCI scores ranging from `r sdc_ascirng[1]` to `r sdc_ascirng[2]` and CSCI scores ranging from `r sdc_cscirng[1]` to `r sdc_cscirng[2]`.  All sites were impacted for both CSCI and ASCI scores. The SQI stressor condition for all five sites indicated nearly a 100\% likelihood of chemistry and physical habitat stressors impacting biology, with a 100\% likelihood of overall stress based on the combined effects of both.   Average total nitrogen, total phosphorus, and conductivity were `r sdc_tn` mg/L, `r sdc_tp` mg/L, and `r sdc_cond` $\mu$S/cm, placing the creek in the `r sdc_tnqnt`, `r sdc_tpqnt`, and `r sdc_condqnt` percentiles, respectively, among all sites in the complete dataset.  Similarly, CRAM and IPI scores averaged across sites were `r sdc_cram` and `r sdc_ipi`, placing the creek in the `r sdc_cramqnt` and `r sdc_ipiqnt` percentiles for the region.  The overall SQI category for all five sites was "impacted and stressed".
+
+An independent causal assessment study was conducted in 2018 to determine the causes of biological impairment in San Diego Creek. A detailed description of causal assessment is beyond the scope of this paper, although in short, causal assessment is a formalized approach using multiple lines of evidence to characterize stressors as likely, unlikely, or insufficient evidence in relation to the biological condition [@Norton14;@Schiff15].  This differs from the SQI approach where the stressors are based on association alone.  For San Diego Creek, the potential stressors that were evaluated included sediment accumulation, channel engineering, nutrients, temperature, conductivity, and pesticides.  The causal assessment concluded that sediment accumulation resulting form channel alteration was the most likely cause of low CSCI scores.  Alternatively, nutrients, although elevated, were not fully evaluated because of insufficient algal data (ASCI scores were not evaluated in the causal assessment).  Finally, pesticides were also considered likely stressors impacting macroinvertebrate communities in San Diego Creek due to mosquito control practices in the region.  As such, the SQI results are supported by causal assessment, with the latter providing a more comprehensive evaluation of links between stressors and biological condition.
+
+### San Juan Creek
+
+San Juan Creek is located in the County of Orange and drains a larger watershed compared to San Diego Creek.  San Juan Creek originates in the Santa Ana mountains that are largely undeveloped, whereas lower portions of the creek are engineered for flood control in the urbanized areas of the watershed. The upper portion of San Juan Creek was described in a regional basin plan for proposed biological objecives (San Diego Regional Water Quality Control Board) as not attaining aquatic life uses because CSCI scores were well below those observed at reference sites.  However, both physical habitat and water chemistry parameters at the assessment site suggested conditions were adequate to support biotic integrity.  Toxicity tests also showed 100\% survival of *Ceriodaphnia dubia*, providing evidence that toxicity was not a likely stressor impacting biology at the site.
+
+The SQI results for the sampling station in the upper San Juan Creek confirmed the above results by indciating the overall category of "impacted by unknown stress".  
 
 # Discussion
 

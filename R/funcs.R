@@ -413,3 +413,21 @@ vif_func<-function(in_frame,thresh=10,trace=T,...){
   }
   
 }
+
+######
+# get suffix for percentiles
+perc_suff <- function(x){
+  
+  x <- x %>% round(2) %>% `*`(100)
+  
+  suff <- case_when(x %in% c(11,12,13) ~ "th",
+                    x %% 10 == 1 ~ 'st',
+                    x %% 10 == 2 ~ 'nd',
+                    x %% 10 == 3 ~'rd',
+                    TRUE ~ "th")
+
+  out <- paste0(x, suff)
+  
+  return(out)
+  
+}

@@ -2,8 +2,8 @@ library(tidyverse)
 library(readxl)
 library(lubridate)
 library(randomForest)
-# library(SQI)
-devtools::load_all('../SQI/.')
+library(SQI)
+# devtools::load_all('../SQI/.')
 library(sf)
 
 prj <- 4326 # geographic wgs84
