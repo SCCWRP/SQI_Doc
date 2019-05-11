@@ -413,7 +413,7 @@ p1 <- ggplot() +
   ) +
   guides(fill = guide_legend(override.aes = list(size = 0.5))) + 
   north(sheds, scale = 0.2, symbol = 3) +
-  scalebar(toplo1, dist = 50, dd2km = T, location = 'bottomleft', st.dist = 0.05, st.size = 3, height = 0.03, border.size = 0.5)
+  scalebar(toplo1, dist = 50, dist_unit = 'km', transform = T, location = 'bottomleft', st.dist = 0.05, st.size = 3, height = 0.03, border.size = 0.5)
 p1leg <- g_legend(p1)
 p1 <- p1 +
   theme(
