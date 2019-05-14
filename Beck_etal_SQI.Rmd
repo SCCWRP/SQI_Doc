@@ -348,7 +348,7 @@ An interactive website is available for viewing results of the SQI:  <https://sc
 
 # Acknowledgments
 
-We thank the Stormwater Monitoring Coalition and Surface Water Ambient Monitoring Program of the California State Water Board for data collection.  We thank Scott Martindale for providing editorial comments on an earlier draft.  We thank the Stormwater Monitoring Coalition executive committee and science advisory group for feedback during the development of the Stream Quality Index.  Site photos for the case studies courtesy of David Gillett (San Diego Creek) and Chad Loflen (San Juan Creek).
+We thank the Stormwater Monitoring Coalition and Surface Water Ambient Monitoring Program of the California State Water Board for data collection.  We thank the Stormwater Monitoring Coalition executive committee and science advisory group for feedback during the development of the Stream Quality Index.  Members of the science advisory panel included Beverley Anderson, Ali Dunn, Chad Loflen, Phil Markle, Katherine Pease, Grant Sharp, Hoan Tang, and Joshua Westfall. We thank David Gillett, Chad Loflen, Grant Sharp, and Joshua Westfall for help with the case studies. We thank Scott Martindale for providing editorial comments on an earlier draft. We thank Nabiul Afrooz for initial contributions on the conceptual framework for the index. Site photos for the case studies courtesy of David Gillett (San Diego Creek) and Chad Loflen (San Juan Creek).
 
 # Figures
 
