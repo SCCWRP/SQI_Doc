@@ -9,6 +9,252 @@ library(ASCI)
 library(PHAB)
 library(PHABMetrics)
 
+library(tidyverse)
+library(lubridate)
+library(readxl)
+library(ASCI)
+library(PHAB)
+library(PHABMetrics)
+
+# data compile for SGR case study SGUR00428, SMC00428
+
+# data from search, not from JW -------------------------------------------
+
+# fls <- list.files('raw/rawdig/',
+#   recursive = T, full.names = T)
+# 
+# dat <- fls %>%
+#   enframe %>%
+#   group_by(value) %>%
+#   mutate(
+#     rawdat = purrr::map(value, function(x){
+# 
+#       # import, wrangle data
+#       raw <- read_excel(x)
+#     
+#       return(raw)
+#       
+#     })
+#   ) %>%
+#   select(-name) %>%
+#   ungroup %>%
+#   mutate(value = basename(value))
+
+# GIS data ----------------------------------------------------------------
+
+gis <- read_excel('../Data/RawData/fire case study/dbo_tblGISMetrics_030519.xlsx') %>%
+  mutate(
+    LogWSA = log10(AREA_SQKM)
+  )
+
+# CSCI --------------------------------------------------------------------
+
+csci <- read.csv('../Data/RawData/fire case study/Post Fire Site - CSCI.csv', stringsAsFactors = F) %>%
+  dplyr::select(Station.Code, Year, Parameter, Result) %>%
+  filter(Parameter %in% 'CSCI') %>%
+  rename(
+    StationCode = Station.Code,
+    yr = Year,
+    var = Parameter,
+    val = Result
+  ) %>%
+  group_by(StationCode, yr, var) %>%
+  summarise(val = mean(val, na.rm = T))
+
+# ASCI --------------------------------------------------------------------
+
+rawtax <- read.csv('../Data/RawData/fire case study/SGRRMP Algal Taxa List.csv', stringsAsFactors = F) %>%
+  rename(
+    StationCode = Station.Code,
+    Result = Results,
+    SampleTypeCode = SampleType,
+    SampleDate = Column1
+  ) %>%
+  mutate(Replicate = 1) %>%
+  dplyr::select(StationCode, SampleDate, Replicate, SampleTypeCode, BAResult, Result, FinalID)
+
+ascigis <- rawtax %>%
+  dplyr::select(StationCode, Replicate, SampleDate) %>%
+  unique %>%
+  left_join(gis, by = 'StationCode') %>%
+  mutate(
+    DayOfYear = mdy(SampleDate) %>% yday(),
+    LogWSA = log(AREA_SQKM)
+  )
+
+# # check inputs
+# ASCI::chkinp(rawtax, ascigis)
+
+# clean up raw tax based on checks
+rawtax <- rawtax %>%
+  filter(!FinalID %in% c("Navicula aitchelbee", "Sellaphora atomoides", "Sellaphora nigri",
+                         "No_Orgs_Pres"))
+
+# asci scores
+asci <- ASCI(rawtax, ascigis) %>%
+  scores %>%
+  filter(taxa %in% 'hybrid') %>%
+  separate(SampleID, c('StationCode', 'SampleDate', 'Replicate'), sep = '_') %>%
+  mutate(
+    yr = mdy(SampleDate) %>% year()
+  ) %>%
+  group_by(StationCode, yr) %>%
+  summarise(val = mean(MMI)) %>%
+  mutate(var = 'ASCI') %>%
+  dplyr::select(StationCode, yr, var, val)
+
+# water chem --------------------------------------------------------------
+
+# cond <- dat %>%
+#   filter(grepl('^SpecCond', value)) %>%
+#   pull(rawdat) %>%
+#   .[[1]] %>%
+#   select(StationCode, SampleDate, Result) %>%
+#   mutate(
+#     yr = year(SampleDate),
+#     Result = as.numeric(Result)
+#   ) %>%
+#   group_by(StationCode, yr) %>%
+#   summarise(Cond = mean(Result, na.rm = T)) %>%
+#   gather('var', 'val', -StationCode, -yr) %>%
+#   na.omit
+#
+# tntpsmc <- dat %>%
+#   filter(grepl('^nutrient', value)) %>%
+#   pull(rawdat) %>%
+#   .[[1]] %>%
+#   select(stationcode, sampledate, total_n_mgl, total_p_mgl) %>%
+#   mutate(
+#     yr = year(sampledate)
+#   ) %>%
+#   rename(
+#     StationCode = stationcode
+#   ) %>%
+#   group_by(StationCode, yr) %>%
+#   summarize(
+#     TN = mean(total_n_mgl, na.rm = T),
+#     TP = mean(total_p_mgl, na.rm = T)
+#   ) %>%
+#   gather('var', 'val', -StationCode, -yr) %>%
+#   na.omit
+#
+# tntpabc <- dat %>%
+#   filter(grepl('^Compiled', value)) %>%
+#   pull(rawdat) %>%
+#   .[[1]] %>%
+#   select(StationCode, SampleDate, AnalyteName, Result) %>%
+#   filter(AnalyteName %in% c('SpecificConductivity', 'Phosphorus as P', 'Total_N_calculated', 'Total_n_calculated', 'Total_P_reported', 'Total_N_partial', 'Total_N_Partial', 'Total_P_Partial')) %>%
+#   mutate(
+#     AnalyteName = case_when(
+#       AnalyteName %in% 'SpecificConductivity' ~ 'Cond',
+#       AnalyteName %in% c('Phosphorus as P', 'Total_P_reported', 'Total_P_partial') ~ 'TP',
+#       AnalyteName %in% c('Total_N_calculated', 'Total_n_calculated', 'Total_N_partial', 'Total_N_Partial') ~ 'TN'
+#     ),
+#     SampleDate = case_when( # ignore warnings here
+#       is.na(as.numeric(SampleDate)) ~ dmy(SampleDate),
+#       !is.na(as.numeric(SampleDate)) ~ as.Date(as.numeric(SampleDate), origin = '1899-12-30')
+#     ),
+#     yr = year(SampleDate)
+#   ) %>%
+#   group_by(StationCode, yr, AnalyteName) %>%
+#   summarise(Result = mean(Result, na.rm = T)) %>%
+#   spread(AnalyteName, Result) %>%
+#   gather('var', 'val', -StationCode, -yr) %>%
+#   na.omit
+#
+# # all nutrients
+# nutdat <- rbind(cond, tntpsmc, tntpabc) %>%
+#   group_by(StationCode, yr, var) %>%
+#   summarise(val = mean(val, na.rm = T))
+#
+# chemours <- nutdat %>%
+#   filter(StationCode %in% c('SMC00428', 'SGUR00428'))
+
+# from Josh
+nuts <- read_excel('../Data/RawData/fire case study/SGRRMP Chemistry.xlsx') %>%
+  rename(
+    StationCode = `Station Id`,
+    yr = Year,
+    var = AnalyteName,
+    val = Result
+  ) %>%
+  mutate(val = ifelse(val == -88, MDL, val)) %>%
+  group_by(StationCode, yr, var) %>%
+  summarise(val = mean(val, na.rm = T)) %>%
+  ungroup %>%
+  mutate(
+    var = case_when(
+      var %in% c('Nitrate as N', 'Nitrite as N', 'Total Kjeldahl Nitrogen') ~ 'TN',
+      var %in% c('OrthoPhosphate as P', 'Phosphorus as P') ~ 'TP'
+    )
+  ) %>%
+  group_by(StationCode, yr, var) %>%
+  summarise(val = sum(val))
+
+cond <- read.csv('../Data/RawData/fire case study/conductivity.csv', stringsAsFactors = F) %>%
+  mutate(var = 'Cond') %>%
+  rename(val = Result) %>%
+  group_by(StationCode, yr, var) %>%
+  summarise(val = mean(val)) %>%
+  dplyr::select(StationCode, yr, var, val)
+
+chem <- rbind(nuts, cond)
+
+# habitat data ------------------------------------------------------------
+
+# cram
+cram <- read.csv('../Data/RawData/fire case study/CRAMData201941814222.csv', stringsAsFactors = F) %>%
+  rename(
+    StationCode = Station.Code,
+    var = Attribute,
+    val = Score
+  ) %>%
+  mutate(
+    yr = mdy(Sample.Date) %>% year(),
+    var = case_when(
+      var %in% 'Overall Score' ~ 'indexscore_cram',
+      var %in% 'Biotic Structure' ~ 'bs',
+      var %in% 'Buffer and Landscape Context' ~ 'blc',
+      var %in% 'Hydrology' ~ 'hy',
+      var %in% 'Physical Structure' ~ 'ps'
+    )
+  ) %>%
+  group_by(StationCode, yr, var) %>%
+  summarise(val = mean(val, na.rm = T))
+
+# ipi
+metrics <- read.csv('../Data/RawData/fire case study/SMC00428_SGRU00428_Phab_metrics.csv', stringsAsFactors = F) %>%
+  rename(
+    StationCode = stationname,
+    SampleDate = sampledate,
+    Variable = variable,
+    Result = result,
+    Count_Calc = count_calc
+  ) %>%
+  dplyr::select(StationCode, SampleDate, Variable, Result, Count_Calc) %>%
+  mutate(
+    SampleDate = gsub('(^.*)\\s.*$', '\\1', SampleDate),
+    StationCode = 'SGUR00428'
+  ) %>%
+  filter(!SampleDate %in% '19/7/2017')
+
+ipidat <- IPI(gis, metrics) %>%
+  mutate(
+    yr = dmy(SampleDate) %>% year()
+  ) %>%
+  gather(var, val, -StationCode, -yr) %>%
+  filter(grepl('^IPI$|\\_score$', var)) %>%
+  mutate(
+    val = as.numeric(val),
+    var = gsub('\\_score$', '', var)
+  )
+
+# join all data -----------------------------------------------------------
+
+alldat <- bind_rows(csci, asci, chem, cram, ipidat)
+
+# plot --------------------------------------------------------------------
+
 # numeric variable names
 numnms <- c('CSCI', 'ASCI', 'TN', 'TP', 'Cond', 'indexscore_cram', 'IPI', 'blc', 'bs', 'ps', 'hy', 'PCT_SAFN', 'H_AqHab', 'H_SubNat',  'Ev_FlowHab', 'XCMG')
 numlab <- c('CSCI', 'ASCI', 'Total nitrogen', 'Total phosphorus', 'Conductivity', 'CRAM', 'IPI', 'Buffer and\nlandscape', 'Biotic\nstructure', 'Physical\nstructure', 'Hydrologic\ncondition', '% sands\nand fines', 'Diversity of\nhabitat', 'Diversity of\nsubstrate', 'Evenness of\nflow habitat', 'Riparian\nveg. cover')
@@ -44,7 +290,7 @@ collims <- enframe(collims, 'var', 'lims') %>%
 # gauge cols, red, orange, green
 gauge_col <- c('#a9d70b', '#f9c802', '#ff0000') %>% rev
 
-alldat <- bind_rows(csci, asci, chem, cram, ipidat) %>% 
+plodat <- alldat %>% 
   mutate(
     grp = case_when(
       var %in% c('Cond', 'TN', 'TP') ~ 'Chemistry', 
@@ -76,14 +322,14 @@ alldat <- bind_rows(csci, asci, chem, cram, ipidat) %>%
   unnest
 
 
-toplo1 <- alldat %>% 
+toplo1 <- plodat %>% 
   filter(grp %in% 'Biology')
 toplo1lb <- toplo1 %>% 
   arrange(var, yr) %>% 
   filter(!duplicated(var))
-toplo2 <- alldat %>% 
+toplo2 <- plodat %>% 
   filter(grp %in% 'Chemistry')
-toplo3 <- alldat %>% 
+toplo3 <- plodat %>% 
   filter(grp %in% 'Physical habitat') %>% 
   mutate(habtyp = case_when(
     var %in% c('indexscore_cram', 'blc', 'bs', 'hy', 'ps') ~ 'CRAM', 
