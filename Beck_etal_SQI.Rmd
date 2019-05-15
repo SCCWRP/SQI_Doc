@@ -952,7 +952,7 @@ dev.off()
 knitr::include_graphics('figs/snsbio_fig.png')
 ```
 
-```{r snsstrfig, fig.cap = "Changes in stress condition (left) and overall SQI categories (right) for different thresholds defining the stress categories.  Lower thresholds mean more sites are designated as high stress, whereas higher thresholds mean more sites are designated as low stress.  Sites are designated as low/high stress using the continuous likelihoods from the fitted models in equations \\@ref(eq:pchem), \\@ref(eq:phab), and \\@ref(eq:poverall) that relate stress measures to healthy/impacted biology. The dotted lines in Figure \\@ref(fig:rspcrv) show stress threholds set at 90%."}
+```{r snsstrfig, fig.cap = "Changes in stress condition (left) and overall SQI categories (right) for different thresholds defining the stress categories.  Lower thresholds mean more sites are designated as high stress, whereas higher thresholds mean more sites are designated as low stress.  Sites are designated as low/high stress using the continuous likelihoods from the fitted models in equations \\@ref(eq:pchem), \\@ref(eq:phab), and \\@ref(eq:poverall) that relate stress measures to healthy/impacted biology. The dotted lines in Figure \\@ref(fig:rspcrv) show stress thresholds set at 90%."}
 knitr::include_graphics('figs/snsstr_fig.png')
 ```
 
