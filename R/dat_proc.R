@@ -5,6 +5,9 @@ library(randomForest)
 library(SQI)
 # devtools::load_all('../SQI/.')
 library(sf)
+library(ASCI)
+library(PHAB)
+library(PHABMetrics)
 
 prj <- 4326 # geographic wgs84
 
