@@ -59,7 +59,7 @@ spelling::spell_check_files('Beck_etal_SQI.Rmd')
 
 # Abstract
 
-Assessment of stream health is a function of the physical, chemical, and biological integrity of the water body. While monitoring of all three indicators of stream quality is commonplace, combining these three indicators into a unified assessment of stream quality is rare, complicating the interpretation of complex environmental health information. In this study, a unified index was developed that compares biological response to physical and chemical stressors for southern California wadeable streams using a scientifically rigorous, easy-to-understand tool intended to facilitate stream management. The Stream Quality Index (SQI) is based on a stressor-response empirical model that quantifies the expected likelihood that chemical and physical stressors will impact multiple individual components of biological condition. The index’s chemical parameters, which are indicative of anthropogenic inputs, include nutrients and conductivity; the physical parameters include two physical habitat indices (Index of Physical Integrity, IPI; California Rapid Assessment Method, CRAM) that describe instream (i.e., substrate) condition and stream corridor (i.e., riparian) condition; and the biological response parameters include biological indices for benthic invertebrates and algae. While the individual stressor and response components are quantitative and have similar meaning across a variety of environmental settings, the final SQI narrative assessment is categorical and designed to be directly actionable within a management decision-making context. The four narrative assessment categories are: (1) "healthy and unstressed" (i.e., unimpacted biology, no physical or chemical stressors); (2) "healthy and resilient" (i.e., stressed, but biological communities are healthy); (3) "impacted and stressed" (i.e., impacted biology due to known chemistry and/or physical habitat stressor(s)); and (4) "impacted by unknown stress" (i.e., biology is impacted, but chemical and physical stressors are low). To facilitate adoption by managers, a web-based application was developed that not only maps overall SQI results, but also enables users to readily access underlying quantitative information for stressors and biological responses to understand likely reasons behind the categorical assessments. This transparent design was intended; high-level output and foundational components of the SQI are relevant for different audiences and details are not sacrificed for accessibility.
+Assessment of stream health is a function of the physical, chemical, and biological integrity of the water body. While monitoring of all three indicators of stream quality is commonplace, combining these three indicators into a unified assessment of stream quality is rare, complicating the interpretation of complex environmental health information. In this study, a unified index was developed that compares biological response to physical and chemical stressors for southern California wadeable streams using a scientifically rigorous, easy-to-understand tool intended to facilitate stream management. The Stream Quality Index (SQI) is based on a stressor-response empirical model that quantifies the expected likelihood that chemical and physical stressors will impact multiple individual components of biological condition. The index’s chemical parameters, which are indicative of anthropogenic inputs, include nutrients and conductivity; the physical parameters include two physical habitat indices (Index of Physical Integrity, IPI; California Rapid Assessment Method, CRAM) that describe instream (i.e., substrate) condition and stream corridor (i.e., riparian) condition; and the biological response parameters include biological indices for benthic invertebrates and algae. While the individual stressor and response components are quantitative and have similar meaning across a variety of environmental settings, the final SQI narrative assessment is categorical and designed to be directly actionable within a management decision-making context. The four narrative assessment categories are: (1) "healthy and unstressed" (i.e., unimpacted biology, no physical or chemical stressors); (2) "healthy and resilient" (i.e., stressed, but biological communities are healthy); (3) "impacted and stressed" (i.e., impacted biology from chemistry and/or physical habitat stressor(s)); and (4) "impacted by unknown stress" (i.e., biology is impacted, but chemical and physical stressors are low). To facilitate adoption by managers, a web-based application was developed that not only maps overall SQI results, but also enables users to readily access underlying quantitative information for stressors and biological responses to understand likely reasons behind the categorical assessments. This transparent design was intended; high-level output and foundational components of the SQI are relevant for different audiences and details are not sacrificed for accessibility.
 
 # Introduction
 
@@ -67,7 +67,7 @@ Assessments of stream health are a function of monitoring the water body’s phy
 
 Tremendous effort is expended to monitor all three types of stream integrity indicators. Despite varying spatial scales and complexities, all monitoring programs share the challenge of how to effectively communicate physical, chemical, and biological data in a scientifically rigorous, repeatable, and readily understandable way to non-scientists [@NRC90]. Because most environmental managers are not scientists, and similarly, scientists may not appreciate the applied context for technical products, the communication of ecological data for decision-making can be challenging. Furthermore, ecological data are rarely black and white, leading to many management decisions made in the "grey zone" [@Paulsen08]. This is particularly true when physical, chemical, and biological indicators are not in complete agreement with one another.
 
-Multiple well-known tools exist for effectively assessing and evaluating different components of stream condition. Bioassessment tools include the Index of Biological Integrity (IBI; @Karr81), Observed to Expected ratios (O/E; @Hawkins00b), and hybrids of the IBI and O/E [@Mazor16]. Chemical assessment tools include the Canadian Council of Ministers of the Environment (CCME) Water Quality Index [@CCME01;@Hurley12]. Physical habitat assessment tools, which are less common, include the California Rapid Assessment Method [@Collins07;@Solek11] and the more recently developed Index of Physical Integrity [@Rehn18].  These established tools are typically used to separately address chemical, physical, and biological components of the United States CWA.
+Multiple well-known tools exist for effectively assessing and evaluating different components of stream condition. Bioassessment tools include the Index of Biological Integrity (IBI; @Karr81), Observed to Expected ratios (O/E; @Hawkins00b), and hybrids of the IBI and O/E [@Mazor16]. Chemical assessment tools include the Canadian Council of Ministers of the Environment (CCME) Water Quality Index [@CCME01;@Hurley12]. Physical habitat assessment tools, which are less common, include the California Rapid Assessment Method [@Collins07;@Solek11] and the more recently developed Index of Physical Integrity [@Rehn18].  These established tools are typically used to separately address chemical, physical, and biological components of the United States CWA and under the Porter-Cologne Act in the state of California.
 
 An assessment tool that combines physical, chemical, and biological indicators into a single unified assessment is exceedingly rare [@Bay12]. Much more commonplace are instances where multiple indicators are individually simplified and presented as a group, leaving managers to decide which is most important [@Paulsen08]. However, a single unified assessment is preferable when communicating stream health to non-technical managers. A single scale provides straightforward context for comparing one site to another, for ranking sites for management actions, and for monitoring improvements at a site following implementation of management actions (or monitoring potential degradation where management actions are not implemented). 
 
@@ -91,7 +91,7 @@ To characterize biological condition, a pair of quantitative bioassessment indic
 
 The California Stream Condition Index (CSCI, @Mazor16) is a predictive index that compares observed benthic macroinvertebrate taxa and metrics at a site to those expected under least disturbed reference conditions (sensu @Stoddard06). Expected values at a site are based on models that estimate the likely macroinvertebrate community relative to factors that naturally influence biology [@Moss87;@Cao07]. 
 
-The Algal Stream Condition Index (ASCI, @Therouxip) was similarly developed as a response endpoint for lower trophic levels; the ASCI is a non-predictive multi-metric index (i.e., it uses a uniform, statewide reference expectation) that incorporates both diatoms and soft-bodied algae. Scores for both indices can range from 0 to ~ 1.4, with a score of 1 at sites in reference condition and lower values indicating biological degradation. Both communities are used as standard assessment measures for perennial wadeable streams in California.
+The Algal Stream Condition Index (ASCI, @Therouxip) was similarly developed as a response endpoint for lower trophic levels; the ASCI is a non-predictive multi-metric index (i.e., it uses a uniform, statewide reference expectation) that incorporates both diatoms and soft-bodied algae. Scores for both the CSCI and ASCI can range from 0 to ~ 1.4, with a score of 1 at sites in reference condition and lower values indicating biological degradation. Both communities are used as standard assessment measures for perennial wadeable streams in California.
 
 Index scores were compared to the distribution of scores at reference sites statewide to identify biological condition classes that described the likelihood of biological alteration. For both the CSCI and ASCI, the 1st, 10th, and 30th percentiles of scores at reference sites were used to categorize sites as very likely to have altered biological condition (scores less than the 1st percentile), likely altered (scores between the 1st and 10th percentile), possibly altered (scores between the 10th and 30th percentiles), and likely intact (scores greater than the 30th percentile) (Table \@ref(tab:biocmb)). This produced four classes for each index, such that each site had two categories describing separate indications of the likelihood of biological alteration in the benthic macroinvertebrate and algal communities. Both response endpoints were jointly considered in the calculation of the SQI for evaluating overall biological condition, described below. Analysis of multiple assemblages provides a more comprehensive indication of biological condition that can confirm overall stream health, and may also provide additional diagnostic information about stressors (as different communities may respond to different characteristics of stream habitat).
 
@@ -106,7 +106,7 @@ The assigned biological condition categories for each index were combined using 
 
 Water chemistry and physical habitat measurements, which were used to describe stressors associated with low CSCI and ASCI scores [@Mazor15;@Therouxip], are strongly linked to the structure and function of both invertebrate and algal assemblages [@Richards97;@Pan02;@Wang07]. Depending on the context, physical habitat can be considered a response metric of stream health. However, physical habitat herein is considered a stressor that can affect biological condition at different taxonomic levels within the stressor-response model.  We also acknowledge that relationships between stressors and biological condition are complex and our simple models linking the two provide only a simple description in the context of more nuanced relationships.  The modelled associations provide the basis for communicating results as a screening tool and are not replacements for more comprehensive causal assessments.  
 
-The water chemistry indicators consisted of nutrients - specifically, total nitrogen (mg/L) and total phosphorus (mg/L) - and specific conductivity ($\mu$S/cm).  Nitrogen, phosphorus, and conductivity are widely measured in many regional and statewide monitoring programs.  These variables are commonly associated with development gradients present in the study region (e.g., urbanization, @Dodds02, @Walsh05). Additionally, these variables can act as surrogates for unmeasured or alternative water quality problems at a site related to eutrophication (e.g., temperature, light penetration, @Dodds16).  Although other contaminants that can affect aquatic organisms are sometimes measured (e.g., metals, pesticides, pharmaceuticals), observations can be sparsely distributed in the study region [@Mazor15].  Eutrophication is a more ubiquitous issue in the study region, although we acknowledge that other stressors not captured by the SQI may affect biological condition.
+The water chemistry indicators consisted of nutrients - specifically, total nitrogen (mg/L) and total phosphorus (mg/L) - and specific conductivity ($\mu$S/cm).  Nitrogen, phosphorus, and conductivity are widely measured in many regional and statewide monitoring programs.  These variables are commonly associated with development gradients present in the study region (e.g., urbanization, @Dodds02, @Walsh05). Additionally, these variables can act as surrogates for unmeasured or alternative water quality pollutants at a site related to eutrophication [@Dodds16].  Although other contaminants that can affect aquatic organisms are sometimes measured (e.g., metals, pesticides, pharmaceuticals), observations can be sparsely distributed in the study region [@Mazor15].  Eutrophication is a more ubiquitous issue in the study region, although we acknowledge that other stressors not captured by the SQI may affect biological condition.
 
 Physical habitat conditions at a site were quantified using two indices of habitat condition developed for California water bodies: the Index of Physical-Habitat Integrity (IPI; @Rehn18) and the California Rapid Assessment Method (CRAM) for riverine wetlands [@Collins07;@Solek11]. Although IPI and CRAM scores can be correlated, the individual metrics that establish each index provide unique information about speciic components of the physical habitat.  Moreover, IPI scores specifically describe instream condition, whereas CRAM scores describe riparian condition.
 
@@ -356,7 +356,7 @@ An interactive website is available for viewing results of the SQI:  <https://sc
 
 # Acknowledgments
 
-We thank the Stormwater Monitoring Coalition and Surface Water Ambient Monitoring Program of the California State Water Board for data collection.  We thank the Stormwater Monitoring Coalition executive committee and science advisory group for feedback during the development of the Stream Quality Index.  Members of the science advisory panel included Beverley Anderson, Ali Dunn, Chad Loflen, Phil Markle, Katherine Pease, Grant Sharp, Hoan Tang, and Joshua Westfall. We thank David Gillett, Chad Loflen, Grant Sharp, and Joshua Westfall for help with the case studies. We thank Scott Martindale for providing editorial comments on an earlier draft. We thank Nabiul Afrooz for initial contributions on the conceptual framework for the index. Site photos for the case studies courtesy of David Gillett (San Diego Creek) and Chad Loflen (San Juan Creek).
+We thank the Stormwater Monitoring Coalition and Surface Water Ambient Monitoring Program of the California State Water Board for data collection.  We thank the Stormwater Monitoring Coalition executive committee and science advisory group for feedback during the development of the Stream Quality Index.  Members of the science advisory panel included Beverley Anderson, Ali Dunn, Chad Loflen, Phil Markle, Katherine Pease, Grant Sharp, Hoan Tang, and Joshua Westfall. We thank David Gillett, Chad Loflen, Grant Sharp, and Joshua Westfall for help with the case studies. We thank Scott Martindale for providing editorial comments on an earlier draft. We thank Nabiul Afrooz for initial contributions on the conceptual framework for the index. Site photos for the case studies courtesy of David Gillett (San Diego Creek) and the Stormwater Monitoring Coalition (San Juan Creek).
 
 # Figures
 
@@ -663,8 +663,8 @@ biocol <- getdsccol(palfac = 'BiologicalCondition')
 # plots
 p1 <- ggplot(toplotn, aes(x = TN)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = TN, colour = BiologicalCondition), sides = 'b') +
-  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = TN, colour = BiologicalCondition), sides = 't') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = TN, colour = BiologicalCondition), sides = 'b', size = 1) +
+  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = TN, colour = BiologicalCondition), sides = 't', size = 1) +
   geom_line(aes(y = fit)) +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
@@ -679,8 +679,8 @@ p1 <- ggplot(toplotn, aes(x = TN)) +
     
 p2 <- ggplot(toplotp, aes(x = TP)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = TP, colour = BiologicalCondition), sides = 'b') +
-  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = TP, colour = BiologicalCondition), sides = 't') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = TP, colour = BiologicalCondition), sides = 'b', size = 1) +
+  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = TP, colour = BiologicalCondition), sides = 't', size = 1) +
   geom_line(aes(y = fit)) +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
@@ -695,8 +695,8 @@ p2 <- ggplot(toplotp, aes(x = TP)) +
     
 p3 <- ggplot(toplocn, aes(x = Cond)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = Cond, colour = BiologicalCondition), sides = 'b') +
-  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = Cond, colour = BiologicalCondition), sides = 't') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = Cond, colour = BiologicalCondition), sides = 'b', size = 1) +
+  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = Cond, colour = BiologicalCondition), sides = 't', size = 1) +
   geom_line(aes(y = fit)) +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
@@ -723,8 +723,8 @@ toploPCT_SAFN <- strs_surf('PCT_SAFN', mod  = 'hab_mod', mod_in = 'habglm', opt_
 # plots
 p4 <- ggplot(toploblc, aes(x = blc)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = blc, colour = BiologicalCondition), sides = 'b') +
-  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = blc, colour = BiologicalCondition), sides = 't') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = blc, colour = BiologicalCondition), sides = 'b', size = 1) +
+  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = blc, colour = BiologicalCondition), sides = 't', size = 1) +
   geom_line(aes(y = fit)) +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
@@ -739,8 +739,8 @@ p4 <- ggplot(toploblc, aes(x = blc)) +
 
 p5 <- ggplot(toplops, aes(x = ps)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = ps, colour = BiologicalCondition), sides = 'b') +
-  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = ps, colour = BiologicalCondition), sides = 't') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = ps, colour = BiologicalCondition), sides = 'b', size = 1) +
+  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = ps, colour = BiologicalCondition), sides = 't', size = 1) +
   geom_line(aes(y = fit)) +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
@@ -755,8 +755,8 @@ p5 <- ggplot(toplops, aes(x = ps)) +
 
 p6 <- ggplot(toploPCT_SAFN, aes(x = PCT_SAFN)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = PCT_SAFN, colour = BiologicalCondition), sides = 'b') +
-  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = PCT_SAFN, colour = BiologicalCondition), sides = 't') +
+  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = PCT_SAFN, colour = BiologicalCondition), sides = 'b', size = 1) +
+  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = PCT_SAFN, colour = BiologicalCondition), sides = 't', size = 1) +
   geom_line(aes(y = fit)) +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
