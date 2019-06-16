@@ -112,7 +112,7 @@ Physical habitat conditions at a site were quantified using two indices of habit
 
 The IPI is an O/E index [@Hawkins00b] based on physical habitat metrics (PHAB, [@Rehn18]) that collectively characterize five components of in-stream habitat quality: percent sands, fines, or concrete, Shannon diversity of aquatic habitat types, Shannon diversity of natural substrate types, evenness of flow habitat types, and riparian vegetation cover. All five metrics are positively associated with physical habitat integrity, such that an increase in each was generally considered an improvement in site condition (percent sands and fines is inversely scored). All physical data used to calculate these metrics were collected using standard field protocols described in @Ode07, which are derived from protocols used in national assessments [@USEPA16]. As with the CSCI, the IPI is a predictive index, and values for most metrics are compared to site-specific expectations appropriate for the stream's environmental setting. The IPI ranges from 0 to ~1.4, with values less than 1 indicating departure from reference conditions.
 
-In contrast to the IPI, CRAM is based on qualitative assessments of four attributes of riparian wetland function: landscape and buffer condition, hydrologic condition, physical structure, and biotic structure. Whereas the data for the IPI is derived from numerous quantitative measurements of physical habitat components collected along several transects, CRAM attributes are assessed on a whole-reach scale through visual observation. In general, CRAM characterizes larger-scale processes affecting stream condition both within and adjacent to the stream corridor, whereas the IPI focuses more narrowly on in-stream conditions. CRAM scores range from 25 to 100, with higher values indicating less degraded conditions at a site.
+In contrast to the IPI, CRAM is based on qualitative assessments of four attributes of riparian wetland function: buffer and landscape condition, hydrologic condition, physical structure, and biotic structure. Whereas the data for the IPI is derived from numerous quantitative measurements of physical habitat components collected along several transects, CRAM attributes are assessed on a whole-reach scale through visual observation. In general, CRAM characterizes larger-scale processes affecting stream condition both within and adjacent to the stream corridor, whereas the IPI focuses more narrowly on in-stream conditions. CRAM scores range from 25 to 100, with higher values indicating less degraded conditions at a site.  The CRAM component for buffer and landscape condition was not included further because it describes stress at scales much larger than the riparian corridor, i.e., it is a direct measure of land use and not as directly relevant for describing proximate stressors affecting or associated with biology.
 
 ### Integrating multiple measures of stress
 
@@ -126,11 +126,11 @@ pChem: p\left(bio\right) \sim \beta_{0} + \beta_{1}TN + \beta_{2}TP + \beta_{3}c
 \end{equation}
 
 \begin{equation}
-pHab: p\left(bio\right) \sim \beta_{0} + \beta_{1}CRAM_{blc} + \beta_{2}CRAM_{ps} + \beta_{3}IPI_{PCT\_SAFN}
+pHab: p\left(bio\right) \sim \beta_{0} + \beta_{1}CRAM_{hy} + \beta_{2}IPI_{PCT\_SAFN} + \beta_{3}IPI_{XCMG}
 (\#eq:phab)
 \end{equation}
 
-where $p\left(bio\right)$ is the probability of biological alteration in equations \@ref(eq:pchem) and \@ref(eq:phab) given the indicators for each chemistry or physical habitat variable.  The probability of alteration is modelled using a logit link function for binomial variables, as $log\left(p / \left(1 - p\right)\right)$, where $p$ defines the presence or absence of altered biology described above.  Both models were created by screening collinear predictors by removing those with variance inflation factors (VIF) greater than three [@Zuur07].  The most parsimonious model was then identified using backward and forward selection to minimize Akaike Information Criterion [@Akaike73;@Venables02]. The selected variables for each model are shown above (equation \@ref(eq:pchem), TN: total nitrogen, TP: total phosphorus, cond: specific conductivity; equation \@ref(eq:phab), CRAM$_{blc}$: CRAM buffer landscape condition, CRAM$_{ps}$: CRAM physical structure, IPI$_{PCT\_SAFN}$: IPI \% sands and fines).
+where $p\left(bio\right)$ is the probability of biological alteration in equations \@ref(eq:pchem) and \@ref(eq:phab) given the indicators for each chemistry or physical habitat variable.  The probability of alteration is modelled using a logit link function for binomial variables, as $log\left(p / \left(1 - p\right)\right)$, where $p$ defines the presence or absence of altered biology described above.  Both models were created by screening collinear predictors by removing those with variance inflation factors (VIF) greater than three [@Zuur07].  The most parsimonious model was then identified using backward and forward selection to minimize Akaike Information Criterion [@Akaike73;@Venables02]. The selected variables for each model are shown above (equation \@ref(eq:pchem), TN: total nitrogen, TP: total phosphorus, cond: specific conductivity; equation \@ref(eq:phab), CRAM$_{hy}$: CRAM hydrologic structure, IPI$_{PCT\_SAFN}$: IPI \% sands and fines, IPI$_{XCMG}$: IPI riparian cover).
 
 An overall likelihood of biological alteration from both chemistry and physical habitat stressors was also estimated as a multiplicative function for $pChem$ and $pHab$:
 
@@ -167,11 +167,11 @@ SQI results for two examples were explored in detail to provide a narrative desc
 
 ## SQI patterns
 
-Among all sites, the overall SQI categorized a majority of sites as having altered biology under high stress conditions (impacted and stressed, 71\% of sites, Table \@ref(tab:sqicnt)).  Almost 20\% of sites were in the opposite category of unaltered biology in low stress conditions (healthy and unstressed).  For the remaining two categories of the overall SQI, only 3\% had unaltered biology but were under high stress conditions (healthy and resilient), whereas 6\% sites had altered biology not related to physical or chemical stressors (impacted by unknown stress).  
+Among all sites, the overall SQI categorized a majority of sites as having altered biology under high stress conditions (impacted and stressed, 72\% of sites, Table \@ref(tab:sqicnt)).  Almost 18\% of sites were in the opposite category of unaltered biology in low stress conditions (healthy and unstressed).  For the remaining two categories of the overall SQI, only 5\% had unaltered biology but were under high stress conditions (healthy and resilient), whereas 6\% sites had altered biology not related to physical or chemical stressors (impacted by unknown stress).  
 
 For the biological condition category, sites with altered conditions were more often altered for both CSCI and ASCI scores (50\%) than the other categories (i.e., altered for only one index).  For sites with one low-scoring index, more sites were altered for the ASCI (16\%) than the CSCI (11\%).  Less than a quarter of all sites had unaltered biology (23\%).  
 
-For stress conditions, 40\% of sites were stressed by both chemistry and physical habitat stressors.  More sites were stressed by water chemistry (22\%) than physical habitat degradation (5\%) if only one stressor was present.  Over 25\% of sites had low stress, and 8\% of sites were stressed by the additive effect of both low chemistry and physical habitat stressors.    
+For stress conditions, 38\% of sites were stressed by both chemistry and physical habitat stressors.  More sites were stressed by water chemistry (24\%) than physical habitat degradation (6\%) if only one stressor was present.  Over 23\% of sites had low stress, and 9\% of sites were stressed by the additive effect of both low chemistry and physical habitat stressors.    
 
 Spatial patterns among SQI categories in southern California generally followed elevation and land use gradients (Figures \@ref(fig:sqimapbase), \@ref(fig:sqimap)).  More altered biological communities and high stress conditions were observed toward coastal areas at lower elevation where urbanization is highest (e.g., Los Angeles, Orange County, Ventura, San Diego).  Sites with altered biological condition showed similar spatial patterns as the overall SQI, although sites altered only for the ASCI were more often observed at mid-elevation across the study region, whereas sites altered only for the CSCI were more common at higher elevation areas in central and northern areas of the study region. Stress condition patterns were similar to biology, although low stress conditions also occurred at higher elevation areas in each watershed.  This produced a handful of sites that had altered biology under low stress conditions at mid-elevation ranges (i.e., impacted by unknown stress, Table \@ref(tab:sqicnt)).    
 
@@ -189,9 +189,9 @@ poverallp <- round(100 * sum(sqidat$pChemHab > 0.5) / nrow(sqidat), 0)
 ## Model precision
 
 ```{r}
-pchemchk <- lm(pChem ~ bio_fp * SiteSet, data = sqidat)
-phabchk <- lm(pHab ~ bio_fp * SiteSet, data = sqidat)
-poverallchk <- lm(pChemHab ~ bio_fp * SiteSet, data = sqidat)
+pchemchk <- lm(pChem ~ SiteSet, data = sqidat)
+phabchk <- lm(pHab ~ SiteSet, data = sqidat)
+poverallchk <- lm(pChemHab ~ SiteSet, data = sqidat)
 
 ttst <- sqidat %>% 
   st_set_geometry(NULL) %>% 
@@ -219,7 +219,7 @@ ttst <- sqidat %>%
 
 ```
 
-The distinction between healthy and impacted biological communities was well-described by the estimated likelihood of biological alteration provided by the empirical models (Figure \@ref(fig:boxlik)).  Relatively good separation was observed between sites designated as healthy or impacted in the validation (dark grey boxes) data for the three stressor-response models. Slightly larger differences between the likelihood of alteration for healthy and impacted communities were observed for the chemistry model compared to the physical habitat model, suggesting an improved fit for the former (for healthy/impacted communities at validation sites, `r ttst$pChem` for *pChem*; `r ttst$pHab` for *pHab*).  For the overall likelihood of biological alteration (*pOverall*), more sites were greater than 90\% likely to be altered in the impacted category as compared to the separate *pChem* and *pHab* models. For all cases (*pChem*, *pHab*, *pOverall*), there were no systematic differences in model results between calibration and validation datasets both qualitatively (similar distribution in the boxplots) and quantitatively ($p >$ 0.05 for the interaction and fixed effect of site type in linear models describing likelihood of alteration between impact categories and site type). 
+The distinction between healthy and impacted biological communities was well-described by the estimated likelihood of biological alteration provided by the empirical models (Figure \@ref(fig:boxlik)).  Relatively good separation was observed between sites designated as healthy or impacted in the validation (dark grey boxes) data for the three stressor-response models. Slightly larger differences between the likelihood of alteration for healthy and impacted communities were observed for the chemistry model compared to the physical habitat model, suggesting an improved fit for the former (for healthy/impacted communities at validation sites, `r ttst$pChem` for *pChem*; `r ttst$pHab` for *pHab*).  For the overall likelihood of biological alteration (*pOverall*), more sites were greater than 90\% likely to be altered in the impacted category as compared to the separate *pChem* and *pHab* models. For all cases (*pChem*, *pHab*, *pOverall*), there were no systematic differences in model results between calibration and validation datasets both qualitatively (similar distribution in the boxplots) and quantitatively ($p >$ 0.05 for models describing likelihood of alteration between site types as calibration or validation). 
 
 The underlying empirical models provided insight into instream characteristics that were related to the likelihood of biological alteration (Figures \@ref(fig:strlik), \@ref(fig:rspcrv)).  About `r pchemp`\% of sites (n = `r pchemn`) had greater than 50\% likelihood of biological alteration from water chemistry stressors, and `r phabp`\% (n = `r phabn`) had greater than 50\% likelihood of biological alteration from physical habitat stressors (Figure \@ref(fig:strlik)).  Collectively, `r poverallp`% (n = `r poveralln`) of sites had greater than 50\% likelihood of biological alteration from the overall stress of both chemistry and physical habitat stressors. 
 
@@ -236,9 +236,9 @@ habglmsub2 <- glm(bio_fp ~ IPI,
               family = binomial('logit'), data = calset)
 ```
 
-Water chemistry and physical habitat predictors included in the empirical response models for *pChem* and *pHab* (equations \@ref(eq:pchem), \@ref(eq:phab)) explained a substantial portion of variability among sites related to the occurrence of biological alteration (Table \@ref(tab:strmod)). The *pChem* model explained 64\% of the variation among sites, whereas the *pHab* model explained 42\%.  All variables in the *pChem* model had VIF values less than 3 and were also included in the final set of predictors after model selection.  All predictors in the *pChem* model were significantly and positively associated ($p < 0.05$) with the occurrence of biological alteration.  For the *pHab* model, three predictors were removed that had VIF values greater than three (diversity of natural substrate, biological structure, and hydrology).  Predictors included in the final *pHab* model after variable selection were buffer and landscape condition, physical structure, and percent sands and fines.  All predictors were negatively associated with the likelihood of biological alteration, whereas buffer landscape condition had the only significant association.   
+Water chemistry and physical habitat predictors included in the empirical response models for *pChem* and *pHab* (equations \@ref(eq:pchem), \@ref(eq:phab)) explained a substantial portion of variability among sites related to the occurrence of biological alteration (Table \@ref(tab:strmod)). The *pChem* model explained 65\% of the variation among sites, whereas the *pHab* model explained 48\%.  All variables in the *pChem* model had VIF values less than 3 and were also included in the final set of predictors after model selection.  All predictors in the *pChem* model were significantly and positively associated ($p < 0.05$) with the occurrence of biological alteration, except total nitrogen which was marginally significant ($p = 0.08$).  For the *pHab* model, two predictors were removed that had VIF values greater than three (diversity of natural substrate and biological structure).  Predictors included in the final *pHab* model after variable selection were hydrologic structure, percent sands and fines, and riparian cover.  All predictors were negatively and significantly associated with the likelihood of biological alteration, except riparian cover ($p =  0.15$).   
 
-Figure \@ref(fig:rspcrv) demonstrates how the individual components for each stressor model were related to likelihood of alteration.  These partial dependency plots were created by estimating the likelihood of alteration across a range of values for each predictor, while holding other predictors constant.  For each plot, the variables in each model (equations \@ref(eq:pchem), \@ref(eq:phab)) not on the x-axis were held at approximate values that were associated with low stress to better understand how biological alteration may be related to each predictor.  For water chemistry stressors, all were positively associated with likelihood of alteration, particularly conductivity which had the steepest per-unit increase in likelihood.  Associations of biological alteration with physical habitat predictors were also as expected, except that decreases in likelihood of biological alteration were observed with increases in the three predictors (all are associated with habitat integrity).  The strongest relationship was observed with increases in CRAM buffer landscape condition, where likelihood of alteration decreased sharply with scores greater than 60. 
+Figure \@ref(fig:rspcrv) demonstrates how the individual components for each stressor model were related to likelihood of alteration.  These partial dependency plots were created by estimating the likelihood of alteration across a range of values for each predictor, while holding other predictors constant.  For each plot, the variables in each model (equations \@ref(eq:pchem), \@ref(eq:phab)) not on the x-axis were held at approximate values that were associated with low stress to better understand how biological alteration may be related to each predictor.  For water chemistry stressors, all were positively associated with likelihood of alteration, particularly conductivity which had the steepest per-unit increase in likelihood.  Associations of biological alteration with physical habitat predictors were also as expected, except that decreases in likelihood of biological alteration were observed with increases in the three predictors (all are indicators of habitat integrity).  The strongest relationship was observed with increases in CRAM hydrologic structure, where likelihood of alteration decreased sharply with scores greater than 50. 
 
 ## Model sensitivity to biological decision points
 
@@ -710,50 +710,34 @@ p3 <- ggplot(toplocn, aes(x = Cond)) +
     )
   
 opt_vrs <- list(
-    blc = 100,
-    ps = 100, 
-    PCT_SAFN = 1
+    hy = 100,
+    PCT_SAFN = 1, 
+    XCMG = 1
   )
 
 # hab
-toploblc <- strs_surf('blc', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
-toplops <- strs_surf('ps', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
+toplohy <- strs_surf('hy', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
 toploPCT_SAFN <- strs_surf('PCT_SAFN', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
+toploXCMG <- strs_surf('XCMG', mod  = 'hab_mod', mod_in = 'habglm', opt_vrs = opt_vrs)
 
 # plots
-p4 <- ggplot(toploblc, aes(x = blc)) +
+p4 <- ggplot(toplohy, aes(x = hy)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = blc, colour = BiologicalCondition), sides = 'b', size = 1) +
-  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = blc, colour = BiologicalCondition), sides = 't', size = 1) +
+  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = hy, colour = BiologicalCondition), sides = 'b', size = 1) +
+  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = hy, colour = BiologicalCondition), sides = 't', size = 1) +
   geom_line(aes(y = fit)) +
   geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
   geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
   theme_bw(base_size = 12,base_family = 'serif') +
   scale_colour_manual(values = biocol$col) +
-  xlab('CRAM buffer\nlandscape condition') + 
-  xlim(range(toploblc$blc)) +
+  xlab('CRAM hydrologic\nstructure') + 
+  xlim(range(toplohy$hy)) +
   theme(
     axis.title.y = element_blank(),
     legend.position = 'none'
     )
 
-p5 <- ggplot(toplops, aes(x = ps)) +
-  geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
-  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = ps, colour = BiologicalCondition), sides = 'b', size = 1) +
-  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = ps, colour = BiologicalCondition), sides = 't', size = 1) +
-  geom_line(aes(y = fit)) +
-  geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
-  geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
-  theme_bw(base_size = 12,base_family = 'serif') +
-  scale_colour_manual(values = biocol$col) +
-  xlab('CRAM physical structure\n') + 
-  xlim(range(toplops$ps)) +
-  theme(
-    axis.title.y = element_blank(),
-    legend.position = 'none'
-    )
-
-p6 <- ggplot(toploPCT_SAFN, aes(x = PCT_SAFN)) +
+p5 <- ggplot(toploPCT_SAFN, aes(x = PCT_SAFN)) +
   geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
   geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = PCT_SAFN, colour = BiologicalCondition), sides = 'b', size = 1) +
   geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = PCT_SAFN, colour = BiologicalCondition), sides = 't', size = 1) +
@@ -764,6 +748,22 @@ p6 <- ggplot(toploPCT_SAFN, aes(x = PCT_SAFN)) +
   scale_colour_manual(values = biocol$col) +
   xlab('IPI % sands and fines\n') + 
   xlim(range(toploPCT_SAFN$PCT_SAFN)) +
+  theme(
+    axis.title.y = element_blank(),
+    legend.position = 'none'
+    )
+
+p6 <- ggplot(toploXCMG, aes(x = XCMG)) +
+  geom_ribbon(aes(ymin = fit - fitse, ymax = fit + fitse), fill = 'lightblue', colour = NA, alpha = 0.6) +
+  geom_rug(data = sqidat[sqidat$bio_fp == 0, ], aes(x = PCT_SAFN, colour = BiologicalCondition), sides = 'b', size = 1) +
+  geom_rug(data = sqidat[sqidat$bio_fp == 1, ], aes(x = PCT_SAFN, colour = BiologicalCondition), sides = 't', size = 1) +
+  geom_line(aes(y = fit)) +
+  geom_line(aes(y = fit + fitse), linetype = 'dashed') + 
+  geom_line(aes(y = fit - fitse), linetype = 'dashed') + 
+  theme_bw(base_size = 12,base_family = 'serif') +
+  scale_colour_manual(values = biocol$col) +
+  xlab('IPI riparian cover\n') + 
+  xlim(range(toploXCMG$XCMG)) +
   theme(
     axis.title.y = element_blank(),
     legend.position = 'top'
@@ -1033,7 +1033,7 @@ knitr::kable(totab, booktabs = T, caption = cap.val)
 *Table \@ref(tab:strmod): \(\#tab:strmod) Summary of empirical stress models to quantify associations of water chemistry (pChem) and physical habitat (pHab) predictors with biological alteration.  Generalized linear models were fit to predict the likelihood of both healthy benthic macroinvertebrate and algal communities at calibration sites (75\% of n = `r nrow(sqidat)` sites).*
 ```{r, results = 'asis'}
 # use jtools
-coef_names <- c("Constant" = "(Intercept)", "log(TN)" = "log10(0.1 + TN)", "log(TP)" = "log10(0.01 + TP)", "Conductivity" = "Cond", "CRAM buffer landscape condition" = "blc", "CRAM physical structure" = "ps", "IPI percent sands and fines" = "PCT_SAFN")
+coef_names <- c("Constant" = "(Intercept)", "log(TN)" = "log10(0.1 + TN)", "log(TP)" = "log10(0.01 + TP)", "Conductivity" = "Cond", "CRAM hydrologic structure" = "hy", "IPI riparian cover" = "XCMG", "IPI percent sands and fines" = "PCT_SAFN")
 huxres <- export_summs(wqglm, habglm, coefs = coef_names, model.names = c('pChem', 'pHab'))
 
 brd <- fp_border(color="black")

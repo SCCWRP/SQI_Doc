@@ -9,6 +9,8 @@ library(ASCI)
 library(PHAB)
 library(PHABMetrics)
 
+source('R/funcs.R')
+
 prj <- 4326 # geographic wgs84
 
 # import all raw data for combining for sqi -------------------------------
@@ -402,8 +404,8 @@ valdat <- sqidat %>%
 wqglm <- glm(bio_fp ~ log10(0.1 + TN) + log10(0.01 + TP) + Cond,
              family = binomial('logit'), data = caldat)
 wqglm <- step(wqglm)
-# vif_func(caldat[, c('blc', 'bs', 'hy', 'ps', 'Ev_FlowHab', 'H_AqHab', 'H_SubNat', 'PCT_SAFN', 'XCMG')], thresh = 3)
-habglm <- glm(bio_fp ~ blc + ps + Ev_FlowHab + H_AqHab + PCT_SAFN + XCMG, family = binomial('logit'), data = caldat)
+vif_func(caldat[, c('bs', 'hy', 'ps', 'Ev_FlowHab', 'H_AqHab', 'H_SubNat', 'PCT_SAFN', 'XCMG')], thresh = 3)
+habglm <- glm(bio_fp ~ hy + ps + Ev_FlowHab + H_AqHab + PCT_SAFN + XCMG, family = binomial('logit'), data = caldat)
 habglm <- step(habglm)
 
 # save to package 
