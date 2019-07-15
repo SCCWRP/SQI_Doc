@@ -1,0 +1,138 @@
+---
+title: "Supplement to The Stream Quality Index: A Multi-Indicator Tool For Enhancing Environmental Management Communication"
+output: 
+  bookdown::word_document2:
+    reference_docx: my_styles.docx
+bibliography: refs.bib
+author: 'Marcus W. Beck (marcusb@sccwrp.org), Raphael D. Mazor (raphaelm@sccwrp.org), Susanna Theroux (susannat@sccwrp.org), Kenneth C. Schiff (kens@sccwrp.org)'
+urlcolor: blue
+csl: ecological-indicators.csl
+link-citations: true
+---
+
+```{r setup, echo = F, warning = F, message = F, results = 'hide'}
+# figure path, chunk options
+knitr::opts_chunk$set(fig.path = 'figs/', warning = F, message = F, echo = F, cache = T, dev.args = list(family = 'serif'), dpi = 300, warning = F, out.width = '100%', cache.path = 'manu_draft_cache/',
+  fig.process = function(x) {
+  x2 = sub('-\\d+([.][a-z]+)$', '\\1', x)
+  if (file.rename(x, x2)) x2 else x
+  })
+
+# libraries
+library(Jabbrev)
+# devtools::load_all('C:/proj/Jabbrev/.')
+library(sf)
+library(tidyverse)
+library(gridExtra)
+library(grid)
+library(directlabels)
+library(SQI)
+# devtools::load_all('L:/SMC SQI_RM/SQI/.')
+library(jtools)
+library(huxtable)
+library(flextable)
+library(officer)
+library(patchwork)
+library(ggalluvial)
+library(ggrepel)
+library(ggsn)
+
+source('R/funcs.R')
+
+# data
+data(sqidat)
+data(sqidatinp)
+data(sheds)
+data(wqglm)
+data(habglm)
+
+# extract bib entries from online
+# bib_scrp('Beck_etal_SQI.Rmd', 'refs.bib', ext_bib = 'https://raw.githubusercontent.com/fawda123/refs/master/refs.bib')
+
+# all colors used for categories
+allcol <- getdsccol(palout = T)
+```
+
+```{r echo = F, cache = F, eval = F}
+spelling::spell_check_files('Beck_etal_SQI.Rmd')
+```
+
+# San Diego Creek
+
+San Diego Creek is a coastal stream in the County of Orange (33.689722N, -117.821853W) that drains the San Joaquin Hills and Loma Ridge into the Newport Bay estuary.  The watershed is heavily urbanized and most of the creek has been engineered for flood control as a concrete-lined or reinforced channel with no natural riparian structure. The creek is designated for aquatic life (wildlife and warmwater habitat) and recreational (contact and non-contact) uses under the regional water quality control plan.  Bioassessment results from the CSCI have shown that the structure and function of macroinvertebrate communities is very likely altered from reference conditions (Figure \@ref(fig:exsfig)a).  
+
+```{r}
+sdc_sites <- sqidat %>% 
+  filter(MasterID %in% c("SMC00766", "801S03971", "801M12649", "SMC06019", "SMC01923"))
+sdc_ascirng <- sdc_sites$ASCI %>% 
+  range %>% 
+  round(2)
+sdc_cscirng <- sdc_sites$CSCI %>% 
+  range %>% 
+  round(2)
+sdc_tn <- sdc_sites$TN %>% 
+  mean %>% 
+  round(1)
+sdc_tp <- sdc_sites$TP %>% 
+  mean %>% 
+  round(1)
+sdc_cond <- sdc_sites$Cond %>% 
+  mean %>% 
+  round(0)
+sdc_cram <- sdc_sites$indexscore_cram %>% 
+  mean %>% 
+  round(0)
+sdc_ipi <- sdc_sites$IPI %>% 
+  mean %>% 
+  round(2)
+sdc_tnqnt <- ecdf(sqidat$TN)(sdc_tn) %>% perc_suff
+sdc_tpqnt <- ecdf(sqidat$TP)(sdc_tp) %>% perc_suff
+sdc_condqnt <- ecdf(sqidat$Cond)(sdc_cond) %>% perc_suff
+sdc_cramqnt <- ecdf(sqidat$indexscore_cram)(sdc_cram) %>% perc_suff
+sdc_ipiqnt <- ecdf(sqidat$IPI)(sdc_ipi) %>% perc_suff
+```
+
+The dataset used to develop the SQI included five sites on San Diego Creek with one sample in 2010, three in 2011, and one in 2016. Biological condition at these sites was poor with ASCI scores ranging from `r sdc_ascirng[1]` to `r sdc_ascirng[2]` and CSCI scores ranging from `r sdc_cscirng[1]` to `r sdc_cscirng[2]`.  All sites were impacted for both CSCI and ASCI scores. The SQI stressor condition for all five sites predicted nearly a 100\% likelihood of chemistry and physical habitat stressors impacting biology, with a 100\% likelihood of overall stress based on the combined effects of both.   Average total nitrogen, total phosphorus, and conductivity were `r sdc_tn` mg/L, `r sdc_tp` mg/L, and `r sdc_cond` $\mu$S/cm, placing the creek in the `r sdc_tnqnt`, `r sdc_tpqnt`, and `r sdc_condqnt` percentiles for water chemistry, respectively, among all sites in the complete dataset.  Similarly, CRAM and IPI scores averaged across sites were `r sdc_cram` and `r sdc_ipi`, placing the creek in the `r sdc_cramqnt` and `r sdc_ipiqnt` percentiles for the SMC region.  The overall SQI category for all five sites was "impacted and stressed" (Figure \@ref(fig:exsfig)a).
+
+An independent causal assessment study was conducted in 2018 to determine the causes of biological impairment in San Diego Creek [@Shibberu18]. A detailed description of causal assessment is beyond the scope of this paper, although in short, causal assessment is a formalized approach using multiple indicators to characterize stressors as likely, unlikely, or indeterminate causes for the biological condition observed in a system [@Norton14;@Schiff15].  This differs from the SQI approach where the stressors are based on association alone.  For San Diego Creek, the potential stressors that were evaluated included sediment accumulation, channel engineering, nutrients, temperature, conductivity, and pesticides.  The causal assessment concluded that sediment accumulation and elevated water temperature resulting from channel alteration, combined with sediment-bound pesticides, were the most likely causes of low CSCI scores.  Alternatively, nutrients, although elevated, were evaluated as not likely. The lack of a causal link between nutrients and biological condition may be related to the assessment's focus on CSCI scores as its biological endpoint and that sufficient algal data were unavailable at the time (ASCI scores were not evaluated).  As such, the SQI results are supported by causal assessment, with the latter providing a more comprehensive evaluation of links between stressors and biological condition and insight into potential sources of the stressors.
+
+# San Juan Creek
+
+San Juan Creek is located in the County of Riverside (33.606546N, -117.446041W) and drains into the Capistrano Bight, about 25 km south of Newport Bay.  The creek originates in the Santa Ana mountains that are largely undeveloped, whereas lower portions of the creek are engineered for flood control in the urbanized areas of the watershed. The upper portion of San Juan Creek was described in a regional basin plan (San Diego Regional Water Quality Control Board) as not attaining aquatic life uses because CSCI scores were lower than the tenth percentile of scores observed at reference sites.  However, both physical habitat and water chemistry parameters at the assessment site suggested conditions were adequate to support biotic integrity.  Toxicity tests also showed 100\% survival of *Ceriodaphnia dubia*, providing evidence that sediment contaminants (e.g., metals, pesticides) were unlikely stressors impacting biology at the site.
+
+```{r}
+cs2_site <- sqidat %>% 
+  filter(MasterID %in% c("901S00313"))
+cs2_asci <- cs2_site$ASCI %>% 
+  round(2)
+cs2_csci <- cs2_site$CSCI %>% 
+  round(2)
+cs2_tn <- cs2_site$TN %>% 
+  round(1)
+cs2_tp <- cs2_site$TP %>% 
+  round(1)
+cs2_cond <- cs2_site$Cond %>% 
+  round(0)
+cs2_cram <- cs2_site$indexscore_cram %>% 
+  round(0)
+cs2_ipi <- cs2_site$IPI %>% 
+  round(2)
+cs2_tnqnt <- ecdf(sqidat$TN)(cs2_tn) %>% perc_suff
+cs2_tpqnt <- ecdf(sqidat$TP)(cs2_tp) %>% perc_suff
+cs2_condqnt <- ecdf(sqidat$Cond)(cs2_cond) %>% perc_suff
+cs2_cramqnt <- ecdf(sqidat$indexscore_cram)(cs2_cram) %>% perc_suff
+cs2_ipiqnt <- ecdf(sqidat$IPI)(cs2_ipi) %>% perc_suff
+cs2_chstr <- cs2_site$pChem %>% `*`(100) %>% round(0)
+cs2_habstr <- cs2_site$pHab %>% `*`(100) %>% round(0)
+cs2_overallstr <- cs2_site$pChemHab %>% `*`(100) %>% round(0)
+```
+
+The SQI results for the sampling station in the upper San Juan Creek confirmed the above results by categorizing the site as "impacted by unknown stress" (Figure \@ref(fig:exsfig)b).  The CSCI score at the site is `r cs2_csci`, whereas the ASCI score is close to reference conditions at `r cs2_asci`; the biological condition category for the SQI showed the site is impacted for the CSCI only.  The likelihood of biological alteration was estimated as `r cs2_chstr`\% from chemistry stress and `r cs2_habstr`\% from physical habitat stress, with a combined likelihood of `r cs2_overallstr`\% from overall stress. Total nitrogen, total phosphorus, and conductivity were `r cs2_tn` mg/L, `r cs2_tp` mg/L, and `r cs2_cond` $\mu$S/cm, placing the site in the `r cs2_tnqnt`, `r cs2_tpqnt`, and `r cs2_condqnt` percentiles for water chemistry, respectively, among all sites.  Similarly, CRAM and IPI scores were `r cs2_cram` and `r cs2_ipi`, placing the creek in the `r cs2_cramqnt` and `r cs2_ipiqnt` percentiles for the SMC region.  As such, initial results suggest that neither chemistry nor physical stressors are impacting biological condition.  Chosen management actions at this site are dependent on regional priorities and applicable regulatory requirements.  
+
+# Figures
+
+```{r exsfig, fig.cap = "Results from the SQI for selected sites on (a) San Diego Creek (County of Orange, California, USA) and (b) San Juan Creek (County of Orange).  Causal assessment analyses have been completed on San Diego Creek to identify stressors related to low CSCI scores.  San Juan Creek is an example where biological impacts are observed, whereas chemistry and physical habitat stressors are low. Images are based on screenshots from the online application for exploring SQI results (see supplement, [https://sccwrp.shinyapps.io/SQI_Shiny](https://sccwrp.shinyapps.io/SQI_Shiny))."}
+knitr::include_graphics('figs/exs_fig.png')
+```
+
+# References
