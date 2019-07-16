@@ -6,7 +6,7 @@ output:
 bibliography: refs.bib
 author: 'Marcus W. Beck (marcusb@sccwrp.org), Raphael D. Mazor (raphaelm@sccwrp.org), Susanna Theroux (susannat@sccwrp.org), Kenneth C. Schiff (kens@sccwrp.org)'
 urlcolor: blue
-csl: ecological-indicators.csl
+csl: ecological-genetics-and-genomics.csl
 link-citations: true
 ---
 

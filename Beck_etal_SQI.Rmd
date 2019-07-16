@@ -6,7 +6,7 @@ output:
 bibliography: refs.bib
 author: 'Marcus W. Beck (marcusb@sccwrp.org), Raphael D. Mazor (raphaelm@sccwrp.org), Susanna Theroux (susannat@sccwrp.org), Kenneth C. Schiff (kens@sccwrp.org)'
 urlcolor: blue
-csl: ecological-indicators.csl
+csl: ecological-genetics-and-genomics.csl
 link-citations: true
 ---
 
@@ -48,6 +48,7 @@ data(habglm)
 
 # extract bib entries from online
 # bib_scrp('Beck_etal_SQI.Rmd', 'refs.bib', ext_bib = 'https://raw.githubusercontent.com/fawda123/refs/master/refs.bib')
+# bib_shr('refs.bib')
 
 # all colors used for categories
 allcol <- getdsccol(palout = T)
