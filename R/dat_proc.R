@@ -78,9 +78,9 @@ ascismcdat <- dat %>%
   filter(grepl('^ASCI\\_SMC', value)) %>% 
   pull(rawdat) %>% 
   .[[1]] %>% 
-  dplyr::select(X__1, hybrid_MMI) %>% 
+  dplyr::select(`...1`, hybrid_MMI) %>% 
   rename(
-    sampleid = X__1,
+    sampleid = `...1`,
     asci_mean = hybrid_MMI
   ) %>% 
   mutate(
@@ -99,9 +99,9 @@ asciswampdat <- dat %>%
   filter(grepl('^ASCI\\_SWAMP', value)) %>% 
   pull(rawdat) %>% 
   .[[1]] %>% 
-  dplyr::select(X__1, hybrid_MMI) %>% 
+  dplyr::select(`...1`, hybrid_MMI) %>% 
   rename(
-    sampleid = X__1,
+    sampleid = `...1`,
     asci_mean = hybrid_MMI
   ) %>% 
   mutate(
