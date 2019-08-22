@@ -1,5 +1,5 @@
 ---
-title: "Supplement to The Stream Quality Index: A Multi-Indicator Tool for Enhancing Environmental Management Communication"
+title: "Supplement to The Stream Quality Index: A Multi-Indicator Tool for Enhancing Environmental Management"
 output: 
   bookdown::word_document2:
     reference_docx: my_styles.docx
